@@ -10,7 +10,6 @@
 #include <interrupts.h>
 #include <time.h>
 
-
 #define SYS_GETCHAR_ID 0
 #define SYS_WRITE_ID 1
 #define SYS_TICK_ID 2
@@ -25,8 +24,9 @@
 #define SYS_CHANGELANGUAGE_ID 11
 #define SYS_STOREREGISTERS_ID 12
 #define SYS_MEMACCESS_ID 13
+#define SYS_ALLOCMEM_ID 14
 
 void initialize();
-char * getBuffer();
+char *getBuffer();
 
 #endif

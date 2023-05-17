@@ -12,6 +12,7 @@ GLOBAL clearkeybuffer
 GLOBAL changelanguage
 GLOBAL storeRegisters
 GLOBAL memAccess
+GLOBAL allocMem
 section .text
 
 %macro pushState 0
@@ -54,19 +55,19 @@ section .text
 	; corre todos los registros hacia atras para que se pueda poner el irq primero
 	mov r9, r8
 	mov r8, rcx
-	mov rcx,rdx 
+	mov rcx,rdx
     mov rdx,rsi
     mov rsi,rdi
 	mov rdi, %1
 	int 80h
-	
+
 	popState
 	ret
 %endmacro
 
 ;-----------------------------------------------;
-;			nuestras syscalls					;			
-;												;	
+;			nuestras syscalls					;
+;												;
 ;-----------------------------------------------;
 getchar:
 	sys_call 0
@@ -108,3 +109,7 @@ storeRegisters:
 
 memAccess:
 	sys_call 13
+
+#freestyle
+allocMem:
+	sys_call 14
