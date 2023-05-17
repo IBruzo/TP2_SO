@@ -124,3 +124,4 @@ void *sys_allocMem(int bytes)
     /* utlizo el memManager que fue inicializado por el kernel ( kernel.c ) */
     return allocMemory(memManager, bytes);
 }
+

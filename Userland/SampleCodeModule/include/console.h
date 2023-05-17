@@ -6,6 +6,7 @@
 #include <system_calls.h>
 #include <tron.h>
 #include <keyboardPiano.h>
+#include <test_mm.h>
 
 extern char* snapshot();
 
@@ -43,7 +44,7 @@ extern char* snapshot();
 #define LANGUAGE 3857633481 // for help
 #define SIZE 2089538912 // for help
 #define INFOREG 2989276335
-
+#define TEST_MM 3973914654
 
 void checkCommand();
 void checkKey( char c );

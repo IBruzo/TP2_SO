@@ -245,7 +245,6 @@ void checkCommand()
 	char section[128] = {0};
 	char *command = toUpper(consoleBuffer);
 	splitString(command, section, ' ');
-
 	if (section[0] == 0)
 	{
 		switch (hash(command))
@@ -293,6 +292,13 @@ void checkCommand()
 			break;
 		case LANG_EN:
 			changelanguage(0);
+			break;
+		case TEST_MM:
+    		{
+				char* argv[] = {"1024"}; // Example argument: 1024
+				test_mm(1, argv); // Call the test_mm function with the provided argument
+				break;
+			}
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);

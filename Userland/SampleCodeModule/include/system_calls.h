@@ -15,5 +15,5 @@ extern void clearkeybuffer();
 extern void changelanguage(int lan);
 extern void storeRegisters();
 extern void memAccess(unsigned long int memDir);
-extern void allocMem(unsigned long int bytes)
+extern void * allocMem(unsigned long int bytes);
 #endif

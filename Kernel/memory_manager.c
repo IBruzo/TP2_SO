@@ -1,5 +1,7 @@
 #include "memoryManager.h" // import 2
 
+MemoryManagerADT memManager;
+
 typedef struct MemoryManagerCDT
 {
     char *nextAddress;

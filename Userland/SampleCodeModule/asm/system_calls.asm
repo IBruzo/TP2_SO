@@ -110,6 +110,5 @@ storeRegisters:
 memAccess:
 	sys_call 13
 
-#freestyle
 allocMem:
 	sys_call 14
