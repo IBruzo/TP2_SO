@@ -6,7 +6,7 @@ typedef struct MM_rq
   uint32_t size;
 } mm_rq;
 
-
+void * memsett(void * destination, int32_t c, uint64_t length);
 
 uint64_t test_mm(uint64_t argc, char *argv[])
 {
@@ -29,12 +29,12 @@ uint64_t test_mm(uint64_t argc, char *argv[])
     // Request as many blocks as we can
     while (rq < MAX_BLOCKS && total < max_memory)
     {
-      mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
+      mm_rqs[rq].size = (GetUniform(max_memory - total - 1) + 1);
       mm_rqs[rq].address = allocMem(mm_rqs[rq].size);
-
-      /* print("Block Adress: %x\n", mm_rqs[rq].address);
+      
+    /*  print("Block Adress: %x\n", mm_rqs[rq].address);
       print("Block Size: %d\n", mm_rqs[rq].size); */
-
+     // print("cant pags: %d\n",(mm_rqs[rq].size*1048576 + 4096-1 )/4096);
       if (mm_rqs[rq].address)
       {
         total += mm_rqs[rq].size;
@@ -44,15 +44,15 @@ uint64_t test_mm(uint64_t argc, char *argv[])
 
     // Set
     uint32_t i;
-    char * aux;
+    char *aux;
     for (i = 0; i < rq; i++)
     {
       if (mm_rqs[i].address)
-        aux=  memset(mm_rqs[i].address, i, mm_rqs[i].size);
-    
+      print("%d)\n", i);
+       aux = memsett(mm_rqs[i].address, i, mm_rqs[i].size);
+      print("%x--->%d--- size:%d\n", mm_rqs[i].address, *((char *)(mm_rqs[i].address)), mm_rqs[i].size);
     }
 
-    
     // Check
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
@@ -63,8 +63,20 @@ uint64_t test_mm(uint64_t argc, char *argv[])
         }
 
     // Free
-    /* for (i = 0; i < rq; i++)
+    for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
-        free(mm_rqs[i].address); */
+        freeBits(mm_rqs[i].address, mm_rqs[i].size);
   }
+}
+
+
+void * memsett(void * destination, int32_t c, uint64_t length)
+{
+	uint8_t chr = (uint8_t)c;
+	char * dst = (char*)destination;
+
+	while(length--)
+		dst[length] = chr;
+
+	return destination;
 }

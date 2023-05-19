@@ -25,6 +25,7 @@
 #define SYS_STOREREGISTERS_ID 12
 #define SYS_MEMACCESS_ID 13
 #define SYS_ALLOCMEM_ID 14
+#define SYS_FREE_ID 15
 
 void initialize();
 char *getBuffer();

@@ -295,7 +295,7 @@ void checkCommand()
 			break;
 		case TEST_MM:
     		{
-				char* argv[] = {"1024"}; // Example argument: 1024
+				char* argv[] = {"128"}; // Example argument: 1024
 				test_mm(1, argv); // Call the test_mm function with the provided argument
 				break;
 			}

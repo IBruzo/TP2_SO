@@ -1,6 +1,7 @@
 #include <syscalls.h>
 #include <lib.h>
 #include <memoryManager.h>
+#include <bitMapADT.h>
 
 extern int getTime(int op);
 
@@ -122,6 +123,10 @@ void sys_memAccess(uint64_t memDir)
 void *sys_allocMem(int bytes)
 {
     /* utlizo el memManager que fue inicializado por el kernel ( kernel.c ) */
-    return allocMemory(memManager, bytes);
+    return allocBits(bytes);
+}
+
+void sys_free(void * dir, int size){
+    freeBits(dir, size);
 }
 

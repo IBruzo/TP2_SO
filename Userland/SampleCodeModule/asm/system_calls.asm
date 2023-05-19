@@ -13,6 +13,7 @@ GLOBAL changelanguage
 GLOBAL storeRegisters
 GLOBAL memAccess
 GLOBAL allocMem
+GLOBAL freeBits
 section .text
 
 %macro pushState 0
@@ -112,3 +113,6 @@ memAccess:
 
 allocMem:
 	sys_call 14
+
+freeBits:
+	sys_call 15
