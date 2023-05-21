@@ -1,4 +1,4 @@
-#include "bitMapADT.h" // import 2
+#include "bitmapMM.h" // import 2
 
 #include <stdint.h>
 #include <stdarg.h>

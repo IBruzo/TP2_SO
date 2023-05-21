@@ -7,7 +7,7 @@
 #include <video_driver.h>
 #include <exceptions.h>
 #include "list.h"
-#include <bitMapADT.h>
+#include <bitmapMM.h>
 #include "memoryManager.h"
 
 extern uint8_t text;

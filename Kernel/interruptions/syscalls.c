@@ -1,7 +1,7 @@
 #include <syscalls.h>
 #include <lib.h>
 #include <memoryManager.h>
-#include <bitMapADT.h>
+#include <bitmapMM.h>
 
 extern int getTime(int op);
 
