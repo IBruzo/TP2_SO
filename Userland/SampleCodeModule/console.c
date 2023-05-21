@@ -294,12 +294,12 @@ void checkCommand()
 			changelanguage(0);
 			break;
 		case TEST_MM:
-    		{
-				char* argv[] = {"128"}; // Example argument: 1024
-				test_mm(1, argv); // Call the test_mm function with the provided argument
-				break;
-			}
+		{
+			char *argv[] = {"128"}; // Example argument: 1024
+			test_mm(1, argv);		// Call the test_mm function with the provided argument
 			break;
+		}
+		break;
 		default:
 			printColor("'%s'", ORANGY, command);
 			print(" : comando no encontrado.\n");

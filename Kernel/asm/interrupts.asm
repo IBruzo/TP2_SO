@@ -19,6 +19,7 @@ GLOBAL _exception0Handler
 GLOBAL _exception6Handler
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
+EXTERN scheduler
 
 SECTION .text
 
@@ -72,7 +73,6 @@ SECTION .text
 	iretq
 %endmacro
 
-
 ; se guarda el stack para poder devolverlo cuando ocurre una excepcion
 %macro exceptionHandler 1
 
@@ -85,6 +85,71 @@ SECTION .text
 
 	iretq
 
+%endmacro
+
+%macro pushStateNoRAX 0
+	push rbx
+	push rcx
+	push rdx
+	push rbp
+	push rdi
+	push rsi
+	push r8
+	push r9
+	push r10
+	push r11
+	push r12
+	push r13
+	push r14
+	push r15
+%endmacro
+
+%macro popStateNoRAX 0
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rsi
+	pop rdi
+	pop rbp
+	pop rdx
+	pop rcx
+	pop rbx
+%endmacro
+
+; version para context switching, deberia ser activada cuando interrumpe el timer tick y cuando termina un proceso
+%macro irqHandler 1
+	pushState
+
+	mov rdi, rsp
+	call scheduler    ;scheduler deberia estar en c y en este caso guardar en una tabla el valor del rsp viejo
+	mov rsp, rax
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
+%endmacro
+
+; para syscalls, no se desea restaurar el RAX ya que el retorno de la syscall esta alli
+%macro sirqHandler 1
+	pushStateNoRAX
+
+	mov rdi, %1 ; pasaje de parametro
+	call irqDispatcher
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popStateNoRAX
+	iretq
 %endmacro
 
 
@@ -143,7 +208,7 @@ _irq04Handler:
 _irq05Handler:
 	irqHandlerMaster 5
 
-;syscalls	
+;syscalls no bloqueantes
 _irq60Handler:
 
 	;se pasan 7 parametros ya que existe una syscall que recibe 6 parametros, debido al
@@ -158,9 +223,30 @@ _irq60Handler:
 	mov rdi,60h
 	call irqDispatcher
 	pop r9
-	
+
 	iretq
 
+
+;syscalls bloqueantes, sospecho el por que no usamos push state y pop state
+_birq60Handler:
+
+	;se pasan 7 parametros ya que existe una syscall que recibe 6 parametros, debido al
+	; corrimiento se tiene que pasar uno de esos parametros por stack
+	push r9
+	mov r9, r8
+	mov r8,rcx
+	mov rcx,rdx
+	mov rdx,rsi
+	mov rsi,rdi
+	;muevo los parametros de handler para q al dispatcher le lleguen bien
+	mov rdi,60h
+	call irqDispatcher
+
+	; interrupcion del timer
+
+	pop r9
+
+	iretq
 
 ;Zero Division Exception
 _exception0Handler:

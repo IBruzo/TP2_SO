@@ -3,22 +3,26 @@
 #include <interrupts.h>
 static unsigned long ticks = 0;
 
-
-void timer_handler() {
+void timer_handler()
+{
 	ticks++;
 }
 
-int ticks_elapsed() {
+int ticks_elapsed()
+{
 	return ticks;
 }
 
-int seconds_elapsed() {
+int seconds_elapsed()
+{
 	return ticks / 18;
 }
 
-void timer_wait(int ticks) {
-	
-	for(int i= 0; i < ticks; i++){
+void timer_wait(int ticks)
+{
+
+	for (int i = 0; i < ticks; i++)
+	{
 		_hlt();
 	}
 }

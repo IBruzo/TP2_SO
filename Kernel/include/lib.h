@@ -2,20 +2,40 @@
 #define LIB_H
 
 #include <stdint.h>
+#include <stdarg.h>
+#include "../interruptions/include/syscalls.h"
 
-void * memset(void * destination, int32_t character, uint64_t length);
-void * memcpy(void * destination, const void * source, uint64_t length);
+#define BACKGROUND_COLOR 0x002B36
+#define USER_TEXT_COLOR 0x95CD28
+#define TERMINAL_BLUE 0x12488B
+#define ORANGY 0xF66151
+#define RED 0xC01C28
+#define FONTCOLOR 0xBFECF1
+#define CURRENT_CURSOR_COLOR 0x002B36
 
+void *memset(void *destination, int32_t character, uint64_t length);
+void *memcpy(void *destination, const void *source, uint64_t length);
+void strcpy(char *destination, const char *origin);
+int strlen(const char *str);
+char *strrev(char *str);
+void appendstringColor(char *string, int color);
+void appendcharColor(char character, int color);
+void drawCursor(int color);
+void newline();
+void putcharSpecifics(char character, int x, int y, int size, int color);
+void updateCursor();
+
+char *itoa(int i, char *strout, int base);
 extern char *cpuVendor(char *result);
 extern int sys_getTime(int op);
-
+void print(char *foundation, ...);
+void printf(char *foundation, void *parameters[]);
 // in de mapa de entrada y salida
-extern uint8_t inb( uint16_t port);
+extern uint8_t inb(uint16_t port);
 // out de mapa de entrada y salida
-extern void outb( uint16_t port, uint8_t value);
+extern void outb(uint16_t port, uint8_t value);
 
 uint64_t getSP();
 
-uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base);
 #endif
-
