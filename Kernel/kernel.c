@@ -6,8 +6,8 @@
 #include <sound_driver.h>
 #include <video_driver.h>
 #include <exceptions.h>
+
 #include "list.h"
-#include <bitmapMM.h>
 #include "memoryManager.h"
 
 extern uint8_t text;
@@ -64,7 +64,8 @@ int main()
 	/* puse 256Mb de memoria a mapear, en teoria se le da 1Gb pero ni idea */
 	/* como direccion inicial puse el comienzo de la Userland segun la tabla del Pure64 */
 	/* arrancar otro memory manager como el buffy o el bitmap */
-	initBitMap();
+	initMM();
+	
 	// memManager = createMemoryManager(/* cantidad de memoria */ (void *)268435456, /* comienzo de dicha memoria */ (void *)0x100000);
 
 	print("Schedule Tester\n");

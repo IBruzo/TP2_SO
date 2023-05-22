@@ -1,4 +1,5 @@
 #include <console.h>
+#include "./include/tests.h"
 
 extern void INVALID_OP_CODE();
 
