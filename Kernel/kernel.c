@@ -22,6 +22,8 @@ static const uint64_t PageSize = 0x1000;
 static void *const sampleCodeModuleAddress = (void *)0x400000; // punteros a user land
 static void *const sampleDataModuleAddress = (void *)0x500000;
 
+static void *const heapAddress = (void *)0x600000;
+#define MAX_HEAP_SIZE (1024*1024*128) // 128Mb
 typedef int (*EntryPoint)();
 
 void clearBSS(void *bssAddress, uint64_t bssSize)
@@ -64,12 +66,12 @@ int main()
 	/* puse 256Mb de memoria a mapear, en teoria se le da 1Gb pero ni idea */
 	/* como direccion inicial puse el comienzo de la Userland segun la tabla del Pure64 */
 	/* arrancar otro memory manager como el buffy o el bitmap */
-	initMM();
-	
+	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
+
 	// memManager = createMemoryManager(/* cantidad de memoria */ (void *)268435456, /* comienzo de dicha memoria */ (void *)0x100000);
 
 	print("Schedule Tester\n");
-	listADT PCBTable = newList(cmpInt);
+	/* listADT PCBTable = newList(cmpInt); */
 	// ENTRY 1
 	PCB pcbEntry1;
 	pcbEntry1.PID = 12;
@@ -122,11 +124,11 @@ int main()
 	PCBmemInfo3.limit = 2222222;
 	pcbEntry3.memInfo = PCBmemInfo3;
 
-	insert(PCBTable, &pcbEntry1);
+	/* insert(PCBTable, &pcbEntry1);
 	insert(PCBTable, &pcbEntry2);
-	insert(PCBTable, &pcbEntry3);
+	insert(PCBTable, &pcbEntry3); */
 
-	toBegin(PCBTable);
+	/* toBegin(PCBTable);
 	while (hasNext(PCBTable))
 	{
 		PCB *elem = next(PCBTable);
@@ -141,7 +143,7 @@ int main()
 			print("->%d  ", elem->FD[i]);
 		}
 		print("\n");
-	}
+	} */
 	/* probablemente aca es donde tengo que crear el primer proceso del kernel y declarar la PCB */
 	return ((EntryPoint)sampleCodeModuleAddress)(); // dirreccion del _start del userland
 }

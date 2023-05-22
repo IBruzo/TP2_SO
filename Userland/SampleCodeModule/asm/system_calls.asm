@@ -14,6 +14,7 @@ GLOBAL storeRegisters
 GLOBAL memAccess
 GLOBAL allocMem
 GLOBAL freeBits
+GLOBAL scrollUp
 section .text
 
 %macro pushState 0
@@ -116,3 +117,6 @@ allocMem:
 
 freeBits:
 	sys_call 15
+
+scrollUp:
+	sys_call 16

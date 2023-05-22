@@ -27,6 +27,7 @@ void sys_storeRegisters(void);
 void sys_memAccess(uint64_t memDir);
 void *sys_allocMem(int bytes);
 void sys_free(void * dir, int size);
+void scroll_up_once(uint32_t tamY, uint32_t color);
 
 
 

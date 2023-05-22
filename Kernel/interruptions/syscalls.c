@@ -130,3 +130,6 @@ void sys_free(void * dir, int size){
     memFree(dir);
 }
 
+void sys_scroll_up(uint32_t tamY, uint32_t color){
+    scroll_up_once(tamY, color);
+}

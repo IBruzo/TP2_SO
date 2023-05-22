@@ -16,11 +16,10 @@ extern MemoryManagerADT memManager;
 
 #include <lib.h>
 
-#define BIT_MAP_SIZE 16384
-#define PAG_SIZE 4096
-#define MEM_START 0x10000000
+#define PAG_SIZE 4096 // 4kb
+#define BIT_MAP_SIZE (28672) // cantidad de memoria a mapear #pags
 
-void initMM();
+void initMemoryManager(void * hBase, uint32_t hSize);
 void memFree(void *dir);
 void * memAlloc(int size);
 

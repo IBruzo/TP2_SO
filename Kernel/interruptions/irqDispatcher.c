@@ -37,6 +37,7 @@ void initialize()
     (fun_sys[SYS_MEMACCESS_ID]) = (syscall)sys_memAccess;
     (fun_sys[SYS_ALLOCMEM_ID]) = (syscall)sys_allocMem; 
     (fun_sys[SYS_FREE_ID]) = (syscall)sys_free; 
+    (fun_sys[SYS_SCROLL_UP_ONCE_ID]) = (syscall)scroll_up_once;
 }
 
 

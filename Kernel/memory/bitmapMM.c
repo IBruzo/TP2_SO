@@ -5,14 +5,21 @@
 #include <stdarg.h>
 
 uint8_t bitMap[BIT_MAP_SIZE];
-
+uint32_t memStart;
+uint32_t memSize;
 // declarar un super array donde cada bit representa un bloque/pagina
 // tenemos que hacer un inicializador del Memory Manager, donde se declare dicho  array
 // una funcion que retorne un puntero a la memoria pedida
 // una funcion que libere la memoria asignada
 
-void initMM()
+void initMemoryManager(void * hBase, uint32_t hSize)
 {
+    if(hBase == NULL || hSize == 0){
+        return;
+    }
+    memStart = (uint32_t)hBase;
+    memSize = hSize;
+
     memset(bitMap, 0, BIT_MAP_SIZE);
 }
 
@@ -88,11 +95,11 @@ int findSpace(int cantPag, int *posArr, int *bitPos)
     int cantPag = (size + PAG_SIZE - 1) / PAG_SIZE;
     switchBits(posArr, bitPos, cantPag); // gomensa
     return;
-} */
+}   */
 
 void memFree(void *dir)
 {
-    int dirMap = (((int)dir) - MEM_START) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
+    int dirMap = (((int)dir) - memStart) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
     int posArr = dirMap / 8;                          // truncation
     int bitPos = dirMap % 8;                          // gives values from 0 to 7
     
@@ -123,19 +130,17 @@ void memFree(void *dir)
     {
         bitMap[i / 8] &= ~(1 << (i % 8));
     }
-}
+} 
 
 void * memAlloc(int sizeBytes)
 {
-    void *resp;
     int posArr = 0;
     int bitPos = 0;
     int cantPag = (sizeBytes + PAG_SIZE - 1) / PAG_SIZE;
     if (findSpace(cantPag, &posArr, &bitPos))
     {
         switchBits(posArr, bitPos, cantPag);
-        resp = MEM_START + PAG_SIZE * (8 * posArr + bitPos);
-        return (void *)(MEM_START + PAG_SIZE * (8 * posArr + bitPos));
+        return (void *)(memStart + PAG_SIZE * (8 * posArr + bitPos));
     }
     return 0;
 }

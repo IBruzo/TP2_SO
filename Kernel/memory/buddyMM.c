@@ -18,7 +18,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+uint32_t memStart;
+uint32_t memSize;
 
 
 /*
@@ -33,7 +34,7 @@
  * The minimum allocation size is 16 bytes because we have an 8-byte header and
  * we need to stay 8-byte aligned.
  */
-#define MIN_ALLOC_LOG2 4
+#define MIN_ALLOC_LOG2 12
 #define MIN_ALLOC ((size_t)1 << MIN_ALLOC_LOG2)
 
 /*
@@ -43,7 +44,7 @@
  * heaps will have multiple allocations, so the real maximum allocation limit
  * is at most 1gb.
  */
-#define MAX_ALLOC_LOG2 29
+#define MAX_ALLOC_LOG2 30
 #define MAX_ALLOC ((size_t)1 << MAX_ALLOC_LOG2)
 
 /*
@@ -303,7 +304,7 @@ void *memAlloc(int request) {
    * possible allocation size. More memory will be reserved later as needed.
    */
   if (base_ptr == NULL) {
-    base_ptr = max_ptr = MEM_START;
+    base_ptr = max_ptr = memStart;
     bucket_limit = BUCKET_COUNT - 1;
     update_max_ptr(base_ptr + sizeof(list_t));
     list_init(&buckets[BUCKET_COUNT - 1]);
@@ -479,7 +480,12 @@ void memFree(void *ptr) {
   list_push(&buckets[bucket], (list_t *)ptr_for_node(i, bucket));
 }
 
-void initMM(){
+void initMemoryManager(void * hBase, uint32_t hSize){
+    if(hBase == NULL || hSize == 0){
+        return;
+    }
+    memStart = (uint32_t)hBase;
+    memSize = hSize;
     return;
 }
 
