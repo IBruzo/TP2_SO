@@ -4,23 +4,30 @@
 #include <stdint.h>
 #include <stdarg.h>
 
-uint8_t bitMap[BIT_MAP_SIZE];
+uint8_t bitMap[BIT_MAP_SIZE ];
 uint32_t memStart;
 uint32_t memSize;
-// declarar un super array donde cada bit representa un bloque/pagina
-// tenemos que hacer un inicializador del Memory Manager, donde se declare dicho  array
-// una funcion que retorne un puntero a la memoria pedida
-// una funcion que libere la memoria asignada
+
+
+typedef struct {
+    void* address;
+    size_t size;
+} Allocation;
+Allocation allocations[BIT_MAP_SIZE]; // Array to store allocated memory information
+int numAllocations = 0; // Number of allocations made
+
 
 void initMemoryManager(void * hBase, uint32_t hSize)
 {
-    if(hBase == NULL || hSize == 0){
+    if( hBase == NULL || hSize == 0 ){
         return;
     }
     memStart = (uint32_t)hBase;
     memSize = hSize;
 
     memset(bitMap, 0, BIT_MAP_SIZE);
+    memset(allocations, 0,  BIT_MAP_SIZE);
+    numAllocations = 0;
 }
 
 void switchBit(char *ch, int bitPos)
@@ -87,50 +94,31 @@ int findSpace(int cantPag, int *posArr, int *bitPos)
     return 0;
 }
 
-/* void memFree(void *dir, int size)
-{
-    int dirMap = (((int)dir) - MEM_START) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
-    int posArr = dirMap / 8;                          // se trunca
-    int bitPos = dirMap % 8;                          // me da cosas del 0 al 7
-    int cantPag = (size + PAG_SIZE - 1) / PAG_SIZE;
-    switchBits(posArr, bitPos, cantPag); // gomensa
-    return;
-}   */
-
 void memFree(void *dir)
 {
-    int dirMap = (((int)dir) - memStart) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
-    int posArr = dirMap / 8;                          // truncation
-    int bitPos = dirMap % 8;                          // gives values from 0 to 7
-    
-    // Find the start position of the allocated region
-    int startPos = dirMap;
-    while (startPos >= 0 && (bitMap[startPos / 8] & (1 << (startPos % 8))))
+    for (int i = 0; i < numAllocations; i++)
     {
-        startPos--;
+        if (allocations[i].address == dir)
+        {
+
+            int posArr = (int)(allocations[i].address - memStart) / PAG_SIZE;
+            int bitPos = 0;
+            int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE;
+            switchBits(posArr, bitPos, cantPag);
+
+            // Remove deallocated memory from allocations array
+            for (int j = i; j < numAllocations ; j++)
+            {
+                //printf("allocations[%p:%ld] = allocations[%p:%ld]\n",allocations[j].address, allocations[j].size, allocations[j + 1].address, allocations[j+1].size);
+                allocations[j] = allocations[j + 1];
+            }
+            
+            numAllocations--;
+
+            break;
+        }
     }
-    startPos++;
-
-    // Find the end position of the allocated region
-    int endPos = dirMap;
-    while (endPos < BIT_MAP_SIZE * 8 && (bitMap[endPos / 8] & (1 << (endPos % 8))))
-    {
-        endPos++;
-    }
-    endPos--;
-
-    // Calculate the size of the region
-    int size = (endPos - startPos + 1) * PAG_SIZE;
-
-    // Free the region
-    switchBits(posArr, bitPos, (size + PAG_SIZE - 1) / PAG_SIZE);
-
-    // Set the bits for the freed region to zero
-    for (int i = startPos; i <= endPos; i++)
-    {
-        bitMap[i / 8] &= ~(1 << (i % 8));
-    }
-} 
+}
 
 void * memAlloc(int sizeBytes)
 {
@@ -140,7 +128,12 @@ void * memAlloc(int sizeBytes)
     if (findSpace(cantPag, &posArr, &bitPos))
     {
         switchBits(posArr, bitPos, cantPag);
-        return (void *)(memStart + PAG_SIZE * (8 * posArr + bitPos));
+        void *address =(void *)(memStart + PAG_SIZE * (8 * posArr + bitPos));
+        allocations[numAllocations].address = address;
+        allocations[numAllocations].size = sizeBytes;
+        numAllocations++;
+
+        return address;
     }
     return 0;
 }
