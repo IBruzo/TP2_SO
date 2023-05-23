@@ -1,7 +1,7 @@
 include Makefile.inc
 
 
-MEMM=-D BITMAP_MM # -D BITMAP_MM o -D BUDDY_MM
+MEMM=-D BUDDY_MM # -D BITMAP_MM o -D BUDDY_MM
 KERNEL=kernel.bin
 SOURCES=$(wildcard *.c)
 SOURCES_ASM=$(wildcard asm/*.asm)

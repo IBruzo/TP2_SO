@@ -54,7 +54,6 @@ uint64_t test_mm(uint64_t argc, char *argv[])
          aux = memsett(mm_rqs[i].address, i, mm_rqs[i].size);
       }
       print("%d) %x = malloc(%d) \n",i,  mm_rqs[i].address, /* *((char *)(mm_rqs[i].address)), */ mm_rqs[i].size);
-
     }
 
     // Check

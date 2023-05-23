@@ -100,10 +100,14 @@ void memFree(void *dir)
     {
         if (allocations[i].address == dir)
         {
+            int dirMap = (((int) dir) - memStart) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
+            int posArr = dirMap / 8;                      // se trunca
+            int  bitPos = dirMap % 8;
 
-            int posArr = (int)(allocations[i].address - memStart) / PAG_SIZE;
-            int bitPos = 0;
-            int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE;
+
+            /* int posArr = (int)(allocations[i].address - memStart) / PAG_SIZE;
+            int bitPos = 0; */
+            int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE; 
             switchBits(posArr, bitPos, cantPag);
 
             // Remove deallocated memory from allocations array
@@ -115,7 +119,7 @@ void memFree(void *dir)
             
             numAllocations--;
 
-            break;
+            return;
         }
     }
 }
@@ -128,7 +132,7 @@ void * memAlloc(int sizeBytes)
     if (findSpace(cantPag, &posArr, &bitPos))
     {
         switchBits(posArr, bitPos, cantPag);
-        void *address =(void *)(memStart + PAG_SIZE * posArr );
+        void *address =(void *)(memStart + PAG_SIZE * (posArr *8 + bitPos) );
         allocations[numAllocations].address = address;
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;

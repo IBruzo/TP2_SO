@@ -16,3 +16,8 @@
 #Visual Studio files
 .vs
 [Bb]in/
+
+#gdb
+.gdb_history
+kernel.elf
+0000-sampleCodeModule.elf
