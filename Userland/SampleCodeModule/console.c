@@ -1,4 +1,5 @@
 #include <console.h>
+#include "./include/tests.h"
 
 extern void INVALID_OP_CODE();
 
@@ -295,7 +296,7 @@ void checkCommand()
 			break;
 		case TEST_MM:
 		{
-			char *argv[] = {"128"}; // Example argument: 1024
+			char *argv[] = {"134217728"}; // 
 			test_mm(1, argv);		// Call the test_mm function with the provided argument
 			break;
 		}
@@ -575,7 +576,7 @@ void checkKey(char c)
 		newline();
 		if (lastEnter())
 		{
-			clearScreen();
+			scrollUp(32, TERMINAL_BLUE);
 		}
 
 		if (consoleBuffer != 0 && consoleBuffer[0])

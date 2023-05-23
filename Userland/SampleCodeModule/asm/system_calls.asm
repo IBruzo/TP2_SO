@@ -14,6 +14,7 @@ GLOBAL storeRegisters
 GLOBAL memAccess
 GLOBAL allocMem
 GLOBAL freeBits
+GLOBAL scrollUp
 GLOBAL createProcess
 section .text
 
@@ -119,3 +120,7 @@ freeBits:
 
 createProcess:
 	sys_call 16
+
+
+scrollUp:
+	sys_call 17

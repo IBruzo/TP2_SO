@@ -5,7 +5,7 @@
 #include <system_calls.h>
 #include <tron.h>
 #include <keyboardPiano.h>
-#include <test_mm.h>
+#include <tests.h>
 
 extern char *snapshot();
 
@@ -47,4 +47,5 @@ extern char *snapshot();
 void checkCommand();
 void checkKey(char c);
 void storeRegisters();
+
 #endif

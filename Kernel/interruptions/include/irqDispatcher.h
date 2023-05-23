@@ -27,6 +27,7 @@
 #define SYS_ALLOCMEM_ID 14
 #define SYS_FREE_ID 15
 #define SYS_CREATEPROCESS_ID 16
+#define SYS_SCROLL_UP_ONCE_ID 17
 
 void initialize();
 char *getBuffer();

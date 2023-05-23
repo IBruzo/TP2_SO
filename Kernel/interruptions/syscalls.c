@@ -1,7 +1,6 @@
 #include <syscalls.h>
 #include <lib.h>
 #include <memoryManager.h>
-#include <bitMapADT.h>
 
 extern int getTime(int op);
 
@@ -123,14 +122,18 @@ void sys_memAccess(uint64_t memDir)
 void *sys_allocMem(int bytes)
 {
     /* utlizo el memManager que fue inicializado por el kernel ( kernel.c ) */
-    return allocBits(bytes);
+    return memAlloc(bytes);
 }
 
 void sys_free(void *dir, int size)
 {
-    freeBits(dir, size);
+    memFree(dir);
 }
 
+void sys_scroll_up(uint32_t tamY, uint32_t color)
+{
+    scroll_up_once(tamY, color);
+}
 void sys_createProcess(void *(*function)(int, char **), int argc, char **argv, listADT PCBTable)
 {
     print("Allocating Process Memory...\n");

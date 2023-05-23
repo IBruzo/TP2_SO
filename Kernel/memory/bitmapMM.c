@@ -1,18 +1,33 @@
-#include "bitMapADT.h" // import 2
+#ifndef BUDDY_MM
 
+#include "memoryManager.h"
 #include <stdint.h>
 #include <stdarg.h>
 
-uint8_t bitMap[BIT_MAP_SIZE];
+uint8_t bitMap[BIT_MAP_SIZE ];
+uint32_t memStart;
+uint32_t memSize;
 
-// declarar un super array donde cada bit representa un bloque/pagina
-// tenemos que hacer un inicializador del Memory Manager, donde se declare dicho  array
-// una funcion que retorne un puntero a la memoria pedida
-// una funcion que libere la memoria asignada
 
-void initBitMap()
+typedef struct {
+    void* address;
+    size_t size;
+} Allocation;
+Allocation allocations[BIT_MAP_SIZE]; // Array to store allocated memory information
+int numAllocations = 0; // Number of allocations made
+
+
+void initMemoryManager(void * hBase, uint32_t hSize)
 {
+    if( hBase == NULL || hSize == 0 ){
+        return;
+    }
+    memStart = (uint32_t)hBase;
+    memSize = hSize;
+
     memset(bitMap, 0, BIT_MAP_SIZE);
+    memset(allocations, 0,  BIT_MAP_SIZE);
+    numAllocations = 0;
 }
 
 void switchBit(char *ch, int bitPos)
@@ -79,34 +94,48 @@ int findSpace(int cantPag, int *posArr, int *bitPos)
     return 0;
 }
 
-/**
- * @brief
- *
- * @param dir direccion donde esta
- * @param size es en bits
- */
-void freeBits(void *dir, int size)
+void memFree(void *dir)
 {
+    for (int i = 0; i < numAllocations; i++)
+    {
+        if (allocations[i].address == dir)
+        {
 
-    int dirMap = (((int)dir) - MEM_START) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
-    int posArr = dirMap / 8;                          // se trunca
-    int bitPos = dirMap % 8;                          // me da cosas del 0 al 7
-    int cantPag = (size + PAG_SIZE - 1) / PAG_SIZE;
-    switchBits(posArr, bitPos, cantPag); // gomensa
-    return;
+            int posArr = (int)(allocations[i].address - memStart) / PAG_SIZE;
+            int bitPos = 0;
+            int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE;
+            switchBits(posArr, bitPos, cantPag);
+
+            // Remove deallocated memory from allocations array
+            for (int j = i; j < numAllocations ; j++)
+            {
+                //printf("allocations[%p:%ld] = allocations[%p:%ld]\n",allocations[j].address, allocations[j].size, allocations[j + 1].address, allocations[j+1].size);
+                allocations[j] = allocations[j + 1];
+            }
+            
+            numAllocations--;
+
+            break;
+        }
+    }
 }
 
-void *allocBits(int sizeBytes)
+void * memAlloc(int sizeBytes)
 {
-    void *resp;
     int posArr = 0;
     int bitPos = 0;
     int cantPag = (sizeBytes + PAG_SIZE - 1) / PAG_SIZE;
     if (findSpace(cantPag, &posArr, &bitPos))
     {
         switchBits(posArr, bitPos, cantPag);
-        resp = MEM_START + PAG_SIZE * (8 * posArr + bitPos);
-        return (void *)(MEM_START + PAG_SIZE * (8 * posArr + bitPos));
+        void *address =(void *)(memStart + PAG_SIZE * (8 * posArr + bitPos));
+        allocations[numAllocations].address = address;
+        allocations[numAllocations].size = sizeBytes;
+        numAllocations++;
+
+        return address;
     }
     return 0;
 }
+
+#endif

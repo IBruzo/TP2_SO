@@ -1,4 +1,7 @@
-#include <test_mm.h>
+#include "tests.h"
+
+
+uint64_t test_mm(uint64_t argc, char *argv[]);
 
 typedef struct MM_rq
 {
@@ -10,7 +13,7 @@ void * memsett(void * destination, int32_t c, uint64_t length);
 
 uint64_t test_mm(uint64_t argc, char *argv[])
 {
-
+  
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;
   uint32_t total;
@@ -47,25 +50,32 @@ uint64_t test_mm(uint64_t argc, char *argv[])
     char *aux;
     for (i = 0; i < rq; i++)
     {
-      if (mm_rqs[i].address)
-      print("%d)\n", i);
-       aux = memsett(mm_rqs[i].address, i, mm_rqs[i].size);
-      print("%x--->%d--- size:%d\n", mm_rqs[i].address, *((char *)(mm_rqs[i].address)), mm_rqs[i].size);
+      if (mm_rqs[i].address){
+         aux = memsett(mm_rqs[i].address, i, mm_rqs[i].size);
+      }
+      print("%d) %x = malloc(%d) \n",i,  mm_rqs[i].address, /* *((char *)(mm_rqs[i].address)), */ mm_rqs[i].size);
+
     }
 
     // Check
-    for (i = 0; i < rq; i++)
-      if (mm_rqs[i].address)
+    for (i = 0; i < rq; i++){
+      if (mm_rqs[i].address){
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
         {
           print("test_mm ERROR\n");
           return -1;
         }
+      }
+    }
 
     // Free
-    for (i = 0; i < rq; i++)
-      if (mm_rqs[i].address)
+    for (i = 0; i < rq; i++){
+      if (mm_rqs[i].address){
         freeBits(mm_rqs[i].address, mm_rqs[i].size);
+        print("free(%x)\n", mm_rqs[i].address);
+      }
+    }
+    clearScreen();
   }
 }
 

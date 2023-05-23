@@ -6,10 +6,11 @@
 #include <sound_driver.h>
 #include <video_driver.h>
 #include <exceptions.h>
-#include "list.h"
-#include <bitMapADT.h>
-#include "memoryManager.h"
 
+#include "list.h"
+#include "memoryManager.h"
+static void *const heapAddress = (void *)0x600000;
+#define MAX_HEAP_SIZE (1024 * 1024 * 128) // 128Mb
 void *initializeKernelBinary()
 {
 
@@ -31,13 +32,13 @@ int main()
 
 	load_idt();
 	exceptionsBackupValues((uint64_t)sampleCodeModuleAddress, getSP());
+	/* inicializo el MemManager, lo almaceno en una constante global  */
+	/* puse 256Mb de memoria a mapear, en teoria se le da 1Gb pero ni idea */
+	/* como direccion inicial puse el comienzo de la Userland segun la tabla del Pure64 */
+	/* arrancar otro memory manager como el buffy o el bitmap */
+	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 
-	//-----------------------------------------Memory Management-----------------------------------------------
-
-	// Nuestro BitMap :
-	initBitMap(); // Deberia ser equivalente para el Buddy
-	// Implementacion de Alejo :
-	// memManager = createMemoryManager((void *)268435456, (void *)0x100000);
+	// memManager = createMemoryManager(/* cantidad de memoria */ (void *)268435456, /* comienzo de dicha memoria */ (void *)0x100000);
 
 	//-----------------------------------------Process Management----------------------------------------------
 
