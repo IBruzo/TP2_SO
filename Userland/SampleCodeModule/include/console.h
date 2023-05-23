@@ -47,5 +47,6 @@ extern char *snapshot();
 void checkCommand();
 void checkKey(char c);
 void storeRegisters();
+void clearScreen();
 
 #endif

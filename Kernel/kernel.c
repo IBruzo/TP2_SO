@@ -9,8 +9,9 @@
 
 #include "list.h"
 #include "memoryManager.h"
-static void *const heapAddress = (void *)0x600000;
+void *const heapAddress = (void *)0x600000;
 #define MAX_HEAP_SIZE (1024 * 1024 * 128) // 128Mb
+
 void *initializeKernelBinary()
 {
 

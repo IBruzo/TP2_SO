@@ -19,9 +19,8 @@
 #define BUCKET_COUNT (MAX_ALLOC_LOG2 - MIN_ALLOC_LOG2 + 1)
 
 
-
-uint32_t memStart;
-uint32_t memSize;
+static void* memStart;
+static uint32_t memSize;
 static list_t buckets[BUCKET_COUNT];
 static size_t bucket_limit;
 static uint8_t node_is_split[(1 << (BUCKET_COUNT - 1)) / 8];
@@ -30,7 +29,6 @@ static uint8_t *max_ptr;
 
 static int update_max_ptr(uint8_t *new_value) {
   if (new_value > max_ptr) {
-    
     max_ptr = new_value;
   }
   return 1;
@@ -108,7 +106,8 @@ void *memAlloc(int request) {
 
   
   if (base_ptr == NULL) {
-    base_ptr = max_ptr = memStart;
+base_ptr = max_ptr = (uint8_t*)(uintptr_t)memStart;
+
     bucket_limit = BUCKET_COUNT - 1;
     update_max_ptr(base_ptr + sizeof(list_t));
     list_init(&buckets[BUCKET_COUNT - 1]);
@@ -205,7 +204,7 @@ void initMemoryManager(void * hBase, uint32_t hSize){
     if(hBase == NULL || hSize == 0){
         return;
     }
-    memStart = (uint32_t)hBase;
+    memStart = hBase;
     memSize = hSize;
     return;
 }

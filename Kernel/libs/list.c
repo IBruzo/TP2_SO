@@ -103,7 +103,7 @@ static TList deleteREC(TList l, elemType elem, int *flag, int (*compare)(elemTyp
     }
     if (c < 0)
     {
-        l->tail = deleteREC(l->tail, elem, &flag, compare);
+        l->tail = deleteREC(l->tail, elem, flag, compare);
     }
     return l;
 }

@@ -56,6 +56,5 @@ extern void outb(uint16_t port, uint8_t value);
 uint64_t getSP();
 
 uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base);
-static int processIDs = 1;
 
 #endif

@@ -151,7 +151,7 @@ void scroll_up_once(uint32_t tamY, uint32_t color)
     uint32_t *screen = (uint32_t *)(uint64_t)info->framebuffer;
 
     // Calculate the number of pixels to shift up
-    uint32_t numPixels = info->pitch / sizeof(uint32_t) * amount;
+    //uint32_t numPixels = info->pitch / sizeof(uint32_t) * amount;
 
     // Calculate the number of words per line
     uint32_t wordsPerLine = info->pitch / sizeof(uint32_t);
