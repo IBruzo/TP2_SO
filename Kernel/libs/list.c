@@ -1,6 +1,6 @@
 #include "list.h"
-#include <assert.h>
 #include "lib.h"
+#include <assert.h>
 #include "memoryManager.h"
 
 // Definimos una estructura auxiliar para los nodos

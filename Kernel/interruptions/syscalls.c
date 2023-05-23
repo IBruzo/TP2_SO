@@ -1,7 +1,6 @@
 #include <syscalls.h>
 #include <lib.h>
-#include <memoryManager.h>
-
+#include "memoryManager.h"
 extern int getTime(int op);
 
 static unsigned char regsBuffer[128] = {0};

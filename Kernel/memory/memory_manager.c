@@ -1,4 +1,4 @@
-#include "memoryManager.h" // import 2
+#include "memoryManager.h" 
 
 MemoryManagerADT memManager;
 
