@@ -13,8 +13,8 @@ typedef struct {
     void* address;
     size_t size;
 } Allocation;
-Allocation allocations[BIT_MAP_SIZE]; // Array to store allocated memory information
-int numAllocations = 0; // Number of allocations made
+Allocation allocations[BIT_MAP_SIZE]; 
+int numAllocations = 0; 
 
 
 void initMemoryManager(void * hBase, uint32_t hSize)

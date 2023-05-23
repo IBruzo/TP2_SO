@@ -12,8 +12,8 @@ GLOBAL clearkeybuffer
 GLOBAL changelanguage
 GLOBAL storeRegisters
 GLOBAL memAccess
-GLOBAL allocMem
-GLOBAL freeBits
+GLOBAL mAlloc
+GLOBAL mFree
 GLOBAL scrollUp
 GLOBAL createProcess
 section .text
@@ -112,10 +112,10 @@ storeRegisters:
 memAccess:
 	sys_call 13
 
-allocMem:
+mAlloc:
 	sys_call 14
 
-freeBits:
+mFree:
 	sys_call 15
 
 createProcess:

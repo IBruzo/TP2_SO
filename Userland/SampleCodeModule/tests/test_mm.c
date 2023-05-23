@@ -33,7 +33,7 @@ uint64_t test_mm(uint64_t argc, char *argv[])
     while (rq < MAX_BLOCKS && total < max_memory)
     {
       mm_rqs[rq].size = (GetUniform(max_memory - total - 1) + 1);
-      mm_rqs[rq].address = allocMem(mm_rqs[rq].size);
+      mm_rqs[rq].address = mAlloc(mm_rqs[rq].size);
       
     /*  print("Block Adress: %x\n", mm_rqs[rq].address);
       print("Block Size: %d\n", mm_rqs[rq].size); */
@@ -70,7 +70,7 @@ uint64_t test_mm(uint64_t argc, char *argv[])
     // Free
     for (i = 0; i < rq; i++){
       if (mm_rqs[i].address){
-        freeBits(mm_rqs[i].address, mm_rqs[i].size);
+        mFree(mm_rqs[i].address);
         print("free(%x)\n", mm_rqs[i].address);
       }
     }

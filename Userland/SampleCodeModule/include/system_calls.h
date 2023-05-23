@@ -15,8 +15,8 @@ extern void clearkeybuffer();
 extern void changelanguage(int lan);
 extern void storeRegisters();
 extern void memAccess(unsigned long int memDir);
-extern void *allocMem(unsigned long int bytes);
-extern void freeBits(void *dir, int size);
+extern void *mAlloc(unsigned long int bytes);
+extern void mFree(void *dir);
 extern void createProcess(void *(*function)(int argc, char **argv), int argc, char **argv);
 extern void scrollUp(int tamY, int color);
 
