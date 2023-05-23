@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "lib.h"
 #include "memoryManager.h"
+
 // Definimos una estructura auxiliar para los nodos
 typedef struct node *TList;
 typedef struct node

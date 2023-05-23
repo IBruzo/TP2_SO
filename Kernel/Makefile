@@ -1,19 +1,21 @@
 include Makefile.inc
 
 
-MEMM=-D BITMAP_MM # -D BITMAP_MM o -D BUDDY_MM
+MEMM=-D BUDDY_MM # -D BITMAP_MM o -D BUDDY_MM
 KERNEL=kernel.bin
 SOURCES=$(wildcard *.c)
 SOURCES_ASM=$(wildcard asm/*.asm)
 SOURCES_DRIVERS=$(wildcard drivers/*.c)
 SOURCES_INTERRUPTIONS=$(wildcard interruptions/*.c)
 SOURCES_MEMORY=$(wildcard memory/*.c)
+SOURCES_LIBS=$(wildcard libs/*.c)
 
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
 OBJECTS_DRIVERS=$(SOURCES_DRIVERS:.c=.o)
 OBJECTS_INTERRUPTIONS=$(SOURCES_INTERRUPTIONS:.c=.o)
 OBJECTS_MEMORY=$(SOURCES_MEMORY:.c=.o)
+OBJECTS_LIBS=$(SOURCES_LIBS:.c=.o)
 
 LOADERSRC=loader.asm
 
@@ -22,9 +24,9 @@ STATICLIBS=
 
 all: $(KERNEL)
 
-$(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_INTERRUPTIONS) $(OBJECTS_MEMORY)
-	$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_INTERRUPTIONS) $(OBJECTS_MEMORY)  $(STATICLIBS) 
-	$(LD) $(LDFLAGS) -T kernel.ld --oformat=elf64-x86-64 -o kernel.elf $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_INTERRUPTIONS) $(OBJECTS_MEMORY) $(STATICLIBS)
+$(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_INTERRUPTIONS) $(OBJECTS_MEMORY) $(OBJECTS_LIBS)
+	$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_INTERRUPTIONS) $(OBJECTS_MEMORY) $(OBJECTS_LIBS) $(STATICLIBS) 
+	$(LD) $(LDFLAGS) -T kernel.ld --oformat=elf64-x86-64 -o kernel.elf $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(OBJECTS_DRIVERS) $(OBJECTS_INTERRUPTIONS) $(OBJECTS_MEMORY) $(OBJECTS_LIBS) $(STATICLIBS)
 %.o: %.c
 	$(GCC) $(GCCFLAGS) $(MEMM) -I./include -I ./drivers/include -I./interruptions/include -c $< -o $@
 
@@ -35,6 +37,6 @@ $(LOADEROBJECT):
 	$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	rm -rf asm/*.o *.o *.bin drivers/*.o interruptions/*.o memory/*.o
+	rm -rf asm/*.o *.o *.bin drivers/*.o interruptions/*.o memory/*.o libs/*.o *.elf
 
 .PHONY: all clean
