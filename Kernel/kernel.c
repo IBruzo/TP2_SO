@@ -38,15 +38,15 @@ int main()
 	/* arrancar otro memory manager como el buffy o el bitmap */
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 
-	//test();
-	// memManager = createMemoryManager(/* cantidad de memoria */ (void *)268435456, /* comienzo de dicha memoria */ (void *)0x100000);
+	// test();
+	//  memManager = createMemoryManager(/* cantidad de memoria */ (void *)268435456, /* comienzo de dicha memoria */ (void *)0x100000);
 
 	//-----------------------------------------Process Management----------------------------------------------
 
 	print("Memory Management");
 
 	// Creo PCB Table
-	listADT PCBTable = newList(cmpInt);
+	PCBTable = newList(cmpInt);
 	// Con este PCB del Kernel, Nodo Centinela
 	PCB kernelPCB;
 	int kernelFD[] = {0};
@@ -68,7 +68,7 @@ int main()
 	//-----------------------------------------Process Creation----------------------------------------------
 
 	int *args = {"1", "2"};
-	sys_createProcess(cmpInt, args, 2, PCBTable);
+	sys_createProcess(cmpInt, args, 2);
 
 	// printeo
 	printPCBTable(PCBTable);

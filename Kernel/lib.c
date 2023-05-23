@@ -4,6 +4,8 @@ static int fontsize = 1;
 static int cursorX = 4; // por que estaba la hora
 static int cursorY = 4;
 
+listADT PCBTable;
+
 void *memset(void *destination, int32_t c, uint64_t length)
 {
 	uint8_t chr = (uint8_t)c;

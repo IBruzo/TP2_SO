@@ -21,3 +21,5 @@
 .gdb_history
 kernel.elf
 0000-sampleCodeModule.elf
+.gdbinit
+.gdbinit:Zone.Identifier
