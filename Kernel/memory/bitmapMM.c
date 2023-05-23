@@ -128,7 +128,7 @@ void * memAlloc(int sizeBytes)
     if (findSpace(cantPag, &posArr, &bitPos))
     {
         switchBits(posArr, bitPos, cantPag);
-        void *address =(void *)(memStart + PAG_SIZE * (8 * posArr + bitPos));
+        void *address =(void *)(memStart + PAG_SIZE * posArr );
         allocations[numAllocations].address = address;
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;
@@ -136,6 +136,76 @@ void * memAlloc(int sizeBytes)
         return address;
     }
     return 0;
+}
+
+
+
+
+void printAllocs(int n){
+    print("%d\t%d\n", n ,numAllocations);
+    for(int i=0; i<BIT_MAP_SIZE  && allocations[i].address != NULL; i++)
+    {
+        print("allocations[%d]:\t [%x:%x]\n", i, allocations[i].address, allocations[i].size);
+    }
+}
+void test()
+{
+	void *mem1=memAlloc(16);
+	print("mem1: %x\n", mem1);
+
+    void *mem2 = memAlloc(32);
+    print("mem2: %x\n", mem2);
+    
+    void *mem3 = memAlloc(64);
+    print("mem3: %x\n", mem3);
+
+
+    // Allocate memory after freeing
+    void *mem4 = memAlloc(16);
+    print("mem4: %p\n", mem4);
+
+    printAllocs(1);
+
+    memFree(mem1);
+    
+
+    memFree(mem2);
+    memFree(mem3);
+    memFree(mem4);
+
+    printAllocs(2);
+
+    void *mem5=memAlloc(25651757);
+    void *mem6=memAlloc(58926595);
+    void *mem7=memAlloc(46616756);
+    void *mem8=memAlloc(2230891);
+    void *mem9=memAlloc(474271);
+    void *mem10=memAlloc(7453);
+    void *mem11=memAlloc(122505);
+    void *mem12=memAlloc(177505);
+
+    printAllocs(3);
+
+    memFree(mem5);
+    memFree(mem6);
+    memFree(mem7);
+    memFree(mem8);
+    memFree(mem9);
+    memFree(mem10);
+    memFree(mem11);
+    memFree(mem12);
+
+    printAllocs(4);
+    
+    mem10 = memAlloc(14326);
+    mem11 = memAlloc(14326);
+
+    printAllocs(5);
+
+    memFree(mem10);
+    memFree(mem11);
+    printAllocs(6);
+	print("test");
 }
 
 #endif

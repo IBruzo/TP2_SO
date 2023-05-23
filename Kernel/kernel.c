@@ -69,6 +69,7 @@ int main()
 	/* arrancar otro memory manager como el buffy o el bitmap */
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 
+	//test();
 	// memManager = createMemoryManager(/* cantidad de memoria */ (void *)268435456, /* comienzo de dicha memoria */ (void *)0x100000);
 
 	print("Schedule Tester\n");
