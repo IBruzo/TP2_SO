@@ -38,12 +38,11 @@ int main()
 	/* arrancar otro memory manager como el buffy o el bitmap */
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 
-	//test();
 	// memManager = createMemoryManager(/* cantidad de memoria */ (void *)268435456, /* comienzo de dicha memoria */ (void *)0x100000);
 
 	//-----------------------------------------Process Management----------------------------------------------
 
-	print("Memory Management");
+	/* print("Memory Management");
 
 	// Creo PCB Table
 	listADT PCBTable = newList(cmpInt);
@@ -71,7 +70,7 @@ int main()
 	sys_createProcess(cmpInt, args, 2, PCBTable);
 
 	// printeo
-	printPCBTable(PCBTable);
+	printPCBTable(PCBTable); */
 	return ((EntryPoint)sampleCodeModuleAddress)(); // dirreccion del _start del userland
 }
 
