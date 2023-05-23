@@ -9,7 +9,7 @@ OBJECTS_ASM=$(SOURCES_ASM:asm/%.asm=obj/%.asm.o)
 
 
 INCLUDE_DIRS := ./*/include ./include
-INCLUDES_DECLARATION := $(foreach dir,$(wildcard $(INCLUDE_DIRS)),-I$(dir)) # pone todos los includes en una variable en forma de -I
+INCLUDES_DECLARATION := $(foreach dir,$(wildcard $(INCLUDE_DIRS)),-I$(dir)) 
 
 all: $(USER)
 

@@ -1,7 +1,7 @@
-#ifndef TEST_H
-#define TEST_H
+#ifndef _TESTS_H_
+#define _TESTS_H_
+
 #include <stdint.h>
-#include "tests.h"
 /****************************/
 
 #define MAX_BLOCKS 128
@@ -18,11 +18,4 @@ void bussy_wait(uint64_t n);
 void endless_loop();
 //void endless_loop_print(uint64_t wait);
 /****************************/
-
-
-
-
-
-
-
 #endif
