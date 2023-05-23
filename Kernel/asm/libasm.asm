@@ -4,9 +4,10 @@ GLOBAL getkey
 GLOBAL inb
 GLOBAL outb
 GLOBAL snapshot
+GLOBAL buildDummyStack
 GLOBAL getSP
 section .text
-	
+
 cpuVendor:
 	push rbp
 	mov rbp, rsp
@@ -61,7 +62,7 @@ inb:
 outb:
 	push rbp
 	mov rbp, rsp
-	mov rax, rsi ;valor	
+	mov rax, rsi ;valor
 	mov rdx, rdi ;puerto
 	out dx, al
 	leave
@@ -70,7 +71,7 @@ outb:
 ; retorna un puntero a una zona de memoria donde se encuentra el estado de todo los registros
 snapshot:
 
-	; es inevitable que algunos registros tengan valores fijos porque para llegar aca 
+	; es inevitable que algunos registros tengan valores fijos porque para llegar aca
 	; hay que invitablemente usar registros, entonces no es un snapshot real
 
 	mov [regsBuffer], rax
@@ -78,7 +79,7 @@ snapshot:
 	mov [regsBuffer+16], rdx
 	mov [regsBuffer+24], rcx
 	mov [regsBuffer+32], rsi
-	mov [regsBuffer+40], rdi 
+	mov [regsBuffer+40], rdi
 	mov [regsBuffer+48], rbp
 	mov [regsBuffer+56], rsp
 	mov [regsBuffer+64], r8
@@ -97,5 +98,53 @@ getSP:
 	mov rax, rsp
 	ret
 
-section .bss 
+buildDummyStack:
+
+	;PARAMETROS DE BUILDDUMMYSTACK:
+
+	;RDI -> Stack Pointer/Fin del bloque
+	;RSI -> Puntero a funcion
+	;RDX -> #Argumentos, int
+	;RCX -> Argumentos, Array de Strings
+
+	mov r8, rbp			;Tengo que preservar este RBP???
+	mov rbp, rdi		;Muevo el stack pointer al final de la pagina
+	mov rsp, rdi
+	push 0				;Align
+	push 0				;Stack Segment
+	push r8				;RSP cuando ocurrio la interrupcion
+	push 0x202			;RFLAGS
+	push 0x8			;Code Segment
+	push rsi			;Entry Point, puntero a funcion
+
+	;PARAMETROS DEL NUEVO PROCESO:
+
+	;RDI -> ARGC
+	;RSI -> ARGV
+
+	push 0				;RAX
+	push 0				;RBX
+	push 0				;RCX
+	push 0				;RDX
+	push 0				;RBP
+	push rdx			;RDI, ARGC
+	push rcx			;RSI, ARGV
+	push 0				;R8
+	push 0				;R9
+	push 0				;R10
+	push 0				;R11
+	push 0				;R12
+	push 0				;R13
+	push 0				;R14
+	push 0				;R15
+	push 0				;R16
+
+	int 20h				;Llamo a la interrupcion del timer
+
+	ret
+
+
+section .bss
 regsBuffer resb 128
+
+
