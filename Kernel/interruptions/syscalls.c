@@ -126,7 +126,26 @@ void *sys_allocMem(int bytes)
     return allocBits(bytes);
 }
 
-void sys_free(void * dir, int size){
+void sys_free(void *dir, int size)
+{
     freeBits(dir, size);
 }
 
+void sys_createProcess(void *(*function)(int, char **), int argc, char **argv, listADT PCBTable)
+{
+    print("Allocating Process Memory...\n");
+    uint64_t memStart = sys_allocMem(4096);
+
+    print("Creating Process Control Block...\n");
+    PCB newBlock;
+    int newBlockFD[] = {0, 1, 2};
+    /* el PPID eventualmente se puede obtener con la getpid syscall */
+    buildPCB(&newBlock, processIDs++, 0, memStart + 4096 - 22 * 8, READY, 1, newBlockFD, 3);
+    insert(PCBTable, newBlock); // esto no esta funcionando y no se por qeu
+
+    /* esta instruccion no retorna, porque activa el timer tick y pone en la rueda el proceso */
+    // print("Building Dummy Stack...\n");
+    // uint64_t RSB = buildDummyStack(memStart + 4096, function, argc, argv);
+
+    return;
+}

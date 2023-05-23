@@ -17,4 +17,5 @@ extern void storeRegisters();
 extern void memAccess(unsigned long int memDir);
 extern void *allocMem(unsigned long int bytes);
 extern void freeBits(void *dir, int size);
+extern void createProcess(void *(*function)(int argc, char **argv), int argc, char **argv);
 #endif

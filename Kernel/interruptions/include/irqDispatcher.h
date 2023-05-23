@@ -26,6 +26,7 @@
 #define SYS_MEMACCESS_ID 13
 #define SYS_ALLOCMEM_ID 14
 #define SYS_FREE_ID 15
+#define SYS_CREATEPROCESS_ID 16
 
 void initialize();
 char *getBuffer();

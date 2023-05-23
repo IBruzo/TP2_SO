@@ -166,7 +166,11 @@ elemType get(const listADT list, unsigned int idx)
 {
     if (list->size <= idx)
     {
-        return NULL;
+        /* PCB dummy;
+        int dummyFD[] = {-1};
+        buildPCB(&dummy, -1, -1, -1, 3, 1, dummyFD, 1); */
+        elemType dummy;
+        return dummy;
     }
     // Ya sabemos que idx es válido
     return getRec(list->first, idx);
@@ -185,7 +189,8 @@ elemType next(listADT list)
 {
     if (!hasNext(list))
     {
-        return NULL;
+        elemType dummy;
+        return dummy;
     }
     // guardo en aux lo que voy a devolver
     elemType aux = list->iter->elem;

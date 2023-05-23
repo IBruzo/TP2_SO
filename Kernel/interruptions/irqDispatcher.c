@@ -35,10 +35,10 @@ void initialize()
     (fun_sys[SYS_CHANGELANGUAGE_ID]) = (syscall)sys_changeLanguage;
     (fun_sys[SYS_STOREREGISTERS_ID]) = (syscall)sys_storeRegisters;
     (fun_sys[SYS_MEMACCESS_ID]) = (syscall)sys_memAccess;
-    (fun_sys[SYS_ALLOCMEM_ID]) = (syscall)sys_allocMem; 
-    (fun_sys[SYS_FREE_ID]) = (syscall)sys_free; 
+    (fun_sys[SYS_ALLOCMEM_ID]) = (syscall)sys_allocMem;
+    (fun_sys[SYS_FREE_ID]) = (syscall)sys_free;
+    (fun_sys[SYS_CREATEPROCESS_ID]) = (syscall)sys_createProcess;
 }
-
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)
 {

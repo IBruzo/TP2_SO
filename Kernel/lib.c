@@ -190,6 +190,12 @@ char *itoa(int i, char *strout, int base)
 {
 	char *str = strout;
 	int digit, sign = 0;
+	if (i == 0)
+	{
+		*str++ = '0';
+		*str = '\0';
+		return strout;
+	}
 	if (i < 0)
 	{
 		sign = 1;
@@ -290,3 +296,96 @@ void newline()
 	cursorX = 4;
 	cursorY += 16 * fontsize;
 }
+
+void buildPCB(PCB *block, int PID, int PPID, uint64_t RSB, char state, char priority, int FDArr[], int FDSize)
+{
+	block->PID = PID;
+	block->PPID = PPID;
+	block->RSB = RSB;
+	block->state = state;
+	block->priority = priority;
+	memcpy(block->FD, FDArr, sizeof(int) * FDSize);
+	block->FDSize = FDSize;
+	return;
+}
+
+void printPCBTable(listADT PCBTable)
+{
+	toBegin(PCBTable);
+	while (hasNext(PCBTable))
+	{
+		PCB elem = next(PCBTable);
+		print("PID    [%d]  --  PPID  [%d]  --  PRIORITY  [%d]  --  STATE  ", elem.PID, elem.PPID, elem.priority);
+		switch (elem.state)
+		{
+		case 0:
+			print("[READY]\n");
+			break;
+		case 1:
+			print("[RUNNING]\n");
+			break;
+		case 2:
+			print("[BLOCKED]\n");
+			break;
+		default:
+			break;
+		}
+		print("RSB    [%d]\n", elem.RSB);
+		print("FD");
+		for (int i = 0; i < elem.FDSize; i++)
+		{
+			print("     [%d]", elem.FD[i]);
+		}
+		print("\n-------------------------------------------------------------------\n");
+	}
+}
+
+int cmpInt(PCB n1, PCB n2)
+{
+	return n1.PID - n2.PID;
+}
+
+void clearBSS(void *bssAddress, uint64_t bssSize)
+{
+	memset(bssAddress, 0, bssSize);
+}
+
+void *getStackBase()
+{
+	return (void *)((uint64_t)&endOfKernel + PageSize * 8 // The size of the stack itself, 32KiB
+					- sizeof(uint64_t)					  // Begin at the top of the stack
+	);
+}
+
+/* void printPCBTable(listADT PCBTable)
+{
+	toBegin(PCBTable);
+	while (hasNext(PCBTable))
+	{
+		PCB *elem = next(PCBTable);
+		print("PID    [%d]  --  PPID  [%d]  --  PRIORITY  [%d]  --  STATE  ", elem->PID, elem->PPID, elem->priority);
+		switch (elem->state)
+		{
+		case 0:
+			print("[READY]\n");
+			break;
+		case 1:
+			print("[RUNNING]\n");
+			break;
+		case 2:
+			print("[BLOCKED]\n");
+			break;
+		default:
+			break;
+		}
+		print("RSB    [%d]\n", elem->RSB);
+		print("BASE   [%d]  --  LIMIT  [%d]\n", elem->memInfo.baseAddress, elem->memInfo.limit);
+		print("PAGES  [%d]\n", elem->memInfo.qPages);
+		print("FD");
+		for (int i = 0; i < elem->FDSize; i++)
+		{
+			print("     [%d]", elem->FD[i]);
+		}
+		print("\n-------------------------------------------------------------------\n");
+	}
+} */

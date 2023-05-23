@@ -7,6 +7,7 @@
 #include <sound_driver.h>
 #include <interrupts.h>
 #include <lib.h>
+#include <list.h>
 #define STDOUT 1
 #define STDRED 2
 #define MAXBUFFER 500
@@ -26,9 +27,7 @@ void sys_changeLanguage(int lan);
 void sys_storeRegisters(void);
 void sys_memAccess(uint64_t memDir);
 void *sys_allocMem(int bytes);
-void sys_free(void * dir, int size);
-
-
-
+void sys_free(void *dir, int size);
+void sys_createProcess(void *(*function)(int, char **), int argc, char **argv, listADT PCBTable);
 
 #endif

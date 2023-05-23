@@ -3,6 +3,12 @@
 
 #include <stdint.h>
 
+// hay que mover esto a otro.h
+#define READY 0
+#define RUNNING 1
+#define BLOCKED 2
+#define DUMMY 3
+
 typedef struct memInfo
 {
     int qPages;
@@ -24,7 +30,7 @@ typedef struct PCB
 
 typedef struct listCDT *listADT;
 
-typedef PCB *elemType;
+typedef PCB elemType;
 
 listADT newList(int (*compare)(elemType e1, elemType e2));
 

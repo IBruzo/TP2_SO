@@ -14,6 +14,7 @@ GLOBAL storeRegisters
 GLOBAL memAccess
 GLOBAL allocMem
 GLOBAL freeBits
+GLOBAL createProcess
 section .text
 
 %macro pushState 0
@@ -52,7 +53,6 @@ section .text
 
 %macro sys_call 1
 	pushState
-	;la teorica decia otros registrospero creo que son estos
 	; corre todos los registros hacia atras para que se pueda poner el irq primero
 	mov r9, r8
 	mov r8, rcx
@@ -116,3 +116,6 @@ allocMem:
 
 freeBits:
 	sys_call 15
+
+createProcess:
+	sys_call 16
