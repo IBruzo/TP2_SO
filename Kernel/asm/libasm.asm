@@ -139,6 +139,8 @@ buildDummyStack:
 	push 0				;R15
 	push 0				;R16
 
+	;mov rax, rsp
+
 	int 20h				;Llamo a la interrupcion del timer
 
 	ret

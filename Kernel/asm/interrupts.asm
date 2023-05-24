@@ -19,7 +19,7 @@ GLOBAL _exception0Handler
 GLOBAL _exception6Handler
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
-EXTERN scheduler
+EXTERN schedule
 
 SECTION .text
 
@@ -125,11 +125,14 @@ SECTION .text
 %macro irqHandler 1
 	pushState
 
+	mov rdi,%1
+	call irqDispatcher
+
 	mov rdi, rsp
-	call scheduler    ;scheduler deberia estar en c y en este caso guardar en una tabla el valor del rsp viejo
+	call schedule    ;scheduler deberia estar en c y en este caso guardar en una tabla el valor del rsp viejo
 	mov rsp, rax
 
-	; signal pic EOI (End of Interrupt)
+	; signal pic EOI (End of Interrupt) para hardware
 	mov al, 20h
 	out 20h, al
 
@@ -187,6 +190,7 @@ picSlaveMask:
 ;8254 Timer (Timer Tick)
 _irq00Handler:
 	irqHandlerMaster 0
+	;irqHandler 0
 
 ;Keyboard
 _irq01Handler:

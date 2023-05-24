@@ -72,17 +72,18 @@ int main()
 	*/
 
 	//-----------------------------------------Process Creation-------------------------------------------------
-
-	int *args = {"1", "2"};
+	char *args[2] = {"1", "2"};
 	// createProcess esta descactivada, una vez activada realmente no retorna, el kernel no deberia crear procesos
-	sys_createProcess(testProcess1, args, 2);
-	sys_createProcess(testProcess2, args, 2);
+	// 0xDEADC0DE ->
+	/* sys_createProcess(testProcess1, args, 2); */
+	/* sys_createProcess(testProcess2, args, 2);
 	sys_createProcess(testProcess3, args, 2);
-	sys_createProcess(testProcess4, args, 2);
+	sys_createProcess(testProcess4, args, 2); */
 	// El output deberia ser el Nodo Centinela mas el nodo del proceso creado
 	printPCBTable(PCBTable);
 	list_print(&route);
 	/* creo que no es necesario un proceso idle, podria directamente siempre correr la shell */
+
 	return ((EntryPoint)sampleCodeModuleAddress)(); // dirreccion del _start del userland
 }
 

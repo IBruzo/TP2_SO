@@ -19,9 +19,9 @@ LOADEROBJECT=$(LOADERSRC:.asm=.o)
 
 all: $(KERNEL)
 
-$(KERNEL): $(LOADEROBJECT) $(OBJECTS)  $(OBJECTS_ASM) 
-	$(LD) $(LDFLAGS) -T kernel.ld $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) -o $(KERNEL)   
-	$(LD) $(LDFLAGS) -T kernel.ld --oformat=elf64-x86-64 $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) -o kernel.elf 
+$(KERNEL): $(LOADEROBJECT) $(OBJECTS)  $(OBJECTS_ASM)
+	$(LD) $(LDFLAGS) -T kernel.ld $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) -o $(KERNEL)
+	$(LD) $(LDFLAGS) -T kernel.ld --oformat=elf64-x86-64 $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) -o kernel.elf
 %.o: %.c
 	$(GCC) $(GCCFLAGS) $(MEMM) $(INCLUDES_DECLARATION) -c $< -o $@
 

@@ -6,6 +6,8 @@ static int cursorY = 4;
 
 listADT PCBTable;
 
+/* --------------------------------------- PRINT FUNCTIONS -------------------------- */
+
 void *memset(void *destination, int32_t c, uint64_t length)
 {
 	uint8_t chr = (uint8_t)c;
@@ -299,53 +301,7 @@ void newline()
 	cursorY += 16 * fontsize;
 }
 
-void buildPCB(PCB *block, int PID, int PPID, uint64_t RSB, char state, char priority, int FDArr[], int FDSize)
-{
-	block->PID = PID;
-	block->PPID = PPID;
-	block->RSB = RSB;
-	block->state = state;
-	block->priority = priority;
-	memcpy(block->FD, FDArr, sizeof(int) * FDSize);
-	block->FDSize = FDSize;
-	return;
-}
-
-void printPCBTable(listADT PCBTable)
-{
-	toBegin(PCBTable);
-	while (hasNext(PCBTable))
-	{
-		PCB elem = next(PCBTable);
-		print("PID    [%d]  --  PPID  [%d]  --  PRIORITY  [%d]  --  STATE  ", elem.PID, elem.PPID, elem.priority);
-		switch (elem.state)
-		{
-		case 0:
-			print("[READY]\n");
-			break;
-		case 1:
-			print("[RUNNING]\n");
-			break;
-		case 2:
-			print("[BLOCKED]\n");
-			break;
-		default:
-			break;
-		}
-		print("RSB    [%d]\n", elem.RSB);
-		print("FD");
-		for (int i = 0; i < elem.FDSize; i++)
-		{
-			print("     [%d]", elem.FD[i]);
-		}
-		print("\n-------------------------------------------------------------------\n");
-	}
-}
-
-int cmpInt(PCB n1, PCB n2)
-{
-	return n1.PID - n2.PID;
-}
+/* --------------------------------------- NATIVE KERNEL FUNCTIONS -------------------------- */
 
 void clearBSS(void *bssAddress, uint64_t bssSize)
 {
@@ -359,28 +315,21 @@ void *getStackBase()
 	);
 }
 
-void list_print(list_t *list)
-{
-	list_t *current = list->next;
-	for (int i = 0; i < 12; i++)
-	{
-		point *currentPoint = container_of(current, point, link);
-		print("Checkpoint  [%d]\n", i);
-		print("PID         [%d]\n", currentPoint->PID);
-		print("--------------------\n", currentPoint->PID);
-
-		current = current->next;
-	}
-}
-
+/* --------------------------------------- CIRCULAR LIST FUNCTIONS -------------------------- */
 void testProcess1()
 {
-	print("Chris Arrived");
+	while (1)
+	{
+		print("Chris Arrived");
+	}
 	return;
 }
 void testProcess2()
 {
-	print("Inaki Arrived");
+	while (1)
+	{
+		print("Inaki Arrived");
+	}
 	return;
 }
 void testProcess3()

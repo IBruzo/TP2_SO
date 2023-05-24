@@ -150,9 +150,9 @@ void sys_createProcess(void *(*function)(int, char **), int argc, char **argv)
     point *newPoint = (point *)sys_allocMem(sizeof(point));
     newPoint->PID = processIDs;
     list_push(&route, &newPoint->link);
-    /* esta instruccion no retorna, porque activa el timer tick y pone en la rueda el proceso */
-    // print("Building Dummy Stack...\n");
-    // uint64_t RSB = buildDummyStack(memStart + 4096, function, argc, argv);
+    /* esta instruccion no retorna, porque activa el timer tick y acciona directamente el scheduler */
+    print("Building Dummy Stack...\n");
+    uint64_t RSB = buildDummyStack(memStart + 4096, function, argc, argv);
 
     return;
 }

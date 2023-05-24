@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include "../interruptions/include/syscalls.h"
+#include "syscalls.h"
 #include "list.h"
 #include "dlc_list.h"
 

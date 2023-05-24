@@ -1,11 +1,15 @@
-#include "dlc_list.h"
-#include "lib.h"
-void schedule(uint64_t RSP)
+#include "scheduler.h"
+
+void initScheduler()
+{
+}
+
+extern void schedule(uint64_t RSP)
 {
     /*
     Antes de que el scheduler corra deberia crearse la shell o un proceso idle, yo creo que con la shell es suficiente,
     no se bien si haciendo que se cree en la primer instruccion del SampleCodeModule es suficiente, probablemente sea mas
-    limpio hacer una funcion de asm que cree un idle sin llamar al scheduler ( o sea sin ponerla en marcha (int20h))
+    limpio hacer una funcion de asm que cree un idle sin llamar al scheduler ( o sea sin ponerla en marcha (int20h))  !!
 
     La lista circular va a contener los PIDs de los procesos readys, la consola/idle deberia estar siempre ready
 
@@ -19,11 +23,44 @@ void schedule(uint64_t RSP)
     El scheduler tambien se deberia encargar de switchear los RSB, guardando el viejo en su lugar correcto
     */
 
-    /* GAMEPLAN, hacer el switching */
-    /* list_t *current = route->next; */  // retornar este
-    /* list_t *previous = route->prev; */ // actualizar este
+    /* Actualizo el Proceso Previo */
+    list_t *previous = route.prev;
+    point *previousPoint = container_of(previous, point, link);
+    if (previousPoint->PID == 0) // por el nodo centinela?
+    {
+        previousPoint = container_of(previous->prev, point, link);
+    }
+    toBegin(PCBTable);
+    while (hasNext(PCBTable))
+    {
+        PCB elem = next(PCBTable);
+        if (elem.PID == previousPoint->PID)
+        {
+            elem.RSP = RSP;
+            elem.state = READY;
+        }
+    }
+
+    /* Actualizo el Proceso Entrante */
+    list_t *current = route.next;
+    point *currentPoint = container_of(current, point, link);
+    if (currentPoint->PID == 0)
+    {
+        currentPoint = container_of(previous->next, point, link);
+    }
+    while (hasNext(PCBTable))
+    {
+        PCB elem = next(PCBTable);
+        if (elem.PID == currentPoint->PID)
+        {
+            elem.state = RUNNING;
+        }
+    }
+    return currentPoint->PID;
+
     // save old RSP, tengo que actualizar el RSP porque capaz el proceso movio su stack, como se que proceso corrio ultimo?
     // lo guardo en una variable del schedulesr? que tal el primer procesO? variabel global de currentProcess, previousProcess?
     // next en la lista
-    /* return next.RSP */
 }
+
+// container_of(current, point, link);

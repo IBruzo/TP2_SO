@@ -20,7 +20,7 @@ typedef struct PCB
 {
     int PID;
     int PPID;
-    uintptr_t RSB;
+    uintptr_t RSP;
     char state;
     char priority;
     int FD[256];
