@@ -1,8 +1,9 @@
 #include <syscalls.h>
 #include <lib.h>
-#include <memoryManager.h>
-
+#include "memoryManager.h"
 extern int getTime(int op);
+
+static int processIDs = 1;
 
 static unsigned char regsBuffer[128] = {0};
 void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color)
@@ -136,8 +137,8 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
 }
 void sys_createProcess(void *(*function)(int, char **), int argc, char **argv)
 {
-    // Reservo memoria del nuevo proceso
-    uint64_t memStart = sys_allocMem(4096);
+    print("Allocating Process Memory...\n");
+    uint64_t memStart = (uint64_t)sys_allocMem(4096);
 
     // Creo su correspondiente PCB
     PCB newBlock;

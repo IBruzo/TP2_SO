@@ -1,6 +1,8 @@
 #include "tests.h"
 
-
+#include "system_calls.h"
+#include "library.h"
+#include "console.h"
 uint64_t test_mm(uint64_t argc, char *argv[]);
 
 typedef struct MM_rq
@@ -47,11 +49,11 @@ uint64_t test_mm(uint64_t argc, char *argv[])
 
     // Set
     uint32_t i;
-    char *aux;
     for (i = 0; i < rq; i++)
     {
       if (mm_rqs[i].address){
-         aux = memsett(mm_rqs[i].address, i, mm_rqs[i].size);
+        memsett(mm_rqs[i].address, i, mm_rqs[i].size);
+
       }
       print("%d) %x = malloc(%d) \n",i,  mm_rqs[i].address, /* *((char *)(mm_rqs[i].address)), */ mm_rqs[i].size);
     }

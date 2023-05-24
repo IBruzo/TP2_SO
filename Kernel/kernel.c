@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <lib.h>
 #include <moduleLoader.h>
-#include <naiveConsole.h>
+
 #include <interrupts.h>
 #include <sound_driver.h>
 #include <video_driver.h>
@@ -9,8 +9,9 @@
 #include "dlc_list.h"
 #include "list.h"
 #include "memoryManager.h"
-static void *const heapAddress = (void *)0x600000;
+void *const heapAddress = (void *)0x600000;
 #define MAX_HEAP_SIZE (1024 * 1024 * 128) // 128Mb
+
 void *initializeKernelBinary()
 {
 
