@@ -359,35 +359,37 @@ void *getStackBase()
 	);
 }
 
-/* void printPCBTable(listADT PCBTable)
+void list_print(list_t *list)
 {
-	toBegin(PCBTable);
-	while (hasNext(PCBTable))
+	list_t *current = list->next;
+	for (int i = 0; i < 12; i++)
 	{
-		PCB *elem = next(PCBTable);
-		print("PID    [%d]  --  PPID  [%d]  --  PRIORITY  [%d]  --  STATE  ", elem->PID, elem->PPID, elem->priority);
-		switch (elem->state)
-		{
-		case 0:
-			print("[READY]\n");
-			break;
-		case 1:
-			print("[RUNNING]\n");
-			break;
-		case 2:
-			print("[BLOCKED]\n");
-			break;
-		default:
-			break;
-		}
-		print("RSB    [%d]\n", elem->RSB);
-		print("BASE   [%d]  --  LIMIT  [%d]\n", elem->memInfo.baseAddress, elem->memInfo.limit);
-		print("PAGES  [%d]\n", elem->memInfo.qPages);
-		print("FD");
-		for (int i = 0; i < elem->FDSize; i++)
-		{
-			print("     [%d]", elem->FD[i]);
-		}
-		print("\n-------------------------------------------------------------------\n");
+		point *currentPoint = container_of(current, point, link);
+		print("Checkpoint  [%d]\n", i);
+		print("PID         [%d]\n", currentPoint->PID);
+		print("--------------------\n", currentPoint->PID);
+
+		current = current->next;
 	}
-} */
+}
+
+void testProcess1()
+{
+	print("Chris Arrived");
+	return;
+}
+void testProcess2()
+{
+	print("Inaki Arrived");
+	return;
+}
+void testProcess3()
+{
+	print("Bruhzo Arrived");
+	return;
+}
+void testProcess4()
+{
+	print("Joaco Arrived");
+	return;
+}

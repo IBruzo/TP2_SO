@@ -3,8 +3,11 @@
 
 #include <stdint.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include "../interruptions/include/syscalls.h"
 #include "list.h"
+#include "dlc_list.h"
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -13,6 +16,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 extern listADT PCBTable;
+extern list_t route;
 
 static const uint64_t PageSize = 0x1000;
 static void *const sampleCodeModuleAddress = (void *)0x400000; // punteros a user land
@@ -43,7 +47,11 @@ void printPCBTable(listADT PCBTable);
 int cmpInt(PCB n1, PCB n2);
 void clearBSS(void *bssAddress, uint64_t bssSize);
 void *getStackBase();
-
+void list_print(list_t *list);
+void testProcess1();
+void testProcess2();
+void testProcess3();
+void testProcess4();
 char *itoa(int i, char *strout, int base);
 extern char *cpuVendor(char *result);
 extern int sys_getTime(int op);
@@ -57,6 +65,10 @@ extern void outb(uint16_t port, uint8_t value);
 uint64_t getSP();
 
 uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base);
+
+#define container_of(ptr, type, member) \
+    ((type *)((char *)(ptr)-offsetof(type, member)))
+
 static int processIDs = 1;
 
 #endif

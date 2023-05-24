@@ -6,7 +6,7 @@
 #include <sound_driver.h>
 #include <video_driver.h>
 #include <exceptions.h>
-
+#include "dlc_list.h"
 #include "list.h"
 #include "memoryManager.h"
 static void *const heapAddress = (void *)0x600000;
@@ -28,6 +28,7 @@ void *initializeKernelBinary()
 /* Primer hilo del Kernel */
 int main()
 {
+	/* La mayoria de lo que esta aca se deberia reemplazar por initPCBTable() y similares */
 	//-----------------------------------------Table Loading---------------------------------------------------
 
 	load_idt();
@@ -42,35 +43,45 @@ int main()
 
 	//-----------------------------------------Process Management----------------------------------------------
 
-	/* print("Memory Management");
-
 	// Creo PCB Table
 	PCBTable = newList(cmpInt);
-	// Con este PCB del Kernel, Nodo Centinela
+	// Creo la Schedule List
+	list_init(&route);
+	// Inserto PCB del Kernel como Nodo Centinela
 	PCB kernelPCB;
 	int kernelFD[] = {0};
 	buildPCB(&kernelPCB, 0, 0, 0, BLOCKED, 2, kernelFD, 1);
 	insert(PCBTable, kernelPCB);
-	// Test PCB
-	PCB testPCB;
-	int testFD[] = {0, 1, 2, 3};
-	memInfo testMB;
-	buildPCB(&testPCB, 291, 14, 12345678, READY, 1, testFD, 4);
-	insert(PCBTable, testPCB);
-	buildPCB(&testPCB, 333, 333, 33333333, READY, 1, testFD, 4);
-	insert(PCBTable, testPCB);
-	buildPCB(&testPCB, 123213, 333, 33333333, READY, 1, testFD, 4);
-	insert(PCBTable, testPCB);
+	// El output deberia ser la informacion del proceso Centinela del Kernel
+	// printPCBTable(PCBTable);
 
-	printPCBTable(PCBTable);
+	//-----------------------------------------Schedule Management----------------------------------------------
 
-	//-----------------------------------------Process Creation----------------------------------------------
+	/*
+	point *pr1 = (point *)sys_allocMem(sizeof(point));
+	pr1->PID = 7;
+	point *pr2 = (point *)sys_allocMem(sizeof(point));
+	pr2->PID = 15;
+	point *pr3 = (point *)sys_allocMem(sizeof(point));
+	pr3->PID = 51;
+
+	list_push(&route, &pr1->link);
+	list_push(&route, &pr2->link);
+	list_push(&route, &pr3->link);
+	*/
+
+	//-----------------------------------------Process Creation-------------------------------------------------
 
 	int *args = {"1", "2"};
-	sys_createProcess(cmpInt, args, 2);
-
-	// printeo
-	printPCBTable(PCBTable); */
+	// createProcess esta descactivada, una vez activada realmente no retorna, el kernel no deberia crear procesos
+	sys_createProcess(testProcess1, args, 2);
+	sys_createProcess(testProcess2, args, 2);
+	sys_createProcess(testProcess3, args, 2);
+	sys_createProcess(testProcess4, args, 2);
+	// El output deberia ser el Nodo Centinela mas el nodo del proceso creado
+	printPCBTable(PCBTable);
+	list_print(&route);
+	/* creo que no es necesario un proceso idle, podria directamente siempre correr la shell */
 	return ((EntryPoint)sampleCodeModuleAddress)(); // dirreccion del _start del userland
 }
 
