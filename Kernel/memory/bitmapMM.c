@@ -1,32 +1,30 @@
 #ifndef BUDDY_MM
 
-#include "memoryManager.h"
-#include <stdint.h>
-#include <stdarg.h>
-
-uint8_t bitMap[BIT_MAP_SIZE ];
+uint8_t bitMap[BIT_MAP_SIZE];
 uint32_t memStart;
 uint32_t memSize;
 
+uint32_t allocated; // en bytes
 
-typedef struct {
-    void* address;
+typedef struct
+{
+    void *address;
     size_t size;
 } Allocation;
-Allocation allocations[BIT_MAP_SIZE]; 
-int numAllocations = 0; 
+Allocation allocations[BIT_MAP_SIZE];
+int numAllocations = 0;
 
-
-void initMemoryManager(void * hBase, uint32_t hSize)
+void initMemoryManager(void *hBase, uint32_t hSize)
 {
-    if( hBase == NULL || hSize == 0 ){
+    if (hBase == NULL || hSize == 0)
+    {
         return;
     }
     memStart = (uint32_t)hBase;
     memSize = hSize;
 
     memset(bitMap, 0, BIT_MAP_SIZE);
-    memset(allocations, 0,  BIT_MAP_SIZE);
+    memset(allocations, 0, BIT_MAP_SIZE);
     numAllocations = 0;
 }
 
@@ -61,7 +59,7 @@ int findSpace(int cantPag, int *posArr, int *bitPos)
     char bitPosition;
     int startArrPos = 0;
     char startBitPos = 0;
-    char mask = 128; // 1000 0000
+    unsigned char mask = 128; // 1000 0000
     for (bitMapPosition = 0; bitMapPosition < BIT_MAP_SIZE; bitMapPosition++)
     {
         for (bitPosition = 0; bitPosition < 8; bitPosition++)
@@ -100,23 +98,22 @@ void memFree(void *dir)
     {
         if (allocations[i].address == dir)
         {
-            int dirMap = (((int) dir) - memStart) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
-            int posArr = dirMap / 8;                      // se trunca
-            int  bitPos = dirMap % 8;
-
+            int dirMap = (((int)dir) - memStart) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
+            int posArr = dirMap / 8;                         // se trunca
+            int bitPos = dirMap % 8;
 
             /* int posArr = (int)(allocations[i].address - memStart) / PAG_SIZE;
             int bitPos = 0; */
-            int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE; 
+            int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE;
             switchBits(posArr, bitPos, cantPag);
 
             // Remove deallocated memory from allocations array
-            for (int j = i; j < numAllocations ; j++)
+            for (int j = i; j < numAllocations; j++)
             {
-                //printf("allocations[%p:%ld] = allocations[%p:%ld]\n",allocations[j].address, allocations[j].size, allocations[j + 1].address, allocations[j+1].size);
+                // printf("allocations[%p:%ld] = allocations[%p:%ld]\n",allocations[j].address, allocations[j].size, allocations[j + 1].address, allocations[j+1].size);
                 allocations[j] = allocations[j + 1];
             }
-            
+            allocated -= cantPag * PAG_SIZE;
             numAllocations--;
 
             return;
@@ -124,7 +121,7 @@ void memFree(void *dir)
     }
 }
 
-void * memAlloc(int sizeBytes)
+void *memAlloc(int sizeBytes)
 {
     int posArr = 0;
     int bitPos = 0;
@@ -132,17 +129,22 @@ void * memAlloc(int sizeBytes)
     if (findSpace(cantPag, &posArr, &bitPos))
     {
         switchBits(posArr, bitPos, cantPag);
-        void *address =(void *)(memStart + PAG_SIZE * (posArr *8 + bitPos) );
+        void *address = (void *)(memStart + PAG_SIZE * (posArr * 8 + bitPos));
         allocations[numAllocations].address = address;
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;
-
+        allocated += cantPag * PAG_SIZE;
         return address;
     }
     return 0;
 }
 
+void printMemState()
+{
+    // cant de memoria usada total libre total
+    int total = 8 * BIT_MAP_SIZE * PAG_SIZE;
 
-
+    printf("total: %d-bytes  used: %d-bytes free: %d-bytes\n", total, allocated, total - allocated);
+}
 
 #endif

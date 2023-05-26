@@ -1,6 +1,6 @@
 #include <time.h>
-
 #include <interrupts.h>
+
 static unsigned long ticks = 0;
 
 void timer_handler()
@@ -20,7 +20,6 @@ int seconds_elapsed()
 
 void timer_wait(int ticks)
 {
-
 	for (int i = 0; i < ticks; i++)
 	{
 		_hlt();

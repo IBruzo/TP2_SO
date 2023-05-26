@@ -1,4 +1,10 @@
 #include "scheduler_lib.h"
+
+int dlcSize = 0;
+
+point *currentProcess;
+point *previousProcess;
+
 /* --------------------------------------- PCB FUNCTIONS -------------------------- */
 
 void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char priority, int FDArr[], int FDSize)
@@ -49,16 +55,27 @@ int cmpInt(PCB n1, PCB n2)
     return n1.PID - n2.PID;
 }
 
-void list_print(list_t *list)
+/* void list_print(list_t *list)
 {
     list_t *current = list->next;
-    for (int i = 0; i < 12; i++)
+    list_t *previous = list->prev;
+
+    for (int i = 0; i < 7; i++)
     {
         point *currentPoint = container_of(current, point, link);
-        print("Checkpoint  [%d]\n", i);
-        print("PID         [%d]\n", currentPoint->PID);
-        print("--------------------\n", currentPoint->PID);
+        point *previousPoint = container_of(previous, point, link);
+        print("PREVIOUS");
+        print("Checkpoint  --%d--\n", i);
+        print("PID         [%d]\n", previousPoint->PID);
 
+        print("CURRENT");
+        print("Checkpoint  --%d--\n", i);
+        print("PID         [%d]\n", currentPoint->PID);
+        print("----------------------------------------------------------\n", previousPoint->PID);
+
+        route.prev = route.next;
+        route.next = route.next->next;
         current = current->next;
+        previous = current->prev;
     }
-}
+} */

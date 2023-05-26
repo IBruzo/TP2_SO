@@ -38,6 +38,6 @@ void haltcpu(void);
 
 char *snapshot();
 
-int buildDummyStack(uint64_t memStart, void *(*function)(int, char **), int argc, char **argv);
+int buildDummyStack(uint64_t memStart, void *(*function)(int, char **)/* , int argc, char **argv */);
 
 #endif /* INTERRUPS_H_ */

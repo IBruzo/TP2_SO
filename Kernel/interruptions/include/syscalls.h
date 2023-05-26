@@ -29,6 +29,6 @@ void sys_memAccess(uint64_t memDir);
 void *sys_allocMem(int bytes);
 void scroll_up_once(uint32_t tamY, uint32_t color);
 void sys_free(void *dir, int size);
-void sys_createProcess(void *(*function)(int, char **), int argc, char **argv);
+void sys_createProcess(void (*function)(int, char **) /* , int argc, char **argv */);
 
 #endif

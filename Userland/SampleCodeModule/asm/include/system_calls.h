@@ -17,7 +17,7 @@ extern void storeRegisters();
 extern void memAccess(unsigned long int memDir);
 extern void *mAlloc(unsigned long int bytes);
 extern void mFree(void *dir);
-extern void createProcess(void *(*function)(int argc, char **argv), int argc, char **argv);
+extern void createProcess(void (*function)());
 extern void scrollUp(int tamY, int color);
 
 #endif

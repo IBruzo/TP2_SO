@@ -1,9 +1,10 @@
 #include <syscalls.h>
 #include <lib.h>
 #include "memoryManager.h"
+#include "scheduler_lib.h"
 extern int getTime(int op);
 
-static int processIDs = 1;
+static int processIDs = 4;
 
 static unsigned char regsBuffer[128] = {0};
 void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color)
@@ -135,24 +136,30 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
 {
     scroll_up_once(tamY, color);
 }
-void sys_createProcess(void *(*function)(int, char **), int argc, char **argv)
-{
-    print("Allocating Process Memory...\n");
-    uint64_t memStart = (uint64_t)sys_allocMem(4096);
 
-    // Creo su correspondiente PCB
+void sys_createProcess(void (*f)() /* , int argc, char **argv */)
+{
+    print("Creating Process...");
+    // Reservo la memoria inicial del proceso
+    uint64_t *memStart = (uint64_t *)sys_allocMem(4096);
+    print("Stack Start %d", (uint64_t)memStart + 4096);
+    print("Stack Start %d", (uint64_t)(memStart + 4096 - 19 * 8));
+    // Añado el proceso a los ciclos del Scheduler
+    list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
+    newProcess->data = processIDs;
+    list_push(&route, newProcess);
+    dlcSize++;
+
+    // Añado a el PCB
     PCB newBlock;
-    int newBlockFD[] = {0, 1, 2};
-    buildPCB(&newBlock, processIDs++, 0, memStart + 4096 - 22 * 8, READY, 1, newBlockFD, 3); /* el PPID eventualmente se puede obtener con la getpid syscall */
+    int newBlockFD[] = {0, 1};
+    /* EL PPID TIENE QUE SER OTRA COSA currentProcess->PID o algo asi */
+    buildPCB(&newBlock, processIDs++, 0, (uint64_t)(memStart + 4096 - 19 * 8), READY, 1, newBlockFD, 3);
     insert(PCBTable, newBlock);
 
-    // Añado el proceso a los ciclos del Scheduler
-    point *newPoint = (point *)sys_allocMem(sizeof(point));
-    newPoint->PID = processIDs;
-    list_push(&route, &newPoint->link);
-    /* esta instruccion no retorna, porque activa el timer tick y acciona directamente el scheduler */
-    print("Building Dummy Stack...\n");
-    uint64_t RSB = buildDummyStack(memStart + 4096, function, argc, argv);
+    // Creo el Stack Virgen y se activa el Tick
+    // buildProcessStack(memStart + 4096 - 19 * 8, f);
+    buildDummyStack((uint64_t)memStart + 4096, f);
 
     return;
 }

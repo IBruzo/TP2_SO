@@ -107,12 +107,11 @@ buildDummyStack:
 	;RDX -> #Argumentos, int
 	;RCX -> Argumentos, Array de Strings
 
-	mov r8, rbp			;Tengo que preservar este RBP???
 	mov rbp, rdi		;Muevo el stack pointer al final de la pagina
 	mov rsp, rdi
-	push 0				;Align
+	;push 0				;Align
 	push 0				;Stack Segment
-	push r8				;RSP cuando ocurrio la interrupcion
+	push rbp			;RSP cuando ocurrio la interrupcion
 	push 0x202			;RFLAGS
 	push 0x8			;Code Segment
 	push rsi			;Entry Point, puntero a funcion
@@ -127,8 +126,8 @@ buildDummyStack:
 	push 0				;RCX
 	push 0				;RDX
 	push 0				;RBP
-	push rdx			;RDI, ARGC
-	push rcx			;RSI, ARGV
+	push 0				;RDI, ARGC
+	push 0				;RSI, ARGV
 	push 0				;R8
 	push 0				;R9
 	push 0				;R10
@@ -137,9 +136,6 @@ buildDummyStack:
 	push 0				;R13
 	push 0				;R14
 	push 0				;R15
-	push 0				;R16
-
-	;mov rax, rsp
 
 	int 20h				;Llamo a la interrupcion del timer
 

@@ -1,66 +1,73 @@
 #include "scheduler.h"
+#include "scheduler_lib.h"
 
+list_t *current;
+Iterator *iterator;
 void initScheduler()
 {
+    list_init(&route);                    // Creo la Ruta del Scheduler
+    iterator = dclCreateIterator(&route); // Iterador sobre los procesos
+    current = dclNext(iterator);
 }
 
-extern void schedule(uint64_t RSP)
+/* el kernel setea el primer valor de esta wea, luego en cada schedule se updatea, primer codigo del scheduler deberia verificar
+que no es el pid 0, si lo es actualiza esta variable al siguiente y sigue su vida
+hay que tener cuidado cuando se actualiza el pcb anterior */
+
+extern uint64_t schedule(uint64_t RSP)
 {
-    /*
-    Antes de que el scheduler corra deberia crearse la shell o un proceso idle, yo creo que con la shell es suficiente,
-    no se bien si haciendo que se cree en la primer instruccion del SampleCodeModule es suficiente, probablemente sea mas
-    limpio hacer una funcion de asm que cree un idle sin llamar al scheduler ( o sea sin ponerla en marcha (int20h))  !!
+    print("\n------------------------\n", RSP);
+    print("parameter RSP  [%d]   --|--   ", RSP);
+    print("list size  [%d]   --|--   ", dlcSize);
 
-    La lista circular va a contener los PIDs de los procesos readys, la consola/idle deberia estar siempre ready
+    /* --------------------- OUT-Update -------------------------- */
 
-    Entonces es seguro suponer que esta lista circular nunca va a estar vacia, a menos que se elimine el proceso de la
-    consola/idle lo cual podemos evitar que se haga.
-
-    Yo supongo que la funcion create/delete se ocupa de modificar la lista circular, mientras que el scheduler cicla
-    sobre ella mindlessly, modificando RSBs de la tabla. Dentro de esta modificacion hay que meditar la prioridad, o sea
-    repetir los procesos acorde a su prioridad para que reciban mas turnos del scheduler.
-
-    El scheduler tambien se deberia encargar de switchear los RSB, guardando el viejo en su lugar correcto
-    */
-
-    /* Actualizo el Proceso Previo */
-    list_t *previous = route.prev;
-    point *previousPoint = container_of(previous, point, link);
-    if (previousPoint->PID == 0) // por el nodo centinela?
-    {
-        previousPoint = container_of(previous->prev, point, link);
-    }
+    // Se actualiza el PCB del Proceso Saliente
     toBegin(PCBTable);
     while (hasNext(PCBTable))
     {
         PCB elem = next(PCBTable);
-        if (elem.PID == previousPoint->PID)
+        if (elem.PID == current->data)
         {
             elem.RSP = RSP;
             elem.state = READY;
         }
     }
 
-    /* Actualizo el Proceso Entrante */
-    list_t *current = route.next;
-    point *currentPoint = container_of(current, point, link);
-    if (currentPoint->PID == 0)
+    // Avanzamos el proceso entrante
+    current = dclNext(iterator);
+    // Si es el nodo centinela lo ignoramos
+    if (current->data == 0)
+        current = dclNext(iterator);
+
+    if (!dlcSize)
     {
-        currentPoint = container_of(previous->next, point, link);
-    }
-    while (hasNext(PCBTable))
-    {
-        PCB elem = next(PCBTable);
-        if (elem.PID == currentPoint->PID)
+        /* --------------------- Idle -------------------------- */
+        toBegin(PCBTable);
+        while (hasNext(PCBTable))
         {
-            elem.state = RUNNING;
+            PCB elem = next(PCBTable);
+            if (elem.PID == 1 /* idle process */)
+            {
+                print("RETURN IDLE PROCESS RSP  [%d]", elem.RSP);
+                return elem.RSP;
+            }
         }
     }
-    return currentPoint->PID;
-
-    // save old RSP, tengo que actualizar el RSP porque capaz el proceso movio su stack, como se que proceso corrio ultimo?
-    // lo guardo en una variable del schedulesr? que tal el primer procesO? variabel global de currentProcess, previousProcess?
-    // next en la lista
+    else
+    {
+        /* --------------------- Switch -------------------------- */
+        toBegin(PCBTable);
+        while (hasNext(PCBTable))
+        {
+            PCB elem = next(PCBTable);
+            if (elem.PID == current->data /* idle process */)
+            {
+                elem.state = RUNNING;
+                print("RETURN PID  [%d]", elem.PID);
+                print("RETURN RSP  [%d]", elem.RSP);
+                return elem.RSP;
+            }
+        }
+    }
 }
-
-// container_of(current, point, link);

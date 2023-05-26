@@ -4,6 +4,7 @@
 #include "dlc_list.h"
 #include "scheduler_lib.h"
 
-void schedule(uint64_t RSP);
+uint64_t schedule(uint64_t RSP);
+void initScheduler();
 
 #endif

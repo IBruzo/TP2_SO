@@ -35,3 +35,47 @@ list_t *list_pop(list_t *list)
   list_remove(back);
   return back;
 }
+
+Iterator *dclCreateIterator(list_t *list)
+{
+  Iterator *iterator = (Iterator *)memAlloc(sizeof(Iterator));
+  if (iterator == NULL)
+  {
+    print("Memory allocation failed.\n");
+    return NULL;
+  }
+  iterator->current = list;
+  iterator->end = list;
+  // iterator->hasNext = (list != NULL);
+  return iterator;
+}
+
+/*int dclHasNext(Iterator *iterator)
+{
+  return iterator->hasNext;
+}*/
+
+list_t *dclNext(Iterator *iterator)
+{
+  list_t *current = iterator->current;
+  iterator->current = current->next;
+  // iterator->hasNext = (current->next != iterator->end);
+  return current;
+}
+
+void dclSkipNode(Iterator *iterator, list_t *node)
+{
+  if (iterator == NULL || node == NULL)
+    return;
+
+  if (iterator->current == node)
+  {
+    iterator->current = node->next;
+  }
+  list_remove(node);
+}
+
+void dclFreeIterator(Iterator *iterator)
+{
+  memFree(iterator);
+}

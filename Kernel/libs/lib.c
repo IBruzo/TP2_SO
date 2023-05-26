@@ -316,27 +316,7 @@ void *getStackBase()
 }
 
 /* --------------------------------------- CIRCULAR LIST FUNCTIONS -------------------------- */
-void testProcess1()
-{
-	while (1)
-	{
-		print("Chris Arrived");
-	}
-	return;
-}
-void testProcess2()
-{
-	while (1)
-	{
-		print("Inaki Arrived");
-	}
-	return;
-}
-void testProcess3()
-{
-	print("Bruhzo Arrived");
-	return;
-}
+
 void testProcess4()
 {
 	print("Joaco Arrived");
