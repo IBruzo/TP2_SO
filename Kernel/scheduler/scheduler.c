@@ -17,7 +17,7 @@ hay que tener cuidado cuando se actualiza el pcb anterior */
 extern uint64_t schedule(uint64_t RSP)
 {
     print("\n------------------------\n", RSP);
-    print("parameter RSP  [%d]   --|--   ", RSP);
+    print("parameter RSP  [%x]   --|--   ", RSP);
     print("list size  [%d]   --|--   ", dlcSize);
 
     /* --------------------- OUT-Update -------------------------- */
@@ -49,7 +49,7 @@ extern uint64_t schedule(uint64_t RSP)
             PCB elem = next(PCBTable);
             if (elem.PID == 1 /* idle process */)
             {
-                print("RETURN IDLE PROCESS RSP  [%d]", elem.RSP);
+                print("RETURN IDLE PROCESS RSP  [%x]", elem.RSP);
                 return elem.RSP;
             }
         }
@@ -65,7 +65,7 @@ extern uint64_t schedule(uint64_t RSP)
             {
                 elem.state = RUNNING;
                 print("RETURN PID  [%d]", elem.PID);
-                print("RETURN RSP  [%d]", elem.RSP);
+                print("RETURN RSP  [%x]", elem.RSP);
                 return elem.RSP;
             }
         }

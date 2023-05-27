@@ -107,14 +107,27 @@ buildDummyStack:
 	;RDX -> #Argumentos, int
 	;RCX -> Argumentos, Array de Strings
 
-	mov rbp, rdi		;Muevo el stack pointer al final de la pagina
-	mov rsp, rdi
+	;push rbp
+    ;mov rbp, rsp
+
+	mov rbp, rdi
+    mov rsp, rdi ; stack base
+    and rsp, -16
+    push 0x0
+    push rdi
+    push 0x202
+    push 0x8
+    push rsi
+
+
+	;mov rbp, rdi		;Muevo el base pointer al final de la pagina
+	;mov rsp, rdi
 	;push 0				;Align
-	push 0				;Stack Segment
-	push rbp			;RSP cuando ocurrio la interrupcion
-	push 0x202			;RFLAGS
-	push 0x8			;Code Segment
-	push rsi			;Entry Point, puntero a funcion
+	;push 0				;Stack Segment
+	;push rdi			;RSP cuando ocurrio la interrupcion, como es un proceso nuevo, es el base pointer
+	;push 0x202			;RFLAGS
+	;push 0x8			;Code Segment
+	;push rsi			;Entry Point, puntero a funcion			<- INVALID OP CODE ???
 
 	;PARAMETROS DEL NUEVO PROCESO:
 
@@ -137,6 +150,7 @@ buildDummyStack:
 	push 0				;R14
 	push 0				;R15
 
+	_sti
 	int 20h				;Llamo a la interrupcion del timer
 
 	ret

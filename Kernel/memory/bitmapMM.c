@@ -1,4 +1,7 @@
 #ifndef BUDDY_MM
+#include "memoryManager.h"
+#include <stdint.h>
+#include <stdarg.h>
 
 uint8_t bitMap[BIT_MAP_SIZE];
 uint32_t memStart;
@@ -144,7 +147,7 @@ void printMemState()
     // cant de memoria usada total libre total
     int total = 8 * BIT_MAP_SIZE * PAG_SIZE;
 
-    printf("total: %d-bytes  used: %d-bytes free: %d-bytes\n", total, allocated, total - allocated);
+    print("total: %d-bytes  used: %d-bytes free: %d-bytes\n", total, allocated, total - allocated);
 }
 
 #endif

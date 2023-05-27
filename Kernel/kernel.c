@@ -192,22 +192,6 @@ int main()
 
 	// printPCBTable(PCBTable);
 	EntryPoint userland = ((EntryPoint)sampleCodeModuleAddress)();
-	// el calculo este tardaba mucho tiempo aparentemente
-	// porque era un llamado a la funcion
-	// entonces precalculas el valor
-	// y no llega tirar el tiemr tick
-	// salio de suerte
-	// para mi este halt no es necesario
-	// ahora tenemos otro problema igual
-	// la shell esta enojada
-	// pero ni arrancamos a arreglarlo
-	// tengo el pelo mojado y no me puedo poner auris
-
-	// teniamos un tema
-	// iba al idle
-	// antes de crear ni un proceso
-	// creas un proceso de user desde kernel?
-	// esto estamos haciendo nosotros BEEN CHILLING NO FUNCA IGUAL MIRA...
 	_sti();
 	_hlt();
 	return userland; // direccion del _start del userland
