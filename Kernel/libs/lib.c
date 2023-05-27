@@ -4,7 +4,7 @@ static int fontsize = 1;
 static int cursorX = 4; // por que estaba la hora
 static int cursorY = 4;
 
-listADT PCBTable;
+List *PCBTable;
 
 /* --------------------------------------- PRINT FUNCTIONS -------------------------- */
 

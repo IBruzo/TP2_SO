@@ -98,29 +98,23 @@ void testProcess3()
 /* Primer hilo del Kernel */
 int main()
 {
-	/* La mayoria de lo que esta aca se deberia reemplazar por initPCBTable() y similares */
-
 	_cli();
-	print("Starting Kernel...\n");
-
-	//----------------------------------------- Table Loading & Creation ----------------------------------------
+	/* ------------- Table Loading & Creation ------------ */
 
 	load_idt();
 	exceptionsBackupValues((uint64_t)sampleCodeModuleAddress, getSP());
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 
-	PCBTable = newList(cmpInt); // Creo PCB Table
+	newList(PCBTable);
 	initScheduler();
 
-	// Inserto PCB del Kernel como Nodo Centinela
+	/* ---------------- Creating Kernel PCB -------------- */
 	PCB kernelPCB;
 	int kernelFD[] = {0};
 	buildPCB(&kernelPCB, 0, 0, 0, BLOCKED, 2, kernelFD, 1);
-	insert(PCBTable, kernelPCB);
+	insert(PCBTable, &kernelPCB);
 
-	//-----------------------------------------Creating Processes-------------------------------------------
-
-	/* ------------ IDLE ---------------- */
+	/* ------------ Creating IDLE Process ---------------- */
 
 	// Reservo memoria para su stack
 	uint64_t *idleMemStart = (uint64_t *)sys_allocMem(4096);
@@ -129,84 +123,13 @@ int main()
 	int idleFD[] = {0};
 	buildPCB(&idlePCB, 1, 0, (uint64_t)(idleMemStart + 4096 - 19 * 8), READY, 2, idleFD, 1);
 	// Lo añado a la PCBT
-	insert(PCBTable, idlePCB);
+	insert(PCBTable, &idlePCB);
 	// Le creo un Stack acorde
 	buildStartUpProcess(idleMemStart + 4096 - 19 * 8, idleProcess);
 
-	/* ------------ TestP1 -------------- */
-
-	// Reservo memoria para su stack
-	/* uint64_t *pr1MemStart = (uint64_t *)sys_allocMem(4096);
-	// Creo su PCB
-	PCB process1;
-	int pr1FD[] = {0};
-	buildPCB(&process1, 12, 0, (uint64_t)(pr1MemStart + 4096 - 19 * 8), READY, 2, pr1FD, 1);
-	// Lo añado a la PCBT
-	insert(PCBTable, process1);
-	// Le creo un Stack acorde
-	buildStartUpProcess(pr1MemStart + 4096 - 19 * 8, testProcess1);
-	// Añado el proceso a la ruta del Scheduler
-
-	list_t *pr1 = (list_t *)sys_allocMem(sizeof(list_t));
-	pr1->data = 12;
-	list_push(&route, pr1);
-	dlcSize++; */
-
-	/* ------------ TestP2 -------------- */
-
-	/* // Reservo memoria para su stack
-	uint64_t *pr2MemStart = (uint64_t *)sys_allocMem(4096);
-	// Creo su PCB
-	PCB process2;
-	int pr2FD[] = {0};
-	buildPCB(&process2, 17, 0, (uint64_t)(pr2MemStart + 4096 - 19 * 8), READY, 2, pr2FD, 1);
-	// Lo añado a la PCBT
-	insert(PCBTable, process2);
-	// Le creo un Stack acorde
-	buildStartUpProcess(pr2MemStart + 4096 - 19 * 8, testProcess2);
-	// Añado el proceso a la ruta del Scheduler
-	list_t *pr2 = (list_t *)sys_allocMem(sizeof(list_t));
-	pr2->data = 17;
-	list_push(&route, pr2);
-	dlcSize++; */
-
-	/* ------------ TestP3 -------------- */
-
-	/* // Reservo memoria para su stack
-	uint64_t *shellMem = (uint64_t *)sys_allocMem(4096);
-	// Creo su PCB
-	PCB shell;
-	int shellFD[] = {0};
-	buildPCB(&shell, 69, 0, (uint64_t)(shellMem + 4096 - 19 * 8), READY, 2, shellFD, 1);
-	// Lo añado a la PCBT
-	insert(PCBTable, shell);
-	// Le creo un Stack acorde
-	buildStartUpProcess(shellMem + 4096 - 19 * 8, initializeShell);
-	// Añado el proceso a la ruta del Scheduler
-	list_t *shell = (list_t *)sys_allocMem(sizeof(list_t));
-	shell->data = 69;
-	list_push(&route, shell);
-	dlcSize++;
- */
-	/* ------------------------------------- Printing Structures ------------------------------------------- */
-
-	// printPCBTable(PCBTable);
+	// Paso de control al Userland
 	EntryPoint userland = ((EntryPoint)sampleCodeModuleAddress)();
 	_sti();
 	_hlt();
 	return userland; // direccion del _start del userland
 }
-
-/*  Process Control Block Table */
-/*
-	PID : numero natural
-	PPID : numero natural
-	RSB : puntero de 64 bits
-	state : READY, RUNNING o BLOCKED
-	priority : 0, 1 o 2
-	FD : numero natural
-	FDSize : numero natural, mantener viva esta variable!
-	memInfo.qPages : numero natural
-	memInfo.baseAddress : puntero
-	memInfo.limit : puntero (?)
-*/

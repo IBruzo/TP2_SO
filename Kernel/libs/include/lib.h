@@ -15,7 +15,7 @@ extern uint8_t bss;
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
-extern listADT PCBTable; /* mover esto */
+extern List *PCBTable; /* mover esto */
 
 static const uint64_t PageSize = 0x1000;
 static void *const sampleCodeModuleAddress = (void *)0x400000; // punteros a user land
@@ -42,7 +42,7 @@ void newline();
 void putcharSpecifics(char character, int x, int y, int size, int color);
 void updateCursor();
 void buildPCB(PCB *block, int PID, int PPID, uint64_t RSB, char state, char priority, int FDArr[], int FDSize);
-void printPCBTable(listADT PCBTable);
+/* void printPCBTable(listADT PCBTable); */
 int cmpInt(PCB n1, PCB n2);
 void clearBSS(void *bssAddress, uint64_t bssSize);
 void *getStackBase();

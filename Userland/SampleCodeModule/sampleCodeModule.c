@@ -27,10 +27,6 @@ int main()
     Nota para joaco: probar mover el 20 a 21 y cercanos
     */
     createProcess(initialize_shell);
-    /* char *args[2] = {"1", "2"}; */
-    /* createProcess(testProcess1);
-    createProcess(testProcess2); */
-    /* sys_createProcess(initializeShell) */
-    /* initialize_shell(); */
+
     return 0;
 }

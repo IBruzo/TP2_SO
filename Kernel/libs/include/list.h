@@ -28,33 +28,32 @@ typedef struct PCB
     memInfo memInfo;
 } PCB;
 
-typedef struct listCDT *listADT;
+typedef struct Node
+{
+    struct PCB *data;
+    struct Node *next;
+} Node;
 
-typedef PCB elemType;
+typedef struct List
+{
+    Node *head;
+    int size;
+} List;
 
-listADT newList(int (*compare)(elemType e1, elemType e2));
+void newList(List *list);
 
-void freeList(listADT list);
+void freeList(List *list);
 
-int isEmpty(const listADT list);
+int isEmpty(const List *list);
 
-int size(const listADT list);
+int size(const List *list);
 
-// 1 si la inserta, 0 sinó (ya estaba)
-int insert(listADT list, elemType elem);
+void insert(List *list, PCB *data);
 
-// 1 si estaba, 0 sinó
-int delete(listADT list, elemType elem);
+void delete(List *list, int targetPID);
 
-int belongs(const listADT list, elemType elem);
+PCB *get(List *list, int targetPID);
 
-elemType get(const listADT list, unsigned int idx);
-
-void map(listADT list, elemType (*funcion)(elemType));
-
-// Para comenzar a iterar
-void toBegin(listADT list);
-int hasNext(const listADT list);
-elemType next(listADT list);
+void iterate(List *list, void (*action)(const PCB *));
 
 #endif // UNTITLED5_LISTADT_H

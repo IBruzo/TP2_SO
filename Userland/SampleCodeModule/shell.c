@@ -7,26 +7,6 @@ void initialize_shell()
 	/* nunca supera esta linea :((((((( */
 	printColor("user@Qemu:", USER_TEXT_COLOR, 0);
 	printColor("> $ ", TERMINAL_BLUE, 0);
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
-	print("jose");
-	halt();
 
 	while (1)
 	{

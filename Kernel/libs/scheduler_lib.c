@@ -19,7 +19,7 @@ void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char prio
     return;
 }
 
-void printPCBTable(listADT PCBTable)
+/* void printPCBTable(listADT PCBTable)
 {
     toBegin(PCBTable);
     while (hasNext(PCBTable))
@@ -48,7 +48,7 @@ void printPCBTable(listADT PCBTable)
         }
         print("\n-------------------------------------------------------------------\n");
     }
-}
+} */
 
 int cmpInt(PCB n1, PCB n2)
 {

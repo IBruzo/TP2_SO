@@ -4,7 +4,7 @@
 #include "scheduler_lib.h"
 extern int getTime(int op);
 
-static int processIDs = 4;
+static unsigned int processIDs = 4;
 
 static unsigned char regsBuffer[128] = {0};
 void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color)
@@ -127,7 +127,7 @@ void *sys_allocMem(int bytes)
     return memAlloc(bytes);
 }
 
-void sys_free(void *dir, int size)
+void sys_free(void *dir)
 {
     memFree(dir);
 }
@@ -139,28 +139,19 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
 
 void sys_createProcess(void (*f)() /* , int argc, char **argv */)
 {
-    print("Creating Process...");
     // Reservo la memoria inicial del proceso
     uint64_t memStart = sys_allocMem(4096);
-    print("memStart %x\n", memStart);
-    print("RBP %x\n", memStart + 4096);
-    print("RSP After Pushing %x\n", memStart + 4096 - (20 * 8));
     // Añado el proceso a los ciclos del Scheduler
     list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
     newProcess->data = processIDs;
     list_push(&route, newProcess);
     dlcSize++;
-
     // Añado a el PCB
     PCB newBlock;
     int newBlockFD[] = {0, 1};
-    /* EL PPID TIENE QUE SER OTRA COSA currentProcess->PID o algo asi */
     buildPCB(&newBlock, processIDs++, 0, memStart + 4096 - (20 * 8), READY, 1, newBlockFD, 3);
-    insert(PCBTable, newBlock);
-
-    // Creo el Stack Virgen y se activa el Tick
-    // buildProcessStack(memStart + 4096 - 19 * 8, f);
+    insert(PCBTable, &newBlock);
+    // Creo el Stack Virgen y se activa el Timer Tick
     buildDummyStack((uint64_t)memStart + 4096, (uint64_t)f);
-
     return;
 }
