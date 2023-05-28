@@ -137,11 +137,11 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
     scroll_up_once(tamY, color);
 }
 
-void sys_createProcess(void (*f)() /* , int argc, char **argv */)
+void sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
 {
-    // Reservo la memoria inicial del proceso
-    uint64_t memStart = sys_allocMem(4096);
-    // Añado el proceso a los ciclos del Scheduler
+    // Reservo la Memoria para el Stack del Proceso
+    uint64_t memStart = (uint64_t)sys_allocMem(4096);
+    // Añado el proceso a la Ruta del Scheduler
     list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
     newProcess->data = processIDs;
     list_push(&route, newProcess);
@@ -152,6 +152,6 @@ void sys_createProcess(void (*f)() /* , int argc, char **argv */)
     buildPCB(&newBlock, processIDs++, 0, memStart + 4096 - (20 * 8), READY, 1, newBlockFD, 3);
     insert(PCBTable, &newBlock);
     // Creo el Stack Virgen y se activa el Timer Tick
-    buildDummyStack((uint64_t)memStart + 4096, (uint64_t)f);
+    buildDummyStack((uint64_t)memStart + 4096, f, argc, argv);
     return;
 }

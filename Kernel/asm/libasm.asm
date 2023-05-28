@@ -13,19 +13,15 @@ cpuVendor:
 	mov rbp, rsp
 
 	push rbx
-
 	mov rax, 0
+
 	cpuid
-
-
 	mov [rdi], ebx
 	mov [rdi + 4], edx
 	mov [rdi + 8], ecx
-
 	mov byte [rdi+13], 0
 
 	mov rax, rdi
-
 	pop rbx
 
 	mov rsp, rbp
@@ -68,7 +64,7 @@ outb:
 	leave
 	ret
 
-; retorna un puntero a una zona de memoria donde se encuentra el estado de todo los registros
+; Retorna un Puntero a una Zona de Memoria del Kernel donde se encuentra el Snapshot
 snapshot:
 
 	; es inevitable que algunos registros tengan valores fijos porque para llegar aca
@@ -98,49 +94,30 @@ getSP:
 	mov rax, rsp
 	ret
 
+; Constructora de Stack Falso
 buildDummyStack:
-
 	;PARAMETROS DE BUILDDUMMYSTACK:
-
 	;RDI -> Stack Pointer/Fin del bloque
-	;RSI -> Puntero a funcion
+	;RSI -> Puntero a Funcion
 	;RDX -> #Argumentos, int
 	;RCX -> Argumentos, Array de Strings
 
-	;push rbp
-    ;mov rbp, rsp
-
-	mov rbp, rdi
-    mov rsp, rdi ; stack base
-    and rsp, -16
-    push 0x0
-    push rdi
-    push 0x202
-    push 0x8
-    push rsi
-
-
-	;mov rbp, rdi		;Muevo el base pointer al final de la pagina
-	;mov rsp, rdi
-	;push 0				;Align
-	;push 0				;Stack Segment
-	;push rdi			;RSP cuando ocurrio la interrupcion, como es un proceso nuevo, es el base pointer
-	;push 0x202			;RFLAGS
-	;push 0x8			;Code Segment
-	;push rsi			;Entry Point, puntero a funcion			<- INVALID OP CODE ???
-
-	;PARAMETROS DEL NUEVO PROCESO:
-
-	;RDI -> ARGC
-	;RSI -> ARGV
+	mov rbp, rdi		; RBP = Fin del Bloque
+    mov rsp, rdi 		; RSP = Fin del Bloque
+    and rsp, -16		; Alineamiento
+    push 0x0			; Stack Segment
+    push rdi			; Como es un Proceso Nuevo tiene un Stack vacio => RSP = RBP = Fin del Bloque
+    push 0x202			; Flags
+    push 0x8			; Code Segment
+    push rsi			; Entry Point = Puntero a Funcion
 
 	push 0				;RAX
 	push 0				;RBX
 	push 0				;RCX
 	push 0				;RDX
 	push 0				;RBP
-	push 0				;RDI, ARGC
-	push 0				;RSI, ARGV
+	push rdx			;RDI, ARGC del Proceso Nuevo
+	push rcx			;RSI, ARGV del Proceso Nuevo
 	push 0				;R8
 	push 0				;R9
 	push 0				;R10
@@ -150,7 +127,6 @@ buildDummyStack:
 	push 0				;R14
 	push 0				;R15
 
-	_sti
 	int 20h				;Llamo a la interrupcion del timer
 
 	ret

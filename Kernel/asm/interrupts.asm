@@ -1,28 +1,26 @@
-
 GLOBAL _cli
 GLOBAL _sti
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 GLOBAL haltcpu
 GLOBAL _hlt
-
 GLOBAL _irq00Handler
 GLOBAL _irq01Handler
 GLOBAL _irq02Handler
 GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
-
 GLOBAL _irq60Handler
 GLOBAL _exception0Handler
-
 GLOBAL _exception6Handler
+
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN schedule
 
 SECTION .text
 
+; Push de todos los Registros de Uso General
 %macro pushState 0
 	push rax
 	push rbx
@@ -39,52 +37,6 @@ SECTION .text
 	push r13
 	push r14
 	push r15
-%endmacro
-
-%macro popState 0
-	pop r15
-	pop r14
-	pop r13
-	pop r12
-	pop r11
-	pop r10
-	pop r9
-	pop r8
-	pop rsi
-	pop rdi
-	pop rbp
-	pop rdx
-	pop rcx
-	pop rbx
-	pop rax
-%endmacro
-
-%macro irqHandlerMaster 1
-	pushState
-
-	mov rdi, %1 ; pasaje de parametro
-	call irqDispatcher
-
-	; signal pic EOI (End of Interrupt)
-	mov al, 20h
-	out 20h, al
-
-	popState
-	iretq
-%endmacro
-
-; se guarda el stack para poder devolverlo cuando ocurre una excepcion
-%macro exceptionHandler 1
-
-	pushState
-	mov rdi, %1 ; pasaje de parametro
-	mov rsi,rsp
-	call exceptionDispatcher
-
-	popState
-
-	iretq
-
 %endmacro
 
 %macro pushStateNoRAX 0
@@ -104,6 +56,25 @@ SECTION .text
 	push r15
 %endmacro
 
+; Pop de todos los Registros de Uso General
+%macro popState 0
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rsi
+	pop rdi
+	pop rbp
+	pop rdx
+	pop rcx
+	pop rbx
+	pop rax
+%endmacro
+
 %macro popStateNoRAX 0
 	pop r15
 	pop r14
@@ -121,20 +92,28 @@ SECTION .text
 	pop rbx
 %endmacro
 
-; version para context switching, deberia ser activada cuando interrumpe el timer tick y cuando termina un proceso
-%macro irqHandler 1
+; Redirije las Interrupciones de Hardware
+%macro irqHandlerMaster 1
 	pushState
 
-	mov rdi,%1
+	mov rdi, %1 ; pasaje de parametro
 	call irqDispatcher
 
-	mov rdi, rsp
-	call schedule    ;scheduler deberia estar en c y en este caso guardar en una tabla el valor del rsp viejo
-	mov rsp, rax
-
-	; signal pic EOI (End of Interrupt) para hardware
+	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
+
+	popState
+	iretq
+%endmacro
+
+; Guarda el Stack devolverlo cuando ocurre una Excepcion
+%macro exceptionHandler 1
+	pushState
+
+	mov rdi, %1 ; pasaje de parametro
+	mov rsi,rsp
+	call exceptionDispatcher
 
 	popState
 	iretq
@@ -155,21 +134,23 @@ SECTION .text
 	iretq
 %endmacro
 
-
+; Reduce la Actividad del CPU hasta que se reciba una nueva Interrupcion
 _hlt:
 	sti
 	hlt
 	ret
 
+; Deshabilita las Interrupciones
 _cli:
 	cli
 	ret
 
-
+; Habilita las Interrupciones
 _sti:
 	sti
 	ret
 
+; Setea las Mascaras para que se permitan las interrupciones del Teclado y Timer Tick
 picMasterMask:
 	push rbp
     mov rbp, rsp
@@ -177,7 +158,6 @@ picMasterMask:
     out	21h,al
     pop rbp
     retn
-
 picSlaveMask:
 	push    rbp
     mov     rbp, rsp
@@ -186,17 +166,29 @@ picSlaveMask:
     pop     rbp
     retn
 
-
-;8254 Timer (Timer Tick)
+; Timer Tick, se encarga del Context Switch
 _irq00Handler:
-	irqHandler 0
-	;irqHandlerMaster 0
+	pushState
+
+	mov rdi, 0
+	call irqDispatcher
+
+	mov rdi, rsp
+	call schedule
+	mov rsp, rax
+
+	; signal pic EOI (End of Interrupt) para hardware
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
 
 ;Keyboard
 _irq01Handler:
 	irqHandlerMaster 1
 
-;Cascade pic never called
+;Cascade PIC
 _irq02Handler:
 	irqHandlerMaster 2
 
@@ -214,7 +206,7 @@ _irq05Handler:
 
 ;syscalls no bloqueantes
 _irq60Handler:
-
+	; necesito a bruhzo para verificar esta wea rara, y tal vez hacer un work around
 	;se pasan 7 parametros ya que existe una syscall que recibe 6 parametros, debido al
 	; corrimiento se tiene que pasar uno de esos parametros por stack
 	push r9
@@ -245,21 +237,19 @@ _birq60Handler:
 	;muevo los parametros de handler para q al dispatcher le lleguen bien
 	mov rdi,60h
 	call irqDispatcher
-
-	; interrupcion del timer
-
+	int 20h; interrupcion del timer
 	pop r9
-
 	iretq
 
-;Zero Division Exception
+; Zero Division Exception
 _exception0Handler:
 	exceptionHandler 0
 
-;Invalid Op code Exception
+; Invalid Op Code Exception
 _exception6Handler:
 	exceptionHandler 6
 
+; Termina la ejecucion del CPU
 haltcpu:
 	cli
 	hlt

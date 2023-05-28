@@ -118,33 +118,3 @@ void freeList(List *list)
     list->head = NULL;
     list->size = 0;
 }
-
-/*
-int main() {
-    List pcbList;
-    list_init(&pcbList);
-
-    // Inserting PCB elements into the list in ascending order based on PID
-    PCB pcb1 = { 2, 0, 0, 'R', 1, { 0 }, 0, { 0, 0, 0 } };
-    PCB pcb2 = { 1, 0, 0, 'R', 1, { 0 }, 0, { 0, 0, 0 } };
-    PCB pcb3 = { 3, 0, 0, 'R', 1, { 0 }, 0, { 0, 0, 0 } };
-    list_insert(&pcbList, &pcb1, compare_PCB);
-    list_insert(&pcbList, &pcb2, compare_PCB);
-    list_insert(&pcbList, &pcb3, compare_PCB);
-
-    printf("PCB List:\n");
-    list_iterate(&pcbList, print_PCB);
-    printf("\n");
-
-    // Get PCB with PID equal to 2
-    PCB* foundPCB = (PCB*)list_get(&pcbList, 2);
-    if (foundPCB != NULL) {
-        printf("Found PCB with PID equal to 2: PID: %d, PPID: %d\n", foundPCB->PID, foundPCB->PPID);
-    } else {
-        printf("PCB with PID equal to 2 not found.\n");
-    }
-
-    return 0;
-}
-
-*/

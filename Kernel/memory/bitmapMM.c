@@ -67,7 +67,6 @@ int findSpace(int cantPag, int *posArr, int *bitPos)
     {
         for (bitPosition = 0; bitPosition < 8; bitPosition++)
         {
-            // printf("%d--\n",!(bitMap[bitMapPosition] & mask));
             // bitMap[bitMapPosition] = 1100 0001
             // bitPosition 1000 0000 -> 0100 0000 -> 0010 0000 -> 0001 0000 -> 0000 1000 -> 0000 0100 -> 0000 0010 -> 0000 0001
             if (freeSpace == 0)
@@ -104,16 +103,12 @@ void memFree(void *dir)
             int dirMap = (((int)dir) - memStart) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
             int posArr = dirMap / 8;                         // se trunca
             int bitPos = dirMap % 8;
-
-            /* int posArr = (int)(allocations[i].address - memStart) / PAG_SIZE;
-            int bitPos = 0; */
             int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE;
             switchBits(posArr, bitPos, cantPag);
 
             // Remove deallocated memory from allocations array
             for (int j = i; j < numAllocations; j++)
             {
-                // printf("allocations[%p:%ld] = allocations[%p:%ld]\n",allocations[j].address, allocations[j].size, allocations[j + 1].address, allocations[j+1].size);
                 allocations[j] = allocations[j + 1];
             }
             allocated -= cantPag * PAG_SIZE;

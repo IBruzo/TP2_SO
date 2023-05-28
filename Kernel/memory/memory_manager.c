@@ -1,4 +1,4 @@
-#include "memoryManager.h" 
+#include "memoryManager.h"
 
 MemoryManagerADT memManager;
 
@@ -18,5 +18,5 @@ void *allocMemory(MemoryManagerADT const restrict memoryManager, const size_t me
 {
     char *allocation = memoryManager->nextAddress;
     memoryManager->nextAddress += memoryToAllocate;
-    return (void *) allocation;
+    return (void *)allocation;
 }

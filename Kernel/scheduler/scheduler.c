@@ -10,14 +10,6 @@ void initScheduler()
     current = dclNext(iterator);
 }
 
-void print_PCB(const PCB *pcb)
-{
-    print("PID: %d, RSP: %x\n", pcb->PID, pcb->RSP);
-}
-/* el kernel setea el primer valor de esta wea, luego en cada schedule se updatea, primer codigo del scheduler deberia verificar
-que no es el pid 0, si lo es actualiza esta variable al siguiente y sigue su vida
-hay que tener cuidado cuando se actualiza el pcb anterior */
-
 uint64_t schedule(uint64_t RSP)
 {
     // Se actualiza el PCB del Proceso Saliente

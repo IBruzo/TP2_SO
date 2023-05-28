@@ -30,6 +30,6 @@
 #define SYS_SCROLL_UP_ONCE_ID 17
 
 void initialize();
-char *getBuffer();
+char *getBuffer(); // esta quien es? (joaco)
 
 #endif

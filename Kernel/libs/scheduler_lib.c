@@ -19,63 +19,37 @@ void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char prio
     return;
 }
 
-/* void printPCBTable(listADT PCBTable)
+void buildStartUpProcess(uint64_t *stackStart, void (*f)())
 {
-    toBegin(PCBTable);
-    while (hasNext(PCBTable))
-    {
-        PCB elem = next(PCBTable);
-        print("PID    [%d]  --  PPID  [%d]  --  PRIORITY  [%d]  --  STATE  ", elem.PID, elem.PPID, elem.priority);
-        switch (elem.state)
-        {
-        case 0:
-            print("[READY]\n");
-            break;
-        case 1:
-            print("[RUNNING]\n");
-            break;
-        case 2:
-            print("[BLOCKED]\n");
-            break;
-        default:
-            break;
-        }
-        print("RSP    [%d]\n", elem.RSP);
-        print("FD");
-        for (int i = 0; i < elem.FDSize; i++)
-        {
-            print("     [%d]", elem.FD[i]);
-        }
-        print("\n-------------------------------------------------------------------\n");
-    }
-} */
-
-int cmpInt(PCB n1, PCB n2)
-{
-    return n1.PID - n2.PID;
+    /* construyendole de abajo para arriba el stack, contrario al push */
+    stackStart[0] = 0;                              // R15
+    stackStart[1] = 0;                              // R14
+    stackStart[2] = 0;                              // R13
+    stackStart[3] = 0;                              // R12
+    stackStart[4] = 0;                              // R11
+    stackStart[5] = 0;                              // R10
+    stackStart[6] = 0;                              // R9
+    stackStart[7] = 0;                              // R8
+    stackStart[8] = 0;                              // RSI, no necesita parametros
+    stackStart[9] = 0;                              // RDI, no necesita parametros
+    stackStart[10] = 0;                             // RBP
+    stackStart[11] = 0;                             // RDX
+    stackStart[12] = 0;                             // RCX
+    stackStart[13] = 0;                             // RBX
+    stackStart[14] = 0;                             // RAX
+    stackStart[15] = (uint64_t)f;                   // Entry Point de Idle
+    stackStart[16] = 0x8;                           // Code Segment
+    stackStart[17] = 0x202;                         // RFLAGS
+    stackStart[18] = (uint64_t)(stackStart + 4096); // RBP previo a la int
+    stackStart[19] = 0;                             // Stack Segment
+    return;
 }
 
-/* void list_print(list_t *list)
+void idleProcess()
 {
-    list_t *current = list->next;
-    list_t *previous = list->prev;
-
-    for (int i = 0; i < 7; i++)
+    print("Chilling...\n");
+    while (1)
     {
-        point *currentPoint = container_of(current, point, link);
-        point *previousPoint = container_of(previous, point, link);
-        print("PREVIOUS");
-        print("Checkpoint  --%d--\n", i);
-        print("PID         [%d]\n", previousPoint->PID);
-
-        print("CURRENT");
-        print("Checkpoint  --%d--\n", i);
-        print("PID         [%d]\n", currentPoint->PID);
-        print("----------------------------------------------------------\n", previousPoint->PID);
-
-        route.prev = route.next;
-        route.next = route.next->next;
-        current = current->next;
-        previous = current->prev;
+        _hlt();
     }
-} */
+}

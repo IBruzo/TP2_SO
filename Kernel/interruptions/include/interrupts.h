@@ -1,10 +1,3 @@
-/*
- *   interrupts.h
- *
- *  Created on: Apr 18, 2010
- *      Author: anizzomc
- */
-
 #ifndef INTERRUPS_H_
 #define INTERRUPS_H_
 
@@ -24,20 +17,12 @@ void _exception0Handler(void);
 void _exception6Handler(void);
 
 void _cli(void);
-
 void _sti(void);
-
 void _hlt(void);
-
 void picMasterMask(uint8_t mask);
-
 void picSlaveMask(uint8_t mask);
 
 // Termina la ejecución de la cpu.
 void haltcpu(void);
-
-char *snapshot();
-
-int buildDummyStack(uint64_t memStart, void *(*function)(int, char **)/* , int argc, char **argv */);
 
 #endif /* INTERRUPS_H_ */

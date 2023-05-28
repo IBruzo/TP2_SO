@@ -46,20 +46,13 @@ Iterator *dclCreateIterator(list_t *list)
   }
   iterator->current = list;
   iterator->end = list;
-  // iterator->hasNext = (list != NULL);
   return iterator;
 }
-
-/*int dclHasNext(Iterator *iterator)
-{
-  return iterator->hasNext;
-}*/
 
 list_t *dclNext(Iterator *iterator)
 {
   list_t *current = iterator->current;
   iterator->current = current->next;
-  // iterator->hasNext = (current->next != iterator->end);
   return current;
 }
 

@@ -144,36 +144,35 @@ void put_word(char *string, uint32_t x, uint32_t y, uint32_t tam, uint32_t color
 	}
 }
 
-
 void scroll_up_once(uint32_t tamY, uint32_t color)
 {
-	 int amount = tamY;
-    uint32_t *screen = (uint32_t *)(uint64_t)info->framebuffer;
+	int amount = tamY;
+	uint32_t *screen = (uint32_t *)(uint64_t)info->framebuffer;
 
-    // Calculate the number of pixels to shift up
-    //uint32_t numPixels = info->pitch / sizeof(uint32_t) * amount;
+	// Calculate the number of pixels to shift up
+	// uint32_t numPixels = info->pitch / sizeof(uint32_t) * amount;
 
-    // Calculate the number of words per line
-    uint32_t wordsPerLine = info->pitch / sizeof(uint32_t);
+	// Calculate the number of words per line
+	uint32_t wordsPerLine = info->pitch / sizeof(uint32_t);
 
-    // Move each pixel up by `amount` pixels
-    for (uint32_t y = 0; y < info->height - amount; y++)
-    {
-        uint32_t *src = &screen[(y + amount) * wordsPerLine];
-        uint32_t *dest = &screen[y * wordsPerLine];
-        for (uint32_t x = 0; x < info->width; x++)
-        {
-            dest[x] = src[x];
-        }
-    }
+	// Move each pixel up by `amount` pixels
+	for (uint32_t y = 0; y < info->height - amount; y++)
+	{
+		uint32_t *src = &screen[(y + amount) * wordsPerLine];
+		uint32_t *dest = &screen[y * wordsPerLine];
+		for (uint32_t x = 0; x < info->width; x++)
+		{
+			dest[x] = src[x];
+		}
+	}
 
-    // Copy the background color to the last `amount` lines
-    for (uint32_t y = info->height - amount; y < info->height; y++)
-    {
-        uint32_t *line = &screen[y * wordsPerLine];
-        for (uint32_t x = 0; x < info->width; x++)
-        {
-            line[x] = color;
-        }
-    }
+	// Copy the background color to the last `amount` lines
+	for (uint32_t y = info->height - amount; y < info->height; y++)
+	{
+		uint32_t *line = &screen[y * wordsPerLine];
+		for (uint32_t x = 0; x < info->width; x++)
+		{
+			line[x] = color;
+		}
+	}
 }

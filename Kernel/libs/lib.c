@@ -1,7 +1,7 @@
 #include "lib.h"
 
 static int fontsize = 1;
-static int cursorX = 4; // por que estaba la hora
+static int cursorX = 4;
 static int cursorY = 4;
 
 List *PCBTable;
@@ -315,10 +315,13 @@ void *getStackBase()
 	);
 }
 
-/* --------------------------------------- CIRCULAR LIST FUNCTIONS -------------------------- */
-
-void testProcess4()
+void *initializeKernelBinary()
 {
-	print("Joaco Arrived");
-	return;
+	void *moduleAddresses[] = {
+		sampleCodeModuleAddress,
+		sampleDataModuleAddress};
+
+	loadModules(&endOfKernelBinary, moduleAddresses);
+	clearBSS(&bss, &endOfKernel - &bss);
+	return getStackBase();
 }
