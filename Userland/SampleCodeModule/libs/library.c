@@ -1,5 +1,3 @@
-
-
 #include <library.h>
 #define CURSOR_TICKS 9
 

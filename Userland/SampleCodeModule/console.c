@@ -296,8 +296,8 @@ void checkCommand()
 			break;
 		case TEST_MM:
 		{
-			char *argv[] = {"134217728"}; // 
-			test_mm(1, argv);		// Call the test_mm function with the provided argument
+			char *argv[] = {"134217728"}; //
+			test_mm(1, argv);			  // Call the test_mm function with the provided argument
 			break;
 		}
 		break;

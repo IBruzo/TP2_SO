@@ -1,8 +1,6 @@
-
 GLOBAL INVALID_OP_CODE
 
 section .text
-
 
 %macro pushState 0
     push rax
@@ -42,8 +40,6 @@ section .text
 
 
 INVALID_OP_CODE:
-mov rax, 10
-	
+	mov rax, 10
     mov cr6, rax ;mueve a un registro q no existe
-
     ret

@@ -16,6 +16,7 @@ GLOBAL mAlloc
 GLOBAL mFree
 GLOBAL scrollUp
 GLOBAL createProcess
+
 section .text
 
 %macro pushState 0
@@ -76,6 +77,7 @@ getchar:
 
 write:
     sys_call 1
+
 gettick:
 	sys_call 2
 
@@ -120,7 +122,6 @@ mFree:
 
 createProcess:
 	sys_call 16
-
 
 scrollUp:
 	sys_call 17
