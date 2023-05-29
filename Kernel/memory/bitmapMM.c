@@ -62,7 +62,7 @@ int findSpace(int cantPag, int *posArr, int *bitPos)
     char bitPosition;
     int startArrPos = 0;
     char startBitPos = 0;
-    unsigned char mask = 128; // 1000 0000
+    char mask = 128; // 1000 0000
     for (bitMapPosition = 0; bitMapPosition < BIT_MAP_SIZE; bitMapPosition++)
     {
         for (bitPosition = 0; bitPosition < 8; bitPosition++)

@@ -149,7 +149,14 @@ void sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     // Añado a el PCB
     PCB newBlock;
     int newBlockFD[] = {0, 1};
-    buildPCB(&newBlock, processIDs++, 0, memStart + 4096 - (20 * 8), READY, 1, newBlockFD, 3);
+    uint64_t rsb =0 ;
+    #ifndef BUDDY_MM
+        rsb = (uint64_t)memStart + 4096 - (20 * 8);
+    #else
+        rsb = (uint64_t)memStart + 4096 - (21 * 8);
+    #endif
+    print("rsb: %d\n", rsb);
+    buildPCB(&newBlock, processIDs++, 0, rsb, READY, 1, newBlockFD, 3);
     insert(PCBTable, &newBlock);
     // Creo el Stack Virgen y se activa el Timer Tick
     buildDummyStack((uint64_t)memStart + 4096, f, argc, argv);
