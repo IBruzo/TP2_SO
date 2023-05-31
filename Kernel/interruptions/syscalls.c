@@ -142,6 +142,7 @@ void sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     newProcess->data = processIDs;
     list_push(&route, newProcess);
     dlcSize++;
+
     // Añado a el PCB
     PCB newBlock;
     int newBlockFD[] = {0, 1};
@@ -153,13 +154,14 @@ void sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     //      rsb = (uint64_t)memStart + 4096 - (21 * 8);
     // #endif
     //  pcb->rbp = (uint64_t)node + STACK_SIZE + sizeof(processNode) - sizeof(char *);
-    buildPCB(&newBlock, processIDs++, 0, (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - 1, READY, 1, newBlockFD, 3);
+    buildPCB(&newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - 1, READY, 1, newBlockFD, 3);
     insert(PCBTable, &newBlock);
 
     // print("rsb: %d\n", rsb);
     // Creo el Stack Virgen y se activa el Timer Tick
     // initializeStackFrame((uint64_t)memStart + 4096, f, argc, argv); //old dumm
     initializeStackFrame(argc, argv, f, processIDs - 1);
+    // print
     return;
 }
 
@@ -170,49 +172,88 @@ int sys_getPid()
 
 int sys_increasePriority(int PID)
 {
-    print("Increasing Priority...\n");
-    printRoute();
+    // print("\nIncreasing Priority of [%d]...\n", PID);
+    // printRoute();
 
     list_t *currentProcess = getCurrentProcess();
     int toReturn = countCurrentProcessAppearances();
-    if (countCurrentProcessAppearances() == 5)
+    if (toReturn == 5)
         return -1;
     list_push(&route, currentProcess);
     dlcSize++;
+    PCB *toIncrease = get(PCBTable, 1);
+    toIncrease->priority++;
 
-    print("\n---------------------\n");
-    printRoute();
+    // print("\n---------------------\n");
 
     return ++toReturn;
 }
 
 int sys_decreasePriority(int PID)
 {
-    print("\nDecreasing Priority...\n");
-
-    printRoute();
+    // print("\nDecreasing Priority...\n");
+    // printRoute();
 
     list_t *currentProcess = getCurrentProcess();
     int toReturn = countCurrentProcessAppearances();
-    if (countCurrentProcessAppearances() == 0)
+    if (toReturn == 0)
         return -1;
     list_remove(currentProcess);
     dlcSize--;
 
-    print("\n---------------------\n");
-    printRoute();
+    PCB *toDecrease = get(PCBTable, 1);
+    toDecrease->priority--;
+
+    // print("\n---------------------\n");
+    // printRoute();
 
     return --toReturn;
 }
 
 void sys_yield()
 {
+    // printRoute();
     forceTick();
+}
+
+int sys_kill(int pid)
+{
+    // print("Killing Process...\n");
+    // print("WANTING TO MURDER PID [%d]\n", pid);
+
+    if (pid == 0 || pid == 1)
+        return 0;
+
+    int cantElim = 0; // found a killable process
+    Iterator *routeIt = dclCreateIterator(&route);
+    list_t *processIt;
+    int aprearences = countCurrentProcessAppearances();
+    while (cantElim != aprearences)
+    {
+        // print("CYCLE PID [%d]\n", processIt->data);
+        processIt = dclNext(routeIt);
+        if (processIt->data == pid)
+        {
+            list_remove(processIt);
+            dlcSize--;
+            cantElim++;
+        }
+    }
+    if (cantElim > 0)
+    {
+        // print("Murdering... \n");
+        PCB *killedProcess = get(PCBTable, pid);
+        killedProcess->state = EXITED;
+        killedProcess->priority = 0;
+    }
+    return cantElim > 0;
 }
 
 void sys_exit()
 {
-    // remuve todas las ocurrencias de la ruta del scheduler
-    // setea su bloque de la pcb en EXITED
-    // llama al timer
+    // printRoute();
+    // print("Exiting Process...\n");
+    sys_kill(getCurrentPid());
+    // printRoute();
+    forceTick();
 }

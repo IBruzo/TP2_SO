@@ -23,5 +23,7 @@ extern int getPid();
 extern int increasePriority(int pid);
 extern int decreasePriority(int pid);
 extern void yield();
+extern int kill(int pid);
+extern void exit();
 
 #endif

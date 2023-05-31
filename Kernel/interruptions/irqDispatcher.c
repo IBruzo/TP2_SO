@@ -43,6 +43,8 @@ void initialize()
     (fun_sys[SYS_INCREASEPRIORITY_ID]) = (syscall)sys_increasePriority;
     (fun_sys[SYS_DECREASEPRIORITY_ID]) = (syscall)sys_decreasePriority;
     (fun_sys[SYS_YIELD_ID]) = (syscall)sys_yield;
+    (fun_sys[SYS_KILL_ID]) = (syscall)sys_kill;
+    (fun_sys[SYS_EXIT_ID]) = (syscall)sys_exit;
 }
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)

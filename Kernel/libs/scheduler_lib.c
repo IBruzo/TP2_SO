@@ -2,7 +2,6 @@
 
 int dlcSize = 0;
 
-
 /* --------------------------------------- PCB FUNCTIONS -------------------------- */
 
 void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char priority, int FDArr[], int FDSize)
@@ -17,10 +16,11 @@ void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char prio
     return;
 }
 
-
-void buildStartUpProcess(uint64_t *stackStart, void (*f)()) {
+void buildStartUpProcess(uint64_t *stackStart, void (*f)())
+{
     // inicializo entradas de stack en 0
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 20; i++)
+    {
         stackStart[i] = 0;
     }
 
@@ -32,20 +32,17 @@ void buildStartUpProcess(uint64_t *stackStart, void (*f)()) {
     stackStart[19] = 0;                             // Stack Segment
 }
 
-
 void idleProcess()
 {
-    //print("Chilling...\n");
     while (1)
     {
         _hlt();
     }
 }
 
-
-void initializeStackFrame(int argc, char **argv, void * (*fn)(int, char **), uint64_t pid)
+void initializeStackFrame(int argc, char **argv, void *(*fn)(int, char **), uint64_t pid)
 {
-    PCB * currentProcess = get(PCBTable, pid);
+    PCB *currentProcess = get(PCBTable, pid);
     stackFrame *stack = (stackFrame *)(currentProcess->RSP);
     // Se incializan los registros con numeros seguidos, se hace mas facil para debuggear.
     stack->r15 = 0x001;
