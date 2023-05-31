@@ -48,11 +48,28 @@ uint64_t schedule(uint64_t RSP)
 void block()
 {
     // print("Block\n");
-    PCB *aux = get(PCBTable, current->data);
-    aux->state = BLOCKED;
-    list_remove(current);
+    PCB *blockedProcess = get(PCBTable, current->data);
+    blockedProcess->state = BLOCKED;
+
     flag = 0;
-    dlcSize--;
+
+    int cantElim = 0; // found a killable process
+    Iterator *routeIt = dclCreateIterator(&route);
+    list_t *processIt;
+    while (cantElim != blockedProcess->priority)
+    {
+        processIt = dclNext(routeIt);
+        if (processIt->data == blockedProcess->PID)
+        {
+            list_remove(processIt);
+            list_t *toFree = processIt;
+            memFree(toFree);
+            dlcSize--;
+            cantElim++;
+        }
+    }
+
+    return;
 }
 
 static int getBlockedPid()
@@ -109,10 +126,11 @@ list_t *getCurrentProcess()
 
 int countCurrentProcessAppearances()
 {
+    int a = dlcSize;
     int count = 0;
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
-    for (int i = 0; i < dlcSize; i++)
+    for (int i = 0; i < dlcSize + 1; i++)
     {
         processIt = dclNext(routeIt);
         if (processIt->data == getCurrentPid())
@@ -125,9 +143,9 @@ void printRoute()
 {
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
-    for (int i = 0; i < dlcSize + 1; i++)
+    for (int i = 0; i < 5; i++)
     {
         processIt = dclNext(routeIt);
-        print("---  It [%d]  || Process  [%d]   ---", i, processIt->data);
+        print("||  PID  [%d]  ||  ", processIt->data);
     }
 }

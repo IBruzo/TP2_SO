@@ -34,5 +34,7 @@ int sys_getPid();
 int sys_increasePriority(int PID);
 int sys_decreasePriority(int PID);
 void sys_yield();
+int sys_kill(int pid);
+void sys_exit();
 
 #endif

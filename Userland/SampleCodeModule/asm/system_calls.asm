@@ -20,6 +20,8 @@ GLOBAL getPid
 GLOBAL increasePriority
 GLOBAL decreasePriority
 GLOBAL yield
+GLOBAL kill
+GLOBAL exit
 section .text
 
 %macro pushState 0
@@ -140,3 +142,9 @@ decreasePriority:
 
 yield:
 	sys_call 21
+
+kill:
+	sys_call 22
+
+exit:
+	sys_call 23

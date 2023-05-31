@@ -33,6 +33,8 @@
 #define SYS_INCREASEPRIORITY_ID 19
 #define SYS_DECREASEPRIORITY_ID 20
 #define SYS_YIELD_ID 21
+#define SYS_KILL_ID 22
+#define SYS_EXIT_ID 23
 
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)
