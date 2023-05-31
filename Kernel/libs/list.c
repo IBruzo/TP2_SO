@@ -118,3 +118,19 @@ void freeList(List *list)
     list->head = NULL;
     list->size = 0;
 }
+
+// Function to get the next node in the list
+Node *next(Node *current)
+{
+    if (current != NULL)
+    {
+        return current->next;
+    }
+    return NULL;
+}
+
+// Function to get the beginning node of the list
+Node *begin(List *list)
+{
+    return list->head;
+}

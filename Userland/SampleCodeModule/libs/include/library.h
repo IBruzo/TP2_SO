@@ -4,6 +4,7 @@
 #include <system_calls.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 #define BACKGROUND_COLOR 0x002B36
 #define USER_TEXT_COLOR 0x95CD28

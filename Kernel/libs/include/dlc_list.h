@@ -16,7 +16,6 @@ typedef struct Iterator
     list_t *end;
 } Iterator;
 
-
 extern list_t route;
 
 void list_init(list_t *list);

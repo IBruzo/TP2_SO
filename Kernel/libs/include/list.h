@@ -56,4 +56,8 @@ PCB *get(List *list, int targetPID);
 
 void iterate(List *list, void (*action)(const PCB *));
 
+Node *next(Node *current);
+
+Node *begin(List *list);
+
 #endif // UNTITLED5_LISTADT_H

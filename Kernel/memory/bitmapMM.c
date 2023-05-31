@@ -4,7 +4,7 @@
 #include <stdarg.h>
 
 uint8_t bitMap[BIT_MAP_SIZE];
-uint32_t memStart;
+void *memStart;
 uint32_t memSize;
 
 uint32_t allocated; // en bytes
@@ -62,10 +62,10 @@ int findSpace(int cantPag, int *posArr, int *bitPos)
     char bitPosition;
     int startArrPos = 0;
     char startBitPos = 0;
-    for (bitMapPosition = 0 ; bitMapPosition < BIT_MAP_SIZE; bitMapPosition++)
+    for (bitMapPosition = 0; bitMapPosition < BIT_MAP_SIZE; bitMapPosition++)
     {
         unsigned char mask = 128; // 1000 0000
-        for (bitPosition = 0 ; bitPosition < 8; bitPosition++)
+        for (bitPosition = 0; bitPosition < 8; bitPosition++)
         {
             // bitMap[bitMapPosition] = 1100 0001
             // bitPosition 1000 0000 -> 0100 0000 -> 0010 0000 -> 0001 0000 -> 0000 1000 -> 0000 0100 -> 0000 0010 -> 0000 0001
@@ -100,8 +100,8 @@ void memFree(void *dir)
     {
         if (allocations[i].address == dir)
         {
-            int dirMap = (((int)dir) - memStart) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
-            int posArr = dirMap / 8;                         // se trunca
+            uint64_t dirMap = (((uint64_t)dir) - (uint64_t)(memStart)) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
+            int posArr = dirMap / 8;                                               // se trunca
             int bitPos = dirMap % 8;
             int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE;
             switchBits(posArr, bitPos, cantPag);
@@ -127,11 +127,12 @@ void *memAlloc(int sizeBytes)
     if (findSpace(cantPag, &posArr, &bitPos))
     {
         switchBits(posArr, bitPos, cantPag);
-        void *address = (void *)(memStart + PAG_SIZE * (posArr * 8 + bitPos));
+        void *address = (memStart + PAG_SIZE * (posArr * 8 + bitPos));
         allocations[numAllocations].address = address;
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;
         allocated += cantPag * PAG_SIZE;
+        print("POS ARRAY [%d] BIT POS [%d]\n", posArr, bitPos);
         return address;
     }
     return 0;

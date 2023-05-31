@@ -6,8 +6,10 @@ GLOBAL outb
 GLOBAL snapshot
 GLOBAL buildDummyStack
 GLOBAL getSP
-section .text
+GLOBAL forceTick
 
+
+section .text
 cpuVendor:
 	push rbp
 	mov rbp, rsp
@@ -45,7 +47,11 @@ getTime:
 	mov rsp, rbp
 	pop rbp
 	ret
-;
+
+forceTick:
+	sti
+	int 20h
+	ret
 
 inb:
 	push rbp
