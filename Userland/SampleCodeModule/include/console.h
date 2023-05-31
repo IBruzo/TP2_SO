@@ -43,6 +43,7 @@ extern char *snapshot();
 #define SIZE 2089538912     // for help
 #define INFOREG 2989276335
 #define TEST_MM 3973914654
+#define MEM 193463204
 
 void checkCommand();
 void checkKey(char c);

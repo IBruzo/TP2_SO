@@ -51,6 +51,11 @@ void updateCursor();
 char *itoa(int i, char *strout, int base);
 void print(char *foundation, ...);
 void printf(char *foundation, void *parameters[]);
+char * snprintf(char *foundation, ...);
+
+
+
+
 // Funciones Nativas del Kernel
 void clearBSS(void *bssAddress, uint64_t bssSize);
 void *getStackBase();
