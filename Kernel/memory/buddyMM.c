@@ -31,10 +31,11 @@ char * mem() // crea string de memoria total, ocupada y libre
     size_t allocated = allocatedBytes;
     // calclar memoria libre
     size_t free = total - allocated;
+    print("%d\n", allocatedBytes);
     // Convert the memory sizes to human-readable strings
-    char* memStateString ;
+    char* memStateString;
     
-    memStateString = snprintf( "Estado de la Memoria\n %d bytes de memoria total\n %d bytes en uso\n %d bytes libres\n", total, allocated, total-allocated);
+    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n", total/1024, allocated/1024, (total-allocated)/1024);
     return memStateString;
 }
 

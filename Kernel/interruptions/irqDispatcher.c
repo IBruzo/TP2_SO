@@ -45,6 +45,7 @@ void initialize()
     (fun_sys[SYS_YIELD_ID]) = (syscall)sys_yield;
     (fun_sys[SYS_KILL_ID]) = (syscall)sys_kill;
     (fun_sys[SYS_EXIT_ID]) = (syscall)sys_exit;
+    (fun_sys[SYS_MEM_ID]) = (syscall)sys_mem;
 }
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)

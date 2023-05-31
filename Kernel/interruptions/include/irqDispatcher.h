@@ -35,7 +35,7 @@
 #define SYS_YIELD_ID 21
 #define SYS_KILL_ID 22
 #define SYS_EXIT_ID 23
-
+#define SYS_MEM_ID 24
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)
 

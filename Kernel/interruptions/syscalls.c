@@ -117,6 +117,9 @@ void sys_memAccess(uint64_t memDir)
     put_word("Presione ESC para salir", 0, 212 + 4 * 16 * 2, 2, 0xf65194);
 }
 
+char * sys_mem(){
+    return mem();
+}
 void *sys_allocMem(int bytes)
 {
     /* utlizo el memManager que fue inicializado por el kernel ( kernel.c ) */

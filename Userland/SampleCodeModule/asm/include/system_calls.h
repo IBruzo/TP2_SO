@@ -25,5 +25,6 @@ extern int decreasePriority(int pid);
 extern void yield();
 extern int kill(int pid);
 extern void exit();
+extern char * mem();
 
 #endif

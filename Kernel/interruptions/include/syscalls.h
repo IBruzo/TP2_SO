@@ -26,6 +26,7 @@ void sys_clearkeybuffer();
 void sys_changeLanguage(int lan);
 void sys_storeRegisters(void);
 void sys_memAccess(uint64_t memDir);
+char *sys_mem();
 void *sys_allocMem(int bytes);
 void scroll_up_once(uint32_t tamY, uint32_t color);
 void sys_free(void *dir);

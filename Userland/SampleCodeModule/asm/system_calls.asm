@@ -22,6 +22,7 @@ GLOBAL decreasePriority
 GLOBAL yield
 GLOBAL kill
 GLOBAL exit
+GLOBAL mem
 section .text
 
 %macro pushState 0
@@ -148,3 +149,6 @@ kill:
 
 exit:
 	sys_call 23
+
+mem:
+	sys_call 24
