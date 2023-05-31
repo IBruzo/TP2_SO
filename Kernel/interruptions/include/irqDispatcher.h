@@ -9,6 +9,7 @@
 #include <video_driver.h>
 #include <interrupts.h>
 #include <time.h>
+#include "scheduler.h"
 
 #define SYS_GETCHAR_ID 0
 #define SYS_WRITE_ID 1

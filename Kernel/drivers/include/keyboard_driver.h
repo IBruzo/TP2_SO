@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <lib.h>
+#include "scheduler.h"
 
 #define ESC 27
 #define MAX_SCANCODE 58

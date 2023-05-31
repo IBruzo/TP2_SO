@@ -9,8 +9,7 @@
 
 extern List *PCBTable;
 extern int dlcSize;
-extern point *currentProcess;
-extern point *previousProcess;
+
 
 typedef struct stackFrame
 {

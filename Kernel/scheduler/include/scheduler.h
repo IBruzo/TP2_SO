@@ -6,5 +6,7 @@
 
 uint64_t schedule(uint64_t RSP);
 void initScheduler();
+void block();
+void unblock();
 
 #endif

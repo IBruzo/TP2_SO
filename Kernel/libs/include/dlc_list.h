@@ -16,11 +16,6 @@ typedef struct Iterator
     list_t *end;
 } Iterator;
 
-typedef struct
-{
-    int PID;
-    list_t link;
-} point;
 
 extern list_t route;
 

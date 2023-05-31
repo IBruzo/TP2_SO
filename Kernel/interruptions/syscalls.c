@@ -14,14 +14,9 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
 
 char sys_getchar()
 {
-    char ret = getKey();
-    while (ret == 0)
-    {
-        _hlt();
-        ret = getKey();
-    }
 
-    return ret;
+   // return getKey();
+   return 'a';
 }
 
 char sys_getLastKey()

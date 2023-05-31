@@ -9,6 +9,8 @@ void initialize_shell()
 	while (1)
 	{
 		char c = getchar();
-		checkKey(c);
+		if(c != 0){
+			checkKey(c);
+		}
 	}
 }

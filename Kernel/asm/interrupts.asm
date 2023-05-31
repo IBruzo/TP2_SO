@@ -17,6 +17,7 @@ GLOBAL _exception6Handler
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN schedule
+EXTERN block
 
 SECTION .text
 
@@ -209,6 +210,14 @@ _irq60Handler:
 	; necesito a bruhzo para verificar esta wea rara, y tal vez hacer un work around
 	;se pasan 7 parametros ya que existe una syscall que recibe 6 parametros, debido al
 	; corrimiento se tiene que pasar uno de esos parametros por stack
+	cmp rdi, 0
+	jne .conti
+	call _birq60Handler
+	int 20h
+	iretq
+
+.conti
+	pushStateNoRAX
 	push r9
 	mov r9, r8
 	mov r8,rcx
@@ -219,16 +228,17 @@ _irq60Handler:
 	mov rdi,60h
 	call irqDispatcher
 	pop r9
-
+	popStateNoRAX
 	iretq
 
 
 ;syscalls bloqueantes, sospecho el por que no usamos push state y pop state
 _birq60Handler:
-
 	;se pasan 7 parametros ya que existe una syscall que recibe 6 parametros, debido al
 	; corrimiento se tiene que pasar uno de esos parametros por stack
+	pushStateNoRAX
 	push r9
+	
 	mov r9, r8
 	mov r8,rcx
 	mov rcx,rdx
@@ -237,9 +247,10 @@ _birq60Handler:
 	;muevo los parametros de handler para q al dispatcher le lleguen bien
 	mov rdi,60h
 	call irqDispatcher
-	int 20h; interrupcion del timer
+
 	pop r9
-	iretq
+	popStateNoRAX
+	ret
 
 ; Zero Division Exception
 _exception0Handler:

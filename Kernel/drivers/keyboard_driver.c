@@ -156,8 +156,10 @@ static char popBuffer()
  */
 char getKey()
 {
-    if (bufferCount <= 0)
+    if (bufferCount <= 0){
+        block();
         return 0;
+    } 
 
     return popBuffer();
 }
@@ -222,6 +224,7 @@ void storeKey()
     default:
         if (isValidScancode(scancode) && bufferCount < MAX_BUFFER)
         {
+        
             if (isLetter(scancode) && capsActivated)
             {
                 keyBuffer[bufferCount] = keyboards[language][scancode][1];
@@ -234,5 +237,8 @@ void storeKey()
         }
         break;
     }
+      if(bufferCount>0){
+            unblock();
+        }
     return;
 }

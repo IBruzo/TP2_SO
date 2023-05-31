@@ -2,8 +2,6 @@
 
 int dlcSize = 0;
 
-point *currentProcess;
-point *previousProcess;
 
 /* --------------------------------------- PCB FUNCTIONS -------------------------- */
 
@@ -37,7 +35,7 @@ void buildStartUpProcess(uint64_t *stackStart, void (*f)()) {
 
 void idleProcess()
 {
-    print("Chilling...\n");
+    //print("Chilling...\n");
     while (1)
     {
         _hlt();
