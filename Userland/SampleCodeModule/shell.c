@@ -1,20 +1,4 @@
-
 #include <shell.h>
-
-void *testProcess1()
-{
-	print("Goodbye");
-	print("Goodbye");
-	print("Goodbye");
-	print("Goodbye");
-	print("Goodbye");
-	print("Goodbye");
-	print("Goodbye");
-	while (1)
-	{
-	}
-	return NULL;
-}
 
 void *initialize_shell(int argc, char **argv)
 {
