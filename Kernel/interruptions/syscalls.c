@@ -17,7 +17,6 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
 
 char sys_getchar()
 {
-
     return getKey();
 }
 
