@@ -18,7 +18,7 @@
 void initMemoryManager(void *hBase, uint32_t hSize);
 void memFree(void *dir);
 void *memAlloc(int size);
-void mem();
+char * mem();
 
 /*********************************/
 

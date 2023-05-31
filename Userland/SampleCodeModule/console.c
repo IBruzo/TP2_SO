@@ -222,6 +222,7 @@ void commandInvOp()
 	INVALID_OP_CODE();
 }
 
+
 // https://stackoverflow.com/questions/4014827/how-can-i-compare-strings-in-c-using-a-switch-statement
 const unsigned long hash(char *str)
 {
@@ -240,6 +241,15 @@ void printExitHelp()
 	printColor("'ESC'", 0xE9AD0C, 0);
 	print(" para volver a la consola.\n", 0);
 }
+void testMemoryManager(){
+	char *argv[] = {"134217728"}; 
+	test_mm(1, argv);
+	return;	
+}
+void printMemoryState(){
+	print("hola\n");
+}
+
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
 void checkCommand()
 {
@@ -295,12 +305,11 @@ void checkCommand()
 			changelanguage(0);
 			break;
 		case TEST_MM:
-		{
-			char *argv[] = {"134217728"}; //
-			test_mm(1, argv);			  // Call the test_mm function with the provided argument
+			testMemoryManager();
 			break;
-		}
-		break;
+		case MEM:
+			printMemoryState();
+			break;
 		default:
 			printColor("'%s'", ORANGY, command);
 			print(" : comando no encontrado.\n");

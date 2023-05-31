@@ -138,20 +138,14 @@ void *memAlloc(int sizeBytes)
     return 0;
 }
 
-void mem()
-{
-    // cant de memoria 
-    int total = 8 * BIT_MAP_SIZE * PAG_SIZE;
 
-    print("total: %d-bytes  used: %d-bytes free: %d-bytes\n", total, allocated, total - allocated);
-}
 void mem()
 {
     // Calculate total memory in bytes
     unsigned long total = 8UL * BIT_MAP_SIZE * PAG_SIZE;
 
     // Print memory usage
-    printf("Total: %d bytes (%d KB)\nUsed: %d bytes\nFree: %d bytes\n",
+    print("Total: %d bytes (%d KB)\nUsed: %d bytes\nFree: %d bytes\n",
            total, total / 1024, allocated, total - allocated);
 }
 #endif

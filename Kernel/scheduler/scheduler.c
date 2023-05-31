@@ -104,7 +104,7 @@ void unblock()
 {
     // print("UNBlock\n");
     int pid = getBlockedPid();
-    if (pid != -1 && flag == 0)
+    if (pid != -1 && !flag)
     {
         list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
         newProcess->data = pid;

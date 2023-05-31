@@ -167,6 +167,84 @@ static void wrapperprint(char *foundation, int color, va_list vl)
 	appendstringColor(buff, color);
 }
 
+
+static char * wrappersnprintf(char *foundation, int color, va_list vl)
+{
+
+	int i = 0, j = 0;
+	// el buffer final y el buffer temporal para las conversiones numericas
+	// buff deberia ser dinamico pero no tenemos malloc :/
+	char buff[4096] = {0}, tmp[20];
+	// buffer para el string
+	char *str_arg;
+
+	// mientras haya caracteres y argumentos
+	while (foundation && foundation[i])
+	{
+		// caso especial de que encuentre un porcentaje que representa la insercion de una variable
+		if (foundation[i] == '%')
+		{
+			i++;
+			switch (foundation[i])
+			{
+			// caso char
+			case 'c':
+			{
+				// se toma el argumento que se presume de tipo char y se lo castea para guardarlo
+				buff[j] = (char)va_arg(vl, int);
+				j++;
+				break;
+			}
+			// caso integer
+			case 'd':
+			{
+				// se toma un int, se lo pasa a decimal y luego a string guardandose en tmp
+				itoa(va_arg(vl, int), tmp, 10);
+				// se copia tmp al buffer
+				strcpy(&buff[j], tmp);
+				// se aumenta la posicion del string final
+				j += strlen(tmp);
+				break;
+			}
+			// caso hexa
+			case 'x':
+			{
+				// identico al previo pero con base 16
+				itoa(va_arg(vl, int), tmp, 16);
+				strcpy(&buff[j], tmp);
+				j += strlen(tmp);
+				break;
+			}
+			// caso octal
+			case 'o':
+			{
+				// identico al anterior pero con base 8
+				itoa(va_arg(vl, int), tmp, 8);
+				strcpy(&buff[j], tmp);
+				j += strlen(tmp);
+				break;
+			}
+			// caso string
+			case 's':
+			{
+				// no se necesita conversion entonces se guarda directo
+				str_arg = va_arg(vl, char *);
+				strcpy(&buff[j], str_arg);
+				j += strlen(str_arg);
+				break;
+			}
+			}
+			// caso donde no hay un porcentaje y se continua el string como si nada
+		}
+		else
+		{
+			buff[j] = foundation[i];
+			j++;
+		}
+		i++;
+	}
+	return buff;
+}
 void print(char *foundation, ...)
 {
 	va_list args;
@@ -174,16 +252,37 @@ void print(char *foundation, ...)
 	wrapperprint(foundation, FONTCOLOR, args);
 	va_end(args);
 }
+char * snprintf(char *foundation, ...)
+{
+	va_list args;
+	va_start(args, foundation);
+	char * formattedString = wrappersnprintf(foundation, FONTCOLOR, args);
+	va_end(args);
+	return formattedString;
+}
 
 // copia el string de origian a destination
 void strcpy(char *destination, const char *origin)
 {
+	strncpy(destination, origin, strlen(origin));
+}
+
+void strncpy(char *destination, const char *origin, int n)
+{
 	int i;
-	for (i = 0; origin[i] != '\0'; i++)
+	for (i = 0; origin[i] != '\0' && i < n; i++)
 		destination[i] = origin[i];
 	destination[i] = '\0';
 }
-
+void strncat(char *destination, const char *origin, int n)
+{
+	int i, j;
+	for (i = 0; destination[i] != '\0'; i++)
+		;
+	for (j = 0; origin[j] != '\0' && j < n; j++)
+		destination[i + j] = origin[j];
+	destination[i + j] = '\0';
+}
 /**
  * @brief pasa a ascii un numero en cualquier base
  * @param i numero a transformar
