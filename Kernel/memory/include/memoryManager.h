@@ -7,14 +7,6 @@
 #include <stdint.h>
 #include <unistd.h>
 
-typedef struct MemoryManagerCDT *MemoryManagerADT;
-
-MemoryManagerADT createMemoryManager(void *const restrict memoryForMemoryManager, void *const restrict managedMemory);
-
-void *allocMemory(MemoryManagerADT const restrict memoryManager, const size_t memoryToAllocate);
-
-/* variable global de referencia la MemManager, para que la syscall pueda referenciarla */
-extern MemoryManagerADT memManager;
 
 /*********************************/
 
@@ -26,6 +18,7 @@ extern MemoryManagerADT memManager;
 void initMemoryManager(void *hBase, uint32_t hSize);
 void memFree(void *dir);
 void *memAlloc(int size);
+void mem();
 
 /*********************************/
 
