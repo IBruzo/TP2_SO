@@ -17,7 +17,11 @@ extern void storeRegisters();
 extern void memAccess(unsigned long int memDir);
 extern void *mAlloc(unsigned long int bytes);
 extern void mFree(void *dir);
-extern void createProcess(void (*function)());
+extern void createProcess(void *(*f)(int, char **), int argc, char **argv);
 extern void scrollUp(int tamY, int color);
+extern int getPid();
+extern int increasePriority(int pid);
+extern int decreasePriority(int pid);
+extern void yield();
 
 #endif

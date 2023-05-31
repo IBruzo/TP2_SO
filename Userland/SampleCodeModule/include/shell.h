@@ -4,6 +4,6 @@
 #include <console.h>
 #include <system_calls.h>
 
-void initialize_shell();
+void *initialize_shell(int argc, char **argv);
 
 #endif

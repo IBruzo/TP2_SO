@@ -5,11 +5,10 @@
 #include <stddef.h>
 #include "syscalls.h"
 #include "list.h"
-#include "dlc_list.h"
+#include <dlc_list.h>
 
 extern List *PCBTable;
 extern int dlcSize;
-
 
 typedef struct stackFrame
 {
@@ -38,6 +37,6 @@ typedef struct stackFrame
 void buildPCB(PCB *block, int PID, int PPID, uint64_t RSB, char state, char priority, int FDArr[], int FDSize);
 void buildStartUpProcess(uint64_t *stackStart, void (*f)());
 void idleProcess();
-void initializeStackFrame(int argc, char **argv, void * (*fn)(int, char **), uint64_t pid);
+void initializeStackFrame(int argc, char **argv, void *(*fn)(int, char **), uint64_t pid);
 
 #endif

@@ -16,7 +16,10 @@ GLOBAL mAlloc
 GLOBAL mFree
 GLOBAL scrollUp
 GLOBAL createProcess
-
+GLOBAL getPid
+GLOBAL increasePriority
+GLOBAL decreasePriority
+GLOBAL yield
 section .text
 
 %macro pushState 0
@@ -125,3 +128,15 @@ createProcess:
 
 scrollUp:
 	sys_call 17
+
+getPid:
+	sys_call 18
+
+increasePriority:
+	sys_call 19
+
+decreasePriority:
+	sys_call 20
+
+yield:
+	sys_call 21

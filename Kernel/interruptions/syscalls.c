@@ -2,7 +2,10 @@
 #include <lib.h>
 #include "memoryManager.h"
 #include "scheduler_lib.h"
+#include "scheduler.h"
+
 extern int getTime(int op);
+extern void forceTick();
 
 static unsigned int processIDs = 4;
 
@@ -14,7 +17,7 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
 
 char sys_getchar()
 {
-   return getKey();
+    return getKey();
 }
 
 char sys_getLastKey()
@@ -143,20 +146,73 @@ void sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     PCB newBlock;
     int newBlockFD[] = {0, 1};
 
-    //uint64_t rsb =0 ;
-    //#ifndef BUDDY_MM
-    //     rsb = (uint64_t)memStart + 4096 - (20 * 8);
-    //#else
-    //     rsb = (uint64_t)memStart + 4096 - (21 * 8);
-    //#endif
-    // pcb->rbp = (uint64_t)node + STACK_SIZE + sizeof(processNode) - sizeof(char *);
+    // uint64_t rsb =0 ;
+    // #ifndef BUDDY_MM
+    //      rsb = (uint64_t)memStart + 4096 - (20 * 8);
+    // #else
+    //      rsb = (uint64_t)memStart + 4096 - (21 * 8);
+    // #endif
+    //  pcb->rbp = (uint64_t)node + STACK_SIZE + sizeof(processNode) - sizeof(char *);
     buildPCB(&newBlock, processIDs++, 0, (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - 1, READY, 1, newBlockFD, 3);
     insert(PCBTable, &newBlock);
 
-
     // print("rsb: %d\n", rsb);
     // Creo el Stack Virgen y se activa el Timer Tick
-    // initializeStackFrame((uint64_t)memStart + 4096, f, argc, argv); //old dumm 
-    initializeStackFrame(argc,argv,f,processIDs -1);
+    // initializeStackFrame((uint64_t)memStart + 4096, f, argc, argv); //old dumm
+    initializeStackFrame(argc, argv, f, processIDs - 1);
     return;
+}
+
+int sys_getPid()
+{
+    return getCurrentPid();
+}
+
+int sys_increasePriority(int PID)
+{
+    print("Increasing Priority...\n");
+    printRoute();
+
+    list_t *currentProcess = getCurrentProcess();
+    int toReturn = countCurrentProcessAppearances();
+    if (countCurrentProcessAppearances() == 5)
+        return -1;
+    list_push(&route, currentProcess);
+    dlcSize++;
+
+    print("\n---------------------\n");
+    printRoute();
+
+    return ++toReturn;
+}
+
+int sys_decreasePriority(int PID)
+{
+    print("\nDecreasing Priority...\n");
+
+    printRoute();
+
+    list_t *currentProcess = getCurrentProcess();
+    int toReturn = countCurrentProcessAppearances();
+    if (countCurrentProcessAppearances() == 0)
+        return -1;
+    list_remove(currentProcess);
+    dlcSize--;
+
+    print("\n---------------------\n");
+    printRoute();
+
+    return --toReturn;
+}
+
+void sys_yield()
+{
+    forceTick();
+}
+
+void sys_exit()
+{
+    // remuve todas las ocurrencias de la ruta del scheduler
+    // setea su bloque de la pcb en EXITED
+    // llama al timer
 }
