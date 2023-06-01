@@ -153,9 +153,8 @@ int pipeClose(int fd) {
 }
 
 
-
-int pipeRead ( int fd,char *buf, int count ) {
-    if(!isValidFd(fd)){
+int pipeRead(int fd, char* buf, int count) {
+    if (!isValidFd(fd)) {
         return -1;
     }
     if (count <= 0) {
@@ -164,45 +163,51 @@ int pipeRead ( int fd,char *buf, int count ) {
     if (buf == NULL) {
         return -1;
     }
-    // Espero a que haya algo para leer
+
+    int rIndex = pipeTable[fd].pipe.readIndex;
+    int wIndex = pipeTable[fd].pipe.writeIndex;
+    int i = 0;
     semWait(pipeTable[fd].pipe.sem[0]);
-    // Leo del buffer
-    int rIndex = pipeTable[fd].pipe.readIndex;
-    int wIndex = pipeTable[fd].pipe.writeIndex;
-    int i = 0;
+
     while (i < count && rIndex != wIndex) {
-        ((char *)buf)[i] = pipeTable[fd].pipe.buffer[rIndex];
-        pipeTable[fd].pipe.readIndex = (rIndex + 1) % MAX_PIPE_BUFFER_SIZE;
+        buf[i] = pipeTable[fd].pipe.buffer[rIndex];
+        rIndex = (rIndex + 1) % MAX_PIPE_BUFFER_SIZE;
         i++;
     }
-    // Libero el semaforo de escritura
+
+    pipeTable[fd].pipe.readIndex = rIndex;
     semPost(pipeTable[fd].pipe.sem[1]);
+
     return i;
 }
 
-int pipeWrite(int fd,const char *buf, int count) {
-    if(!isValidFd(fd)){
-        return -1;
-    }
-    if (count <= 0) {
+
+int pipeWrite(int fd, const char* buf) {
+    if (!isValidFd(fd)) {
         return -1;
     }
     if (buf == NULL) {
         return -1;
     }
-    semWait(pipeTable[fd].pipe.sem[1]);
-    // Escribo en el buffer
+    int count = strlen(buf);
     int rIndex = pipeTable[fd].pipe.readIndex;
     int wIndex = pipeTable[fd].pipe.writeIndex;
     int i = 0;
-    while (i < count && wIndex != (rIndex + 1) % MAX_PIPE_BUFFER_SIZE){
+    semWait(pipeTable[fd].pipe.sem[1]);
+
+    while (i < count && ((wIndex + 1) % MAX_PIPE_BUFFER_SIZE) != rIndex) {
         pipeTable[fd].pipe.buffer[wIndex] = buf[i];
-        pipeTable[fd].pipe.writeIndex = (wIndex + 1) % MAX_PIPE_BUFFER_SIZE;
+        wIndex = (wIndex + 1) % MAX_PIPE_BUFFER_SIZE;
         i++;
     }
-    semPost(pipeTable[fd].pipe.sem[0]);
+
+    pipeTable[fd].pipe.writeIndex = wIndex;
+    semWait(pipeTable[fd].pipe.sem[0]);
+
+
     return i;
 }
+
 
 
 #endif

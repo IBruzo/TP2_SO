@@ -147,7 +147,6 @@ void commandPiano()
 	print("Usted se encuentra frente a un teclado especial.\n\n", 0);
 	print("Presione teclas...\n\n", 0);
 	appendstring("Para salir presione la 'SPACE' bar.\n\n");
-
 	playPiano();
 	commandClear();
 }
@@ -255,6 +254,21 @@ void printMemoryState(size_t unit){
 	char * string =  mem(unit);
 	print(string);
 }
+void commandCat(){
+	while(1){
+		char c = getchar();
+		if (c)
+		{
+			if(c == '\n'){
+				break;
+			}
+			else{
+				checkKey(c);
+			}
+		}
+	}
+	print("\n");
+}
 
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
 void checkCommand()
@@ -321,6 +335,9 @@ void checkCommand()
 			break;
 		case TEST_SYNC:
 			testSemaphoresSync();
+			break;
+		case CAT:
+			commandCat();
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);

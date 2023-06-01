@@ -25,6 +25,9 @@
 #define RSHIFT_RELEASED 0xB6
 #define CAPSLOCK 0x3A
 #define CAPSLOCK_RELEASED 0xBA
+#define CTRL_PRESSED 0x1D
+#define CTRL_RELEASED 0x9D
+
 
 extern unsigned char getkeyScancode();
 extern int keyboardActive();

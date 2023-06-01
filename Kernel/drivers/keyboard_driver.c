@@ -123,6 +123,7 @@ static char keyboards[2][MAX_SCANCODE][2] = {
 
 static int shiftActivated = 0;
 static int capsActivated = 0;
+static int controlActivated = 0;
 
 static char keyBuffer[MAX_BUFFER];
 static int bufferCount = 0;
@@ -195,6 +196,12 @@ void storeKey()
 
     switch (scancode)
     {
+    case CTRL_PRESSED:
+        controlActivated = 1;
+        break;
+    case CTRL_RELEASED:
+        controlActivated = 0;
+        break;
     case LSHIFT_PRESSED:
         shiftActivated = 1;
         break;
@@ -223,17 +230,22 @@ void storeKey()
         keyBuffer[bufferCount++] = ASC_RIGHT;
         break;
     default:
+        if(controlActivated)
+        {
+            int index = shiftActivated || (isLetter(scancode) && capsActivated) ? 1 : 0;
+            char combinedChar = keyboards[language][scancode][index];
+            if(combinedChar == 'c' || combinedChar == 'C'){
+                print("And now, it's time for the grand finale of this extraordinary process. Behold as it bids its farewell, leaving us in a cloud of whimsical wonder... Farewell, dear process, may your bits and bytes find eternal joy in templeOS.\n");
+            }
+            if(combinedChar == 'd' || combinedChar == 'D'){
+                print("Control D pressed\n");
+            }
+            break;
+        }
         if (isValidScancode(scancode) && bufferCount < MAX_BUFFER)
         {
-
-            if (isLetter(scancode) && capsActivated)
-            {
-                keyBuffer[bufferCount] = keyboards[language][scancode][1];
-            }
-            else
-            {
-                keyBuffer[bufferCount] = keyboards[language][scancode][shiftActivated ? 1 : 0];
-            }
+            int index = shiftActivated || (isLetter(scancode) && capsActivated) ? 1 : 0;
+            keyBuffer[bufferCount] = keyboards[language][scancode][index];
             bufferCount++;
         }
         break;
