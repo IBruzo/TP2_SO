@@ -132,7 +132,7 @@ void *memAlloc(int sizeBytes)
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;
         allocatedBytes += cantPag * PAG_SIZE;
-        print("POS ARRAY [%d] BIT POS [%d]\n", posArr, bitPos);
+        //print("POS ARRAY [%d] BIT POS [%d]\n", posArr, bitPos);
         return address;
     }
     return 0;
@@ -141,16 +141,18 @@ void *memAlloc(int sizeBytes)
 
 char * mem(int unit) // crea string de memoria total, ocupada y libre
 { 
-  size_t total = 8* BIT_MAP_SIZE * PAG_SIZE; 
+  size_t memSize =  8 *BIT_MAP_SIZE * PAG_SIZE; 
+  size_t total;
   size_t allocated;
   size_t free;
   char* memStateString;
+
   if(unit == 0){ // mb
     size_t kibiConvert = 1024*1024;
-    total = total/kibiConvert; 
+    total = (size_t) memSize/kibiConvert; 
     allocated = allocatedBytes/kibiConvert; 
     free = (total - allocated); 
-    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocatedBytes, free);
+    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
   }
   else if(unit == 1){ // bytes
     total = (size_t) memSize; 

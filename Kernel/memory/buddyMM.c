@@ -26,6 +26,7 @@ char * mem(int unit) // crea string de memoria total, ocupada y libre
   size_t allocated;
   size_t free;
   char* memStateString;
+
   if(unit == 0){ // mb
     size_t kibiConvert = 1024*1024;
     total = (size_t) memSize /kibiConvert; 
