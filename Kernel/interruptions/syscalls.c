@@ -16,14 +16,7 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
 
 char sys_getchar()
 {
-    char ret = getKey();
-    while (ret == 0)
-    {
-        _hlt();
-        ret = getKey();
-    }
-
-    return ret;
+    return getKey();
 }
 
 char sys_getLastKey()
@@ -146,7 +139,7 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
 int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
 {
     // Reservo la Memoria para el Stack del Proceso
-    uint64_t memStart = (uint64_t)sys_allocMem(4096);
+    uint64_t memStart = (uint64_t)sys_allocMem(PAG_SIZE * 2);
     // Añado el proceso a la Ruta del Scheduler
     list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
     newProcess->data = processIDs;
@@ -155,11 +148,11 @@ int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     // Añado a el PCB
     PCB *newBlock = (PCB *)sys_allocMem(sizeof(PCB));
     int newBlockFD[] = {0, 1};
-    buildPCB(newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - 1, READY, 1, newBlockFD, 2);
+    buildPCB(newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), READY, 1, newBlockFD, 2);
     insert(PCBTable, newBlock);
 
     initializeStackFrame(argc, argv, f, processIDs - 1);
-    return;
+    return processIDs;
 }
 
 int sys_semCreate(char *name, int initValue)
