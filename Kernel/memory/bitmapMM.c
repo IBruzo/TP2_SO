@@ -132,20 +132,21 @@ void *memAlloc(int sizeBytes)
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;
         allocated += cantPag * PAG_SIZE;
-        print("POS ARRAY [%d] BIT POS [%d]\n", posArr, bitPos);
+        // print("POS ARRAY [%d] BIT POS [%d]\n", posArr, bitPos);
         return address;
     }
     return 0;
 }
 
-
-void mem()
+char *mem()
 {
     // Calculate total memory in bytes
     unsigned long total = 8UL * BIT_MAP_SIZE * PAG_SIZE;
 
     // Print memory usage
     print("Total: %d bytes (%d KB)\nUsed: %d bytes\nFree: %d bytes\n",
-           total, total / 1024, allocated, total - allocated);
+          total, total / 1024, allocated, total - allocated);
+
+    return NULL;
 }
 #endif
