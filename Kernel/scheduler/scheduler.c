@@ -20,15 +20,12 @@ uint64_t schedule(uint64_t RSP)
     {
         aux->state = READY;
     }
-
     // Avanzamos el proceso entrante
     current = dclNext(iterator);
     // Si es el nodo centinela lo ignoramos
     if (current->data == 0)
         current = dclNext(iterator);
     // Se actualiza el PCB del Proceso Entrante y se retorna
-    // print("CURRENT PID %d", current->data);
-
     if (!dlcSize)
     {
         // Idle
@@ -40,7 +37,6 @@ uint64_t schedule(uint64_t RSP)
         // New Process
         PCB *aux2 = get(PCBTable, current->data);
         aux2->state = RUNNING;
-        //  print(" PID RETURNING  [%d]", aux2->PID);
         return aux2->RSP;
     }
 }
@@ -71,10 +67,8 @@ void block()
     return;
 }
 
-
 static int getBlockedPid()
 {
-    // uint64_t a = &PCBTable;
     Node *curr = begin(PCBTable);
     while (curr != NULL)
     {
@@ -85,19 +79,6 @@ static int getBlockedPid()
         curr = next(curr);
     }
     return -1;
-    /*
-    curr = (Node *)((uintptr_t)PCBTable->head & 0x00000000FFFFFFFF); // bitmap de algo en Hexabytes, buddy da curr = 0x601008: {data = 0x117ba8, next = 0x604008}
-    for (int i = 0; i != 3; i++)
-    {
-        PCB *a = curr->data;
-        if (curr->data->state == BLOCKED)
-        {
-            return curr->data->PID;
-        }
-        curr = curr->next;
-    }
-    return -1;
-    */
 }
 
 void unblock()

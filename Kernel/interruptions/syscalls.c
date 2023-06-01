@@ -4,9 +4,7 @@
 #include "scheduler_lib.h"
 #include "scheduler.h"
 #include "semaphores.h"
-
-extern int getTime(int op);
-extern void forceTick();
+#include "list.h"
 
 static unsigned int processIDs = 4;
 
@@ -125,7 +123,8 @@ void sys_memAccess(uint64_t memDir)
     put_word("Presione ESC para salir", 0, 212 + 4 * 16 * 2, 2, 0xf65194);
 }
 
-char * sys_mem(){
+char *sys_mem()
+{
     return mem();
 }
 void *sys_allocMem(int bytes)
@@ -154,32 +153,37 @@ int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     list_push(&route, newProcess);
     dlcSize++;
     // Añado a el PCB
-    PCB newBlock;
+    PCB *newBlock = (PCB *)sys_allocMem(sizeof(PCB));
     int newBlockFD[] = {0, 1};
-    buildPCB(&newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - 1, READY, 1, newBlockFD, 3);
-    insert(PCBTable, &newBlock);
+    buildPCB(newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - 1, READY, 1, newBlockFD, 2);
+    insert(PCBTable, newBlock);
 
     initializeStackFrame(argc, argv, f, processIDs - 1);
     return;
 }
 
-int sys_semCreate(char *name, int initValue){
+int sys_semCreate(char *name, int initValue)
+{
     return semCreate(name, initValue);
 }
 
-int sys_semOpen(char *name, int initValue){
+int sys_semOpen(char *name, int initValue)
+{
     return semOpen(name, initValue);
 }
 
-int sys_semClose(char *name){
+int sys_semClose(char *name)
+{
     return semClose(name);
 }
 
-int sys_semWait(char *name){
+int sys_semWait(char *name)
+{
     return semWait(getSemIndex(name));
 }
 
-int sys_semPost(char *name){
+int sys_semPost(char *name)
+{
     return semPost(getSemIndex(name));
 }
 

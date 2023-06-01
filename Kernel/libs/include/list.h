@@ -60,4 +60,6 @@ Node *next(Node *current);
 
 Node *begin(List *list);
 
+void printList(List *list);
+
 #endif // UNTITLED5_LISTADT_H

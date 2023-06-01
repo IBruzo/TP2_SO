@@ -134,3 +134,15 @@ Node *begin(List *list)
 {
     return list->head;
 }
+
+void printList(List *list)
+{
+    Node *current = list->head;
+    print("PCB Table\n");
+    while (current != NULL)
+    {
+        // Assuming the data in the PCB structure has a member called 'name'
+        print("PID [%d]  |", current->data->PID);
+        current = current->next;
+    }
+}

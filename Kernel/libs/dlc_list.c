@@ -72,3 +72,34 @@ void dclFreeIterator(Iterator *iterator)
 {
   memFree(iterator);
 }
+
+void list_print(list_t *list, int numElements)
+{
+  print("Scheduler List\n");
+  if (list == NULL)
+  {
+    print("Invalid list.\n");
+    return;
+  }
+
+  Iterator *printIterator = dclCreateIterator(list);
+  if (printIterator == NULL)
+  {
+    print("Failed to create iterator.\n");
+    return;
+  }
+
+  int count = 0;
+  list_t *node;
+  while ((node = dclNext(printIterator)) != NULL && count < numElements)
+  {
+    // Print the element from the node
+    // Assuming the list node contains some data you want to print
+    print("Element: %d  |", node->data); // Replace 'data' with the actual member of the node containing the data
+
+    count++;
+  }
+
+  dclFreeIterator(printIterator);
+  print("\n");
+}

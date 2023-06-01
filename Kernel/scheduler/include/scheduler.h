@@ -11,5 +11,7 @@ int getCurrentPid();
 struct list_t *getCurrentProcess();
 int countCurrentProcessAppearances();
 void printRoute();
+extern int getTime(int op);
+extern void forceTick();
 
 #endif

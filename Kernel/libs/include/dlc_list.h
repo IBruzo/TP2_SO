@@ -22,12 +22,12 @@ void list_init(list_t *list);
 void list_push(list_t *list, list_t *entry);
 void list_remove(list_t *entry);
 list_t *list_pop(list_t *list);
-void list_print(list_t *list);
 
 Iterator *dclCreateIterator(list_t *list);
 // int dclHasNext(Iterator *iterator);
 list_t *dclNext(Iterator *iterator);
 void dclSkipNode(Iterator *iterator, list_t *node);
 void dclFreeIterator(Iterator *iterator);
+void list_print(list_t *list, int numElements);
 
 #endif
