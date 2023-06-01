@@ -1,13 +1,13 @@
 #ifndef BUDDY_MM
+
 #include "memoryManager.h"
-#include <stdint.h>
-#include <stdarg.h>
+
 
 uint8_t bitMap[BIT_MAP_SIZE];
 void *memStart;
 uint32_t memSize;
 
-uint32_t allocated; // en bytes
+uint32_t allocatedBytes; // en bytes
 
 typedef struct
 {
@@ -111,7 +111,7 @@ void memFree(void *dir)
             {
                 allocations[j] = allocations[j + 1];
             }
-            allocated -= cantPag * PAG_SIZE;
+            allocatedBytes -= cantPag * PAG_SIZE;
             numAllocations--;
 
             return;
@@ -131,7 +131,7 @@ void *memAlloc(int sizeBytes)
         allocations[numAllocations].address = address;
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;
-        allocated += cantPag * PAG_SIZE;
+        allocatedBytes += cantPag * PAG_SIZE;
         print("POS ARRAY [%d] BIT POS [%d]\n", posArr, bitPos);
         return address;
     }
@@ -139,13 +139,29 @@ void *memAlloc(int sizeBytes)
 }
 
 
-void mem()
-{
-    // Calculate total memory in bytes
-    unsigned long total = 8UL * BIT_MAP_SIZE * PAG_SIZE;
-
-    // Print memory usage
-    print("Total: %d bytes (%d KB)\nUsed: %d bytes\nFree: %d bytes\n",
-           total, total / 1024, allocated, total - allocated);
+char * mem(int unit) // crea string de memoria total, ocupada y libre
+{ 
+  size_t total = 8* BIT_MAP_SIZE * PAG_SIZE; 
+  size_t allocated;
+  size_t free;
+  char* memStateString;
+  if(unit == 0){ // mb
+    size_t kibiConvert = 1024*1024;
+    total = total/kibiConvert; 
+    allocated = allocatedBytes/kibiConvert; 
+    free = (total - allocated); 
+    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocatedBytes, free);
+  }
+  else if(unit == 1){ // bytes
+    total = (size_t) memSize; 
+    allocated = allocatedBytes; 
+    free = (total - allocated); 
+    memStateString = snprintf( "Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, allocatedBytes, free);
+  }
+  else{
+    memStateString = snprintf( "Unidad no reconocida\n");
+  }
+  return memStateString;
 }
+
 #endif

@@ -1,11 +1,9 @@
 #ifndef MEMORY_MANAGER_H
 #define MEMORY_MANAGER_H
 
-#include "memoryManager.h"
-#include <dlc_list.h>
-#include <stdarg.h>
+#include <lib.h>
 #include <stdint.h>
-#include <unistd.h>
+#include <stdarg.h>
 
 
 /*********************************/

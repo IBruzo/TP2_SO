@@ -1,14 +1,10 @@
 #ifndef BITMAP_MM
 
 #include "memoryManager.h"
-#include <dlc_list.h>
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 #define HEADER_SIZE 8
-#define MIN_ALLOC_LOG2 12
+#define MIN_ALLOC_LOG2 12 // 4kibibyte
 #define MIN_ALLOC ((size_t)1 << MIN_ALLOC_LOG2)
 #define MAX_ALLOC_LOG2 30
 #define MAX_ALLOC ((size_t)1 << MAX_ALLOC_LOG2)
@@ -32,16 +28,19 @@ char * mem(int unit) // crea string de memoria total, ocupada y libre
   char* memStateString;
   if(unit == 0){ // mb
     size_t kibiConvert = 1024*1024;
-    size_t total = (size_t) memSize /kibiConvert; 
-    size_t allocated = allocatedBytes/kibiConvert; 
-    size_t free = (total - allocated); 
+    total = (size_t) memSize /kibiConvert; 
+    allocated = allocatedBytes/kibiConvert; 
+    free = (total - allocated); 
     memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
   }
-  else if(unit ==1){
-    size_t total = (size_t) memSize; 
-    size_t allocated = allocatedBytes; 
-    size_t free = (total - allocated); 
+  else if(unit == 1){
+    total = (size_t) memSize; 
+    allocated = allocatedBytes; 
+    free = (total - allocated); 
     memStateString = snprintf( "Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, allocated, free);
+  }
+  else{
+    memStateString = snprintf( "Unidad no reconocida\n");
   }
   return memStateString;
   
