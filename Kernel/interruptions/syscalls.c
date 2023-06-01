@@ -3,6 +3,7 @@
 #include "memoryManager.h"
 #include "scheduler_lib.h"
 #include "scheduler.h"
+#include "semaphores.h"
 
 extern int getTime(int op);
 extern void forceTick();
@@ -17,7 +18,14 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
 
 char sys_getchar()
 {
-    return getKey();
+    char ret = getKey();
+    while (ret == 0)
+    {
+        _hlt();
+        ret = getKey();
+    }
+
+    return ret;
 }
 
 char sys_getLastKey()
@@ -133,7 +141,7 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
     scroll_up_once(tamY, color);
 }
 
-void sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
+int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
 {
     // Reservo la Memoria para el Stack del Proceso
     uint64_t memStart = (uint64_t)sys_allocMem(4096);
@@ -150,6 +158,26 @@ void sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
 
     initializeStackFrame(argc, argv, f, processIDs - 1);
     return;
+}
+
+int sys_semCreate(char *name, int initValue){
+    return semCreate(name, initValue);
+}
+
+int sys_semOpen(char *name, int initValue){
+    return semOpen(name, initValue);
+}
+
+int sys_semClose(char *name){
+    return semClose(name);
+}
+
+int sys_semWait(char *name){
+    return semWait(getSemIndex(name));
+}
+
+int sys_semPost(char *name){
+    return semPost(getSemIndex(name));
 }
 
 int sys_getPid()

@@ -246,6 +246,11 @@ void testMemoryManager(){
 	test_mm(1, argv);
 	return;	
 }
+void testSemaphoresSync(){
+	char *argv[] = {"123456789"}; 
+	test_sync(2, argv);
+	return;	
+}
 void printMemoryState(){
 	print("hola\n");
 }
@@ -309,6 +314,9 @@ void checkCommand()
 			break;
 		case MEM:
 			printMemoryState();
+			break;
+		case TEST_SYNC:
+			testSemaphoresSync();
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);

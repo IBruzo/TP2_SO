@@ -23,3 +23,6 @@ kernel.elf
 0000-sampleCodeModule.elf
 .gdbinit
 .gdbinit:Zone.Identifier
+
+#mac sh
+docker_build_command.sh

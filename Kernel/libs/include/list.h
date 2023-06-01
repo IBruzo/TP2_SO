@@ -8,7 +8,6 @@
 #define RUNNING 1
 #define BLOCKED 2
 #define EXITED 3
-// #define DUMMY 3
 
 typedef struct memInfo
 {

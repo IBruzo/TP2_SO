@@ -195,12 +195,6 @@ char * snprintf(char *foundation, ...)
 	return str;
 }
 
-// copia el string de origian a destination
-void strcpy(char *destination, const char *origin)
-{
-	strncpy(destination, origin, strlen(origin));
-}
-
 void strncpy(char *destination, const char *origin, int n)
 {
 	int i;
@@ -208,6 +202,13 @@ void strncpy(char *destination, const char *origin, int n)
 		destination[i] = origin[i];
 	destination[i] = '\0';
 }
+
+// copia el string de origian a destination
+void strcpy(char *destination, const char *origin)
+{
+	strncpy(destination, origin, strlen(origin));
+}
+
 void strncat(char *destination, const char *origin, int n)
 {
 	int i, j;
@@ -357,4 +358,13 @@ void *initializeKernelBinary()
 	loadModules(&endOfKernelBinary, moduleAddresses);
 	clearBSS(&bss, &endOfKernel - &bss);
 	return getStackBase();
+}
+
+int strcmp(const char *str1, const char *str2) {
+    while (*str1 && (*str1 == *str2)) {
+        str1++;
+        str2++;
+    }
+    
+    return *(unsigned char *)str1 - *(unsigned char *)str2;
 }

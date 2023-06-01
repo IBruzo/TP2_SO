@@ -29,12 +29,17 @@ void sys_memAccess(uint64_t memDir);
 void *sys_allocMem(int bytes);
 void scroll_up_once(uint32_t tamY, uint32_t color);
 void sys_free(void *dir);
-void sys_createProcess(void *(*function)(int, char **), int argc, char **argv);
+int sys_createProcess(void *(*function)(int, char **), int argc, char **argv);
 int sys_getPid();
 int sys_increasePriority(int PID);
 int sys_decreasePriority(int PID);
 void sys_yield();
 int sys_kill(int pid);
 void sys_exit();
+int sys_semCreate(char *name, int initValue);
+int sys_semOpen(char *name, int initValue);
+int sys_semClose(char *name);
+int sys_semWait(char *name);
+int sys_semPost(char *name);
 
 #endif

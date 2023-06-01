@@ -17,7 +17,7 @@ extern void storeRegisters();
 extern void memAccess(unsigned long int memDir);
 extern void *mAlloc(unsigned long int bytes);
 extern void mFree(void *dir);
-extern void createProcess(void *(*f)(int, char **), int argc, char **argv);
+extern int createProcess(void *(*f)(int, char **), int argc, char **argv);
 extern void scrollUp(int tamY, int color);
 extern int getPid();
 extern int increasePriority(int pid);
@@ -25,5 +25,10 @@ extern int decreasePriority(int pid);
 extern void yield();
 extern int kill(int pid);
 extern void exit();
+extern int semCreate(char *name, int initValue);
+extern int semOpen(char *name, int initValue);
+extern int semClose(char *name);
+extern int semWait(char *name);
+extern int semPost(char *name);
 
 #endif

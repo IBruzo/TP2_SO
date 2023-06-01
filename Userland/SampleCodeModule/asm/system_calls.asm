@@ -22,6 +22,11 @@ GLOBAL decreasePriority
 GLOBAL yield
 GLOBAL kill
 GLOBAL exit
+GLOBAL semCreate
+GLOBAL semOpen
+GLOBAL semClose
+GLOBAL semWait
+GLOBAL semPost
 section .text
 
 %macro pushState 0
@@ -142,9 +147,21 @@ decreasePriority:
 
 yield:
 	sys_call 21
-
 kill:
 	sys_call 22
-
 exit:
 	sys_call 23
+semCreate:
+	sys_call 24
+
+semOpen:
+	sys_call 25
+
+semClose:
+	sys_call 26
+
+semWait:
+	sys_call 27
+
+semPost:
+	sys_call 28

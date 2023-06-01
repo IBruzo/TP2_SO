@@ -69,4 +69,5 @@ extern uint8_t inb(uint16_t port);
 extern void outb(uint16_t port, uint8_t value);
 char *snapshot();
 int buildDummyStack(uint64_t memStart, void *(*function)(int, char **), int argc, char **argv);
+int strcmp(const char *str1, const char *str2);
 #endif

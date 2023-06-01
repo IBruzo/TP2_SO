@@ -45,6 +45,11 @@ void initialize()
     (fun_sys[SYS_YIELD_ID]) = (syscall)sys_yield;
     (fun_sys[SYS_KILL_ID]) = (syscall)sys_kill;
     (fun_sys[SYS_EXIT_ID]) = (syscall)sys_exit;
+    (fun_sys[SYS_SEMCREATE_ID]) = (syscall)sys_semCreate;
+    (fun_sys[SYS_SEMOPEN_ID]) = (syscall)sys_semOpen;
+    (fun_sys[SYS_SEMCLOSE_ID]) = (syscall)sys_semClose;
+    (fun_sys[SYS_SEMWAIT_ID]) = (syscall)sys_semWait;
+    (fun_sys[SYS_SEMPOST_ID]) = (syscall)sys_semPost;
 }
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)
@@ -63,7 +68,7 @@ void int_20()
 void int_21()
 {
     storeKey();
-    //   unblock();
+    unblock();
 }
 /**
  * @brief selecciona la syscall q se va a usar

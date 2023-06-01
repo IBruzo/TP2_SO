@@ -7,6 +7,8 @@ GLOBAL snapshot
 GLOBAL buildDummyStack
 GLOBAL getSP
 GLOBAL forceTick
+GLOBAL _xchg
+section .text
 
 
 section .text
@@ -137,6 +139,10 @@ buildDummyStack:
 
 	ret
 
+_xchg:
+	mov rax, rsi
+	xchg [rdi], eax 	;sus
+	ret
 
 section .bss
 regsBuffer resb 128

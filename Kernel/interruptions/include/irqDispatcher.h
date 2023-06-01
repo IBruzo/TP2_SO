@@ -35,6 +35,11 @@
 #define SYS_YIELD_ID 21
 #define SYS_KILL_ID 22
 #define SYS_EXIT_ID 23
+#define SYS_SEMCREATE_ID 24
+#define SYS_SEMOPEN_ID 25
+#define SYS_SEMCLOSE_ID 26
+#define SYS_SEMWAIT_ID 27
+#define SYS_SEMPOST_ID 28
 
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)
