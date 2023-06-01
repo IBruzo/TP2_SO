@@ -11,6 +11,7 @@
 #include "memoryManager.h"
 #include "scheduler_lib.h"
 #include "scheduler.h"
+#include "stack.h"
 
 int main()
 {
@@ -21,6 +22,8 @@ int main()
 	load_idt();
 	exceptionsBackupValues((uint64_t)sampleCodeModuleAddress, getSP());
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
+	initializeStack(&waitQueue);
+	initializeStack(&inputQueue);
 
 	newList(PCBTable);
 

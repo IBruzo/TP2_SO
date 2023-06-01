@@ -95,6 +95,7 @@ SECTION .text
 
 ; Redirije las Interrupciones de Hardware
 %macro irqHandlerMaster 1
+	cli
 	pushState
 
 	mov rdi, %1 ; pasaje de parametro
@@ -105,6 +106,7 @@ SECTION .text
 	out 20h, al
 
 	popState
+	sti
 	iretq
 %endmacro
 
@@ -169,6 +171,7 @@ picSlaveMask:
 
 ; Timer Tick, se encarga del Context Switch
 _irq00Handler:
+	cli
 	pushState
 
 	mov rdi, 0
@@ -183,6 +186,7 @@ _irq00Handler:
 	out 20h, al
 
 	popState
+	sti
 	iretq
 
 ;Keyboard
@@ -210,10 +214,12 @@ _irq60Handler:
 	; necesito a bruhzo para verificar esta wea rara, y tal vez hacer un work around
 	;se pasan 7 parametros ya que existe una syscall que recibe 6 parametros, debido al
 	; corrimiento se tiene que pasar uno de esos parametros por stack
+	cli
 	cmp rdi, 0
 	jne .conti
 	call _birq60Handler
 	int 20h
+	sti
 	iretq
 
 .conti
@@ -229,6 +235,7 @@ _irq60Handler:
 	call irqDispatcher
 	pop r9
 	popStateNoRAX
+	sti
 	iretq
 
 

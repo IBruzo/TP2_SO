@@ -42,5 +42,7 @@ int sys_semOpen(char *name, int initValue);
 int sys_semClose(char *name);
 int sys_semWait(char *name);
 int sys_semPost(char *name);
+void sys_waitPid(int pid);
+int getCurrentPid();
 
 #endif

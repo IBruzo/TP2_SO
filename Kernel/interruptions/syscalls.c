@@ -152,7 +152,7 @@ int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     insert(PCBTable, newBlock);
 
     initializeStackFrame(argc, argv, f, processIDs - 1);
-    return processIDs;
+    return processIDs-1;
 }
 
 int sys_semCreate(char *name, int initValue)
@@ -266,9 +266,29 @@ int sys_kill(int pid)
 
 void sys_exit()
 {
+    // if ( currentProcess() == peek().CPID ) => unblock papi
+    if(peek(&waitQueue)!=-1 ){
+        unblock( getCurrentPPid() );
+        print("unblocking [%d] \n",getCurrentPPid() );
+        pop(&waitQueue);
+    }
     // printRoute();
     // print("Exiting Process...\n");
     sys_kill(getCurrentPid());
     // printRoute();
+    forceTick();
+}
+
+void sys_waitPid(int pid){  // padre ejecuta esto y quiere que lo despierten cuando termine de ejecutar PID
+    int cPid=getCurrentPid();
+    /* struct lala{
+        int PPID;
+        int CPID;
+    } */
+    push(&waitQueue,cPid);
+    print("blocking [%d] \n",cPid );
+    //push parent pid y pid 
+    //push(&waitQueue,pid);
+    block( cPid);
     forceTick();
 }

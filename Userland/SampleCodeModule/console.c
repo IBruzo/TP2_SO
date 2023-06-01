@@ -270,6 +270,33 @@ void commandCat(){
 	print("\n");
 }
 
+void *timmy(int argc, char **argv)
+{
+    print("-Tommy: Dad, Ill take a nap in my last 5 seconds of life\n");
+    sleep(5);
+    print("*peacefully dies in his sleep*\n");
+    exit();
+    return NULL;
+}
+
+static void *dad(int argc, char **argv)
+{
+    sleep(1);
+    print("\n-Dad: Please Timmy! Please Dont Die On Me!\n");
+    sleep(1);
+    int timmyPID = createProcess(timmy, 0, NULL);
+    print("(( Timmy PID [%d] ))\n", timmyPID);
+    waitPid(timmyPID);  // estoy esperando a la llegada de este pid
+    sleep(1);
+    print("-Dad: F in the chat\n");
+    exit();
+    return NULL;
+}
+
+static void testWait(){
+	createProcess(dad, 0, NULL);
+}
+
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
 void checkCommand()
 {
@@ -338,6 +365,9 @@ void checkCommand()
 			break;
 		case CAT:
 			commandCat();
+			break;
+		case TEST_WAIT:
+			testWait();
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);

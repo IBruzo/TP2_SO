@@ -13,6 +13,8 @@ void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char prio
     block->priority = priority;
     memcpy(block->FD, FDArr, sizeof(int) * FDSize);
     block->FDSize = FDSize;
+    // block->waitInput = 0;
+    // block->waitChild = 0;
     return;
 }
 

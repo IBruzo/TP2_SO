@@ -47,6 +47,7 @@ extern char *snapshot();
 #define MEMB 2089318502
 #define TEST_SYNC 2561222465
 #define CAT 193452189
+#define TEST_WAIT 2561339929
 
 void checkCommand();
 void checkKey(char c);

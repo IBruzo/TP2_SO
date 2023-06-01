@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <lib.h>
 #include "scheduler.h"
+#include "syscalls.h"
 
 #define ESC 27
 #define MAX_SCANCODE 58

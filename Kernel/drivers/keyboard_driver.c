@@ -159,10 +159,10 @@ char getKey()
 {
     if (bufferCount <= 0)
     {
-        block();
+        block(getCurrentPid());
+        push(&inputQueue ,getCurrentPid() );
         return 0;
     }
-
     return popBuffer();
 }
 /**
@@ -239,6 +239,7 @@ void storeKey()
             }
             if(combinedChar == 'd' || combinedChar == 'D'){
                 print("Control D pressed\n");
+                pop(&inputQueue);
             }
             break;
         }
@@ -252,7 +253,11 @@ void storeKey()
     }
     if (bufferCount > 0)
     {
-        unblock();
+        /* 
+        if ( key is ctrl + d )
+            pop()
+        */
+        unblock( peek(&inputQueue) );
     }
     return;
 }
