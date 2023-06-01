@@ -27,6 +27,7 @@ GLOBAL semOpen
 GLOBAL semClose
 GLOBAL semWait
 GLOBAL semPost
+GLOBAL mem
 section .text
 
 %macro pushState 0
@@ -165,3 +166,5 @@ semWait:
 
 semPost:
 	sys_call 28
+mem:
+	sys_call 29

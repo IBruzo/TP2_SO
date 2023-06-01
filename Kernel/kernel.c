@@ -23,8 +23,6 @@ int main()
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 
 	newList(PCBTable);
-	print("PCB TABLE  [%x]  [%d]\n", &PCBTable, &PCBTable);
-	print("PCB TABLE  [%x]  [%d]\n", PCBTable->head, PCBTable->head); // 0
 
 	initScheduler();
 
@@ -34,21 +32,18 @@ int main()
 	buildPCB(&kernelPCB, KERNEL_PID, KERNEL_PID, 0, BLOCKED, 1, kernelFD, 1);
 	insert(PCBTable, &kernelPCB);
 
-	print("PCB TABLE  [%x]  [%d]\n", &PCBTable, &PCBTable);
-	print("PCB TABLE  [%x]  [%d]\n", PCBTable->head, PCBTable->head); // 0
 
 	/* ------------ Creating IDLE Process ---------------- */
 	// Reserva de memoria para el Stack
 	uint64_t *idleMemStart = (uint64_t *)sys_allocMem(PAGE_SIZE);
+	
+	
 	// Creacion de PCB
 	PCB idlePCB;
 	int idleFD[] = {0};
 	buildPCB(&idlePCB, IDLE_PID, KERNEL_PID, (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE), READY, 1, idleFD, sizeof(idleFD) / sizeof(int));
 	// Adicion a la PCBT
 	insert(PCBTable, &idlePCB);
-	print("PCB TABLE  [%x]  [%d]\n", &PCBTable, &PCBTable);
-
-	print("PCB TABLE  [%x]  [%d]\n", PCBTable->head->next, PCBTable->head->next); // 0
 	// Creacion de Stack
 	buildStartUpProcess(idleMemStart + PAGE_SIZE - STACK_SIZE, idleProcess);
 

@@ -50,6 +50,7 @@ void initialize()
     (fun_sys[SYS_SEMCLOSE_ID]) = (syscall)sys_semClose;
     (fun_sys[SYS_SEMWAIT_ID]) = (syscall)sys_semWait;
     (fun_sys[SYS_SEMPOST_ID]) = (syscall)sys_semPost;
+    (fun_sys[SYS_MEM_ID]) = (syscall)sys_mem;
 }
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)

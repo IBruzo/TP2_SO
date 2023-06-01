@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #define HEADER_SIZE 8
-#define MIN_ALLOC_LOG2 12
+#define MIN_ALLOC_LOG2 6
 #define MIN_ALLOC ((size_t)1 << MIN_ALLOC_LOG2)
 #define MAX_ALLOC_LOG2 30
 #define MAX_ALLOC ((size_t)1 << MAX_ALLOC_LOG2)
@@ -21,20 +21,21 @@ static size_t bucket_limit;
 static uint8_t node_is_split[(1 << (BUCKET_COUNT - 1)) / 8];
 static uint8_t *base_ptr;
 static uint8_t *max_ptr;
+
 size_t allocatedBytes = 0;
 
 char * mem() // crea string de memoria total, ocupada y libre
 { 
-    size_t total = (size_t)memSize;
+    size_t total = (size_t) memSize / 1024;
 
     // calculo memoria ocupada
-    size_t allocated = allocatedBytes;
+    size_t allocated = allocatedBytes/1024;
     // calclar memoria libre
-    size_t free = total - allocated;
+    size_t free = (total - allocated) / 1024;
     // Convert the memory sizes to human-readable strings
-    char* memStateString ;
+    char* memStateString;
     
-    memStateString = snprintf( "Estado de la Memoria\n %d bytes de memoria total\n %d bytes en uso\n %d bytes libres\n", total, allocated, total-allocated);
+    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n", total, allocated, free);
     return memStateString;
 }
 
@@ -80,7 +81,6 @@ static size_t bucket_for_request(size_t request)
     bucket--;
     size *= 2;
   }
-
   return bucket;
 }
 
@@ -119,6 +119,10 @@ static int lower_bucket_limit(size_t bucket)
 
 void *memAlloc(int request)
 {
+  if(request < 0)
+  {
+    return NULL;
+  }
   size_t original_bucket, bucket;
 
   if (request + HEADER_SIZE > MAX_ALLOC)
@@ -188,8 +192,12 @@ void *memAlloc(int request)
     }
 
     *(size_t *)ptr = request;
-    allocatedBytes += (request + HEADER_SIZE);
-    char * memString = mem();
+
+    if(request < 0){
+      return NULL;
+    }
+    int currentAllocation = (size_t)1 << (MAX_ALLOC_LOG2-bucket);
+    allocatedBytes += currentAllocation;
     return ptr + HEADER_SIZE;
   }
 
@@ -223,9 +231,9 @@ void memFree(void *ptr)
     i = (i - 1) / 2;
     bucket--;
   }
-
   list_push(&buckets[bucket], (list_t *)ptr_for_node(i, bucket));
-  allocatedBytes -= (*(size_t *)ptr + HEADER_SIZE);
+
+
 }
 
 void initMemoryManager(void *hBase, uint32_t hSize)

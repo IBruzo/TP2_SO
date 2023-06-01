@@ -40,7 +40,7 @@
 #define SYS_SEMCLOSE_ID 26
 #define SYS_SEMWAIT_ID 27
 #define SYS_SEMPOST_ID 28
-
+#define SYS_MEM_ID 29
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)
 

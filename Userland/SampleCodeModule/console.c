@@ -252,7 +252,8 @@ void testSemaphoresSync(){
 	return;	
 }
 void printMemoryState(){
-	print("hola\n");
+	char * string =  mem();
+	print(string);
 }
 
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
@@ -593,7 +594,8 @@ void checkKey(char c)
 		newline();
 		if (lastEnter())
 		{
-			scrollUp(32, TERMINAL_BLUE);
+			//scrollUp(32, TERMINAL_BLUE);
+			clearScreen();
 		}
 
 		if (consoleBuffer != 0 && consoleBuffer[0])
