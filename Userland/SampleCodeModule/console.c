@@ -251,8 +251,8 @@ void testSemaphoresSync(){
 	test_sync(2, argv);
 	return;	
 }
-void printMemoryState(){
-	char * string =  mem();
+void printMemoryState(size_t unit){
+	char * string =  mem(unit);
 	print(string);
 }
 
@@ -314,7 +314,10 @@ void checkCommand()
 			testMemoryManager();
 			break;
 		case MEM:
-			printMemoryState();
+			printMemoryState(0);
+			break;
+		case MEMB:
+			printMemoryState(1);
 			break;
 		case TEST_SYNC:
 			testSemaphoresSync();

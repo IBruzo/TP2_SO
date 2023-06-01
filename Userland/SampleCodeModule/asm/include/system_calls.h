@@ -30,6 +30,6 @@ extern int semOpen(char *name, int initValue);
 extern int semClose(char *name);
 extern int semWait(char *name);
 extern int semPost(char *name);
-extern char * mem();
+extern char * mem(unit);
 
 #endif

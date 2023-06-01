@@ -44,6 +44,7 @@ extern char *snapshot();
 #define INFOREG 2989276335
 #define TEST_MM 3973914654
 #define MEM 193463204
+#define MEMB 2089318502
 #define TEST_SYNC 2561222465
 
 void checkCommand();

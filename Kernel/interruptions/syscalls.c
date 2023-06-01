@@ -123,9 +123,9 @@ void sys_memAccess(uint64_t memDir)
     put_word("Presione ESC para salir", 0, 212 + 4 * 16 * 2, 2, 0xf65194);
 }
 
-char *sys_mem()
+char *sys_mem(int unit)
 {
-    return mem();
+    return mem(unit);
 }
 void *sys_allocMem(int bytes)
 {

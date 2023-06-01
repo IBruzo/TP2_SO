@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #define HEADER_SIZE 8
-#define MIN_ALLOC_LOG2 6
+#define MIN_ALLOC_LOG2 12
 #define MIN_ALLOC ((size_t)1 << MIN_ALLOC_LOG2)
 #define MAX_ALLOC_LOG2 30
 #define MAX_ALLOC ((size_t)1 << MAX_ALLOC_LOG2)
@@ -24,19 +24,27 @@ static uint8_t *max_ptr;
 
 size_t allocatedBytes = 0;
 
-char * mem() // crea string de memoria total, ocupada y libre
+char * mem(int unit) // crea string de memoria total, ocupada y libre
 { 
-    size_t total = (size_t) memSize / 1024;
-
-    // calculo memoria ocupada
-    size_t allocated = allocatedBytes/1024;
-    // calclar memoria libre
-    size_t free = (total - allocated) / 1024;
-    // Convert the memory sizes to human-readable strings
-    char* memStateString;
-    
-    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n", total, allocated, free);
-    return memStateString;
+  size_t total; 
+  size_t allocated;
+  size_t free;
+  char* memStateString;
+  if(unit == 0){ // mb
+    size_t kibiConvert = 1024*1024;
+    size_t total = (size_t) memSize /kibiConvert; 
+    size_t allocated = allocatedBytes/kibiConvert; 
+    size_t free = (total - allocated); 
+    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
+  }
+  else if(unit ==1){
+    size_t total = (size_t) memSize; 
+    size_t allocated = allocatedBytes; 
+    size_t free = (total - allocated); 
+    memStateString = snprintf( "Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, allocated, free);
+  }
+  return memStateString;
+  
 }
 
 
@@ -198,6 +206,7 @@ void *memAlloc(int request)
     }
     int currentAllocation = (size_t)1 << (MAX_ALLOC_LOG2-bucket);
     allocatedBytes += currentAllocation;
+
     return ptr + HEADER_SIZE;
   }
 
