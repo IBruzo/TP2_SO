@@ -30,7 +30,7 @@ typedef int (*EntryPoint)();
 #define FONTCOLOR 0xBFECF1
 #define CURRENT_CURSOR_COLOR 0x002B36
 
-#define MAX_HEAP_SIZE (1024 * 1024 * 128) // 128Mb
+#define MAX_HEAP_SIZE (1024 * 1024 * 1024) // 1GB
 #define PAGE_SIZE 4096                    // 4Kb
 #define STACK_SIZE 152                    // Bytes
 #define IDLE_PID 1

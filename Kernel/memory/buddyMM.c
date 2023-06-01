@@ -27,14 +27,15 @@ char * mem(int unit) // crea string de memoria total, ocupada y libre
   size_t free;
   char* memStateString;
 
+  size_t kibiConvert = 1024*1024;
+  size_t gibiConvert = 1024*1024*1024;
   if(unit == 0){ // mb
-    size_t kibiConvert = 1024*1024;
     total = (size_t) memSize /kibiConvert; 
     allocated = allocatedBytes/kibiConvert; 
     free = (total - allocated); 
-    memStateString = snprintf( "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
+    memStateString = snprintf( "Estado de la Memoria\n TOTAL: %d MB \n En uso: %d MB \n Libre: %d MB \nPara mayor precision usar el comando 'memb'\n", total, allocated, free);
   }
-  else if(unit == 1){
+  else if(unit == 1){ //GB
     total = (size_t) memSize; 
     allocated = allocatedBytes; 
     free = (total - allocated); 
