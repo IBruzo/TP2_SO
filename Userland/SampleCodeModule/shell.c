@@ -15,9 +15,8 @@ void *initialize_shell(int argc, char **argv)
 	printColor("user@Qemu:", USER_TEXT_COLOR, 0);
 	printColor("> $ ", TERMINAL_BLUE, 0);
 
-	// print("my output process ID = %d", getOutputFD(getPid()));
-
-	createBGProcess(testBGProcess, 0, NULL);
+	// bg process test
+	// createBGProcess(testBGProcess, 0, NULL);
 
 	while (1)
 	{
