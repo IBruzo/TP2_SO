@@ -26,3 +26,6 @@ kernel.elf
 
 #mac sh
 docker_build_command.sh
+
+#prettier
+.prettierrc

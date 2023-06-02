@@ -10,19 +10,21 @@
 #define TRUE 1
 #define FALSE 0
 
-typedef struct processNode{
+typedef struct processNode
+{
     struct processNode *next;
     uint64_t pid;
-}  process_t;
+} process_t;
 
-typedef struct {
+typedef struct
+{
     char name[MAX_NAME];
-    process_t *first;                   // 1er proceso en fila
-    process_t *last;                    // Ultimo proceso en fila
+    process_t *first; // 1er proceso en fila
+    process_t *last;  // Ultimo proceso en fila
     uint64_t lock;
     int value;
-    uint64_t size;                      // cantidad de procesos que usan el semaforo
-    uint64_t listSize;                  // cantidad de procesos bloqueados
+    uint64_t size;     // cantidad de procesos que usan el semaforo
+    uint64_t listSize; // cantidad de procesos bloqueados
 } sem_t;
 
 extern uint64_t _xchg(uint64_t *lock, int value);
@@ -47,6 +49,6 @@ char *getSemName(uint64_t semIndex);
 
 uint64_t getSemIndex(char *name);
 
-//void printProcessesSem(uint64_t semIndex);
+// void printProcessesSem(uint64_t semIndex);
 
 #endif

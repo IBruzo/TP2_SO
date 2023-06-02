@@ -2,21 +2,22 @@
 
 extern void forceTick();
 
-typedef struct{
+typedef struct
+{
     sem_t sem;
     uint64_t available;
 } space;
 
 static space semSpaces[MAX_SEM];
 
-//funciones auxiliares
+// funciones auxiliares
 static uint64_t findAvailableSpace();
 static uint64_t lockSem; // Para bloquear al momento de un open o close de cualquier sem.
 static uint64_t findSem(char *name);
 static uint64_t enqeueProcess(uint64_t pid, sem_t *sem);
 static uint64_t dequeueProcess(sem_t *sem);
-//void printSem(sem_t sem);
-//void printProcessesBlocked(process_t *process);
+// void printSem(sem_t sem);
+// void printProcessesBlocked(process_t *process);
 
 void initSems()
 {
@@ -99,7 +100,8 @@ uint64_t semWait(uint64_t semIndex)
         return -1;
     sem_t *sem = &semSpaces[semIndex].sem;
 
-    while (_xchg(&sem->lock, 1) != 0); // Espero a que el semaforo este disponible
+    while (_xchg(&sem->lock, 1) != 0)
+        ; // Espero a que el semaforo este disponible
 
     if (sem->value > 0)
     {
@@ -108,8 +110,8 @@ uint64_t semWait(uint64_t semIndex)
     }
     else
     {
-        //Si el valor es 0 entonces debo poner al proceso a dormir (encolarlo)
-        uint64_t pid = getCurrentPid(); 
+        // Si el valor es 0 entonces debo poner al proceso a dormir (encolarlo)
+        uint64_t pid = getCurrentPid();
         if (enqeueProcess(pid, sem) == -1)
         {
             _xchg(&sem->lock, 0);
@@ -117,14 +119,13 @@ uint64_t semWait(uint64_t semIndex)
         }
 
         _xchg(&sem->lock, 0);
-        
+
         // if (block(pid) == -1)
         // {
         //     return -1;
         // }
         block(pid);
         sem->value--;
-
     }
     return 0;
 }
@@ -250,13 +251,13 @@ char *getSemName(uint64_t semIndex)
 {
     if (semIndex >= MAX_SEM)
     {
-        //print("Wrong Index in getSemName\n");
+        // print("Wrong Index in getSemName\n");
         return NULL;
     }
     return semSpaces[semIndex].sem.name;
 }
 
-//function that gets sem index
+// function that gets sem index
 uint64_t getSemIndex(char *name)
 {
     for (int i = 0; i < MAX_SEM; i++)

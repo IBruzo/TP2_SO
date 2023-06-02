@@ -9,8 +9,6 @@
 #include "dlcList.h"
 #include "moduleLoader.h"
 
-
-
 #define BACKGROUND_COLOR 0x002B36
 #define USER_TEXT_COLOR 0x95CD28
 #define TERMINAL_BLUE 0x12488B
@@ -20,8 +18,8 @@
 #define CURRENT_CURSOR_COLOR 0x002B36
 
 #define MAX_HEAP_SIZE (1024 * 1024 * 1024) // 1GB
-#define PAGE_SIZE 4096                    // 4Kb
-#define STACK_SIZE 152                    // Bytes
+#define PAGE_SIZE 4096                     // 4Kb
+#define STACK_SIZE 152                     // Bytes
 #define IDLE_PID 1
 #define KERNEL_PID 0
 
@@ -40,10 +38,8 @@ void updateCursor();
 char *itoa(int i, char *strout, int base);
 void print(char *foundation, ...);
 void printf(char *foundation, void *parameters[]);
-char * snprintf(char *foundation, ...);
-
-
-
+char *snprintf(char *foundation, ...);
+void strcat(char *destination, const char *origin);
 
 // Funciones Nativas del Kernel
 void clearBSS(void *bssAddress, uint64_t bssSize);
