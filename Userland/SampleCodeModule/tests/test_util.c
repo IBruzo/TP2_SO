@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "syscall.h"
 #include "tests.h"
 
 // Random
@@ -69,11 +68,21 @@ void bussy_wait(uint64_t n)
   for (i = 0; i < n; i++)
     ;
 }
-
 void endless_loop()
 {
   while (1)
     ;
+}
+void endless_loop_print(int argc, char *argv[])
+{
+  int i = 0;
+  while (1)
+  {
+    i++;
+    if (i % 2)
+    {
+    }
+  }
 }
 
 /* void endless_loop_print(uint64_t wait) {

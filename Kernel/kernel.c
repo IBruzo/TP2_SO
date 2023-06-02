@@ -35,7 +35,7 @@ int main()
 	// Desactivadoo Interrupciones mientras se configuran las Estructuras
 	_cli();
 
-	/* ------------- Table Loading & Creation ------------ */
+		/* ------------- Table Loading & Creation ------------ */
 	load_idt();
 	exceptionsBackupValues((uint64_t)sampleCodeModuleAddress, getSP());
 

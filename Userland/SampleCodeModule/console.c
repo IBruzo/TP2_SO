@@ -221,7 +221,6 @@ void commandInvOp()
 	INVALID_OP_CODE();
 }
 
-
 // https://stackoverflow.com/questions/4014827/how-can-i-compare-strings-in-c-using-a-switch-statement
 const unsigned long hash(char *str)
 {
@@ -240,29 +239,36 @@ void printExitHelp()
 	printColor("'ESC'", 0xE9AD0C, 0);
 	print(" para volver a la consola.\n", 0);
 }
-void testMemoryManager(){
-	char *argv[] = {"134217728"}; 
+void testMemoryManager()
+{
+	char *argv[] = {"134217728"};
 	test_mm(1, argv);
-	return;	
+	return;
 }
-void testSemaphoresSync(){
-	char *argv[] = {"123456789"}; 
+void testSemaphoresSync()
+{
+	char *argv[] = {"123456789"};
 	test_sync(2, argv);
-	return;	
+	return;
 }
-void printMemoryState(size_t unit){
-	char * string =  mem(unit);
+void printMemoryState(size_t unit)
+{
+	char *string = mem(unit);
 	print(string);
 }
-void commandCat(){
-	while(1){
+void commandCat()
+{
+	while (1)
+	{
 		char c = getchar();
 		if (c)
 		{
-			if(c == '\n'){
+			if (c == '\n')
+			{
 				break;
 			}
-			else{
+			else
+			{
 				checkKey(c);
 			}
 		}
@@ -272,32 +278,46 @@ void commandCat(){
 
 void *timmy(int argc, char **argv)
 {
-    print("-Tommy: Dad, Ill take a nap in my last 5 seconds of life\n");
-    sleep(5);
-    print("*peacefully dies in his sleep*\n");
-    exit();
-    return NULL;
+	print("-Tommy: Dad, Ill take a nap in my last 5 seconds of life\n");
+	sleep(5);
+	print("*peacefully dies in his sleep*\n");
+	exit();
+	return NULL;
 }
 
 static void *dad(int argc, char **argv)
 {
-    sleep(1);
-    print("\n-Dad: Please Timmy! Please Dont Die On Me!\n");
-    sleep(1);
-    int timmyPID = createProcess(timmy, 0, NULL);
-    print("(( Timmy PID [%d] ))\n", timmyPID);
-    waitPid(timmyPID);  // estoy esperando a la llegada de este pid
-    sleep(1);
-    print("-Dad: F in the chat\n");
+	sleep(1);
+	print("\n-Dad: Please Timmy! Please Dont Die On Me!\n");
+	sleep(1);
+	int timmyPID = createProcess(timmy, 0, NULL);
+	print("(( Timmy PID [%d] ))\n", timmyPID);
+	waitPid(timmyPID); // estoy esperando a la llegada de este pid
+	sleep(1);
+	print("-Dad: F in the chat\n");
 	checkKey(ENTER);
-    exit();
-    return NULL;
+	exit();
+	return NULL;
 }
 
-static void testWait(){
+static void testWait()
+{
 	createProcess(dad, 0, NULL);
 }
+static void testPrio()
+{
+	print("TESTING PRIORITY\n");
+	test_prio();
+	print("TEST ENDED\n");
+}
 
+static void testProcesses()
+{
+	print("TESTING PROCESSES\n");
+	char *argv[] = {"10"};
+	test_processes(1, argv);
+	print("TEST ENDED\n");
+}
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
 void checkCommand()
 {
@@ -369,6 +389,12 @@ void checkCommand()
 			break;
 		case TEST_WAIT:
 			testWait();
+			break;
+		case TEST_PRIO:
+			testPrio();
+			break;
+		case TEST_PROC:
+			testProcesses();
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);
@@ -645,7 +671,7 @@ void checkKey(char c)
 		newline();
 		if (lastEnter())
 		{
-			//scrollUp(32, TERMINAL_BLUE);
+			// scrollUp(32, TERMINAL_BLUE);
 			clearScreen();
 		}
 

@@ -241,7 +241,6 @@ void storeKey()
             if (combinedChar == 'c' || combinedChar == 'C')
             {
                 print("And now, it's time for the grand finale of this extraordinary process. Behold as it bids its farewell, leaving us in a cloud of whimsical wonder... Farewell, dear process, may your bits and bytes find eternal joy in templeOS.\n");
-
                 sys_kill(getCurrentPid());
             }
             if (combinedChar == 'd' || combinedChar == 'D')

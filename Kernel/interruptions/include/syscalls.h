@@ -44,8 +44,8 @@ int sys_semClose(char *name);
 int sys_semWait(char *name);
 int sys_semPost(char *name);
 void sys_waitPid(int pid);
-void sys_block(int pid);
-void sys_unblock(int pid);
+int sys_block(int pid);
+int sys_unblock(int pid);
 int sys_nice(int pid, int prio);
 
 int getCurrentPid(); //>.>

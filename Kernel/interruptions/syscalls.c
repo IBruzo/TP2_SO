@@ -16,6 +16,7 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
 
 char sys_getchar()
 {
+
     return getKey();
 }
 
@@ -241,30 +242,51 @@ int sys_kill(int pid)
     // print("WANTING TO MURDER PID [%d]\n", pid);
 
     if (pid == 0 || pid == 1)
-        return 0;
-
-    int cantElim = 0; // found a killable process
-    Iterator *routeIt = dclCreateIterator(&route);
-    list_t *processIt;
-    PCB *killedProcess = get(PCBTable, pid);
-    while (cantElim != killedProcess->priority)
     {
-        processIt = dclNext(routeIt);
-        if (processIt->data == pid)
-        {
-            list_remove(processIt);
-            dlcSize--;
-            cantElim++;
-        }
+        return -1;
     }
-    if (cantElim == killedProcess->priority)
+
+    int index = 0; // found a killable process
+
+    PCB *killedProcess = get(PCBTable, pid);
+
+    if (killedProcess->state == BLOCKED)
     {
-        // print("Murdering... \n");
-        PCB *killedProcess = get(PCBTable, pid);
         killedProcess->state = EXITED;
         killedProcess->priority = 0;
+        killedProcess->lives = 0;
+        return 1;
     }
-    return cantElim > 0;
+
+    Iterator *routeIter = dclCreateIterator(&route);
+    list_t *processIt;
+    while (index < dlcSize + 1)
+    {
+        processIt = dclNext(routeIter);
+        if (processIt->data == killedProcess->PID)
+        {
+            list_remove(processIt);
+            list_t *toFree = processIt;
+            memFree(toFree);
+            dlcSize--;
+            killedProcess->state = EXITED;
+            killedProcess->priority = 0;
+            killedProcess->lives = 0;
+            return 1;
+        }
+        index++;
+    }
+
+    if (killedProcess->state == RUNNING) // caso especifico cuando no esta en dlcList pero esta running
+    {
+        killedProcess->state = EXITED;
+        killedProcess->priority = 0;
+        killedProcess->lives = 0;
+        return 1;
+    }
+
+    // print(" PID: %d %d\n", killedProcess->PID, killedProcess->state);
+    return -1;
 }
 
 void sys_exit()
@@ -295,11 +317,17 @@ void sys_waitPid(int pid)
     forceTick();
 }
 
-void sys_block(int pid)
+int sys_block(int pid)
 {
-    block(pid);
+
+    int ret = block(pid);
+    /*  if (pid == getCurrentPid())
+     {
+         forceTick();
+     } */
+    return ret;
 }
-void sys_unblock(int pid)
+int sys_unblock(int pid)
 {
-    unblock(pid);
+    return unblock(pid);
 }

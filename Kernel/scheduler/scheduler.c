@@ -47,22 +47,29 @@ uint64_t schedule(uint64_t RSP)
     else
     {
         // New Process
+
         PCB *aux2 = get(PCBTable, current->data);
         aux2->state = RUNNING;
         return aux2->RSP;
+        /*
+              while (aux2->state != READY)
+              {
+                  current = dclNext(iterator);
+                  aux2 = get(PCBTable, current->data);
+              }
+        */
     }
 }
 
-void block(int pid)
+int block(int pid)
 {
     // print("blocking %d -->", pid);
     PCB *blockedProcess = get(PCBTable, pid);
-    blockedProcess->state = BLOCKED;
 
     int index = 0;
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
-    while (index != dlcSize + 1)
+    while (index < dlcSize + 1)
     {
         processIt = dclNext(routeIt);
         if (processIt->data == blockedProcess->PID)
@@ -72,30 +79,35 @@ void block(int pid)
             memFree(toFree);
             dlcSize--;
             flag++;
-            return;
+            blockedProcess->state = BLOCKED;
+            blockedProcess->lives = 0;
+            blockedProcess->priority = 0;
+            return 1;
         }
+        index++;
     }
-    return;
+    return -1;
 }
 
-void unblock(int pid)
+int unblock(int pid)
 {
     // printRoute();
     // print("unblocking %d  |-|", pid);
+    PCB *blockedProcess = get(PCBTable, pid);
     if (pid != -1 && flag)
     {
-        PCB *blockedProcess = get(PCBTable, pid);
-        blockedProcess->state = READY;
-
         list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
         newProcess->data = pid;
         list_push(&route, newProcess);
         dlcSize++;
         flag--;
+        blockedProcess->state = READY;
+        return 1;
     }
     // printRoute();
     // printList(PCBTable);
     //  forceTick();
+    return -1;
 }
 
 int getCurrentPid()
@@ -136,5 +148,29 @@ void printRoute()
     {
         processIt = dclNext(routeIt);
         print("||  PID  [%d]  ||  ", processIt->data);
+    }
+}
+
+/*
+    Imprime la lista de todos los procesos con sus propiedades:
+    nombre,
+    ID,
+    prioridad,
+    stack y base pointer,
+    foreground
+    y cualquier otra variable que consideren necesaria.
+*/
+
+void ps(char *buffer)
+{
+    char *aux;
+    Iterator *routeIt = dclCreateIterator(&route);
+    list_t *processIt;
+    for (int i = 0; i < dlcSize + 1; i++)
+    {
+        processIt = dclNext(routeIt);
+        PCB *pcb = get(PCBTable, processIt->data);
+        aux = snprintf("PID: %d | Priority: %d | State: %d \n", pcb->PID, pcb->PPID, pcb->state);
+        strcat(buffer, aux);
     }
 }
