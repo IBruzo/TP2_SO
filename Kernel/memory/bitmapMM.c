@@ -4,6 +4,8 @@
 
 
 uint8_t bitMap[BIT_MAP_SIZE];
+unsigned char bitMap[BIT_MAP_SIZE];
+
 void *memStart;
 uint32_t memSize;
 
@@ -23,7 +25,7 @@ void initMemoryManager(void *hBase, uint32_t hSize)
     {
         return;
     }
-    memStart = (uint32_t)hBase;
+    memStart = hBase;
     memSize = hSize;
 
     memset(bitMap, 0, BIT_MAP_SIZE);
@@ -31,7 +33,7 @@ void initMemoryManager(void *hBase, uint32_t hSize)
     numAllocations = 0;
 }
 
-void switchBit(char *ch, int bitPos)
+void switchBit(uint8_t  *ch, int bitPos)
 {
     *ch ^= (1 << bitPos);
 }

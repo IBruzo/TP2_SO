@@ -1,6 +1,7 @@
 #ifndef STACK_H
 #define STACK_H
 
+#include "lib.h"
 #define MAX_SIZE 100
 
 typedef struct {
@@ -11,7 +12,7 @@ typedef struct {
 extern Stack waitQueue;
 extern Stack inputQueue;
 
-void initializeStack(Stack* stack);
+void initStack(Stack* stack);
 int isStackEmpty(Stack* stack);
 int isStackFull(Stack* stack);
 void push(Stack* stack, int element);

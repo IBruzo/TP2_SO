@@ -66,7 +66,7 @@ void block(int pid)
     return;
 }
 
-static int getBlockedPid()
+int getBlockedPid()
 {
     Node *curr = begin(PCBTable);
     while (curr != NULL)
@@ -116,7 +116,6 @@ list_t *getCurrentProcess()
 
 int countCurrentProcessAppearances()
 {
-    int a = dlcSize;
     int count = 0;
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
