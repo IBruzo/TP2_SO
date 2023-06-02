@@ -23,6 +23,7 @@ typedef struct PCB
     uint64_t RSP;
     char state;
     char priority;
+    char lives;
     int FD[256];
     int FDSize;
     // char waitInput;

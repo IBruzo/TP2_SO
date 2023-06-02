@@ -31,7 +31,7 @@ GLOBAL mem
 GLOBAL waitPid
 GLOBAL block
 GLOBAL unblock
-
+GLOBAL nice
 
 section .text
 
@@ -180,9 +180,12 @@ mem:
 
 waitPid:
 	sys_call 30
-	
+
 block:
 	sys_call 31
 
 unblock:
 	sys_call 32
+
+nice:
+	sys_call 33

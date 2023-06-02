@@ -152,7 +152,7 @@ int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     insert(PCBTable, newBlock);
 
     initializeStackFrame(argc, argv, f, processIDs - 1);
-    return processIDs-1;
+    return processIDs - 1;
 }
 
 int sys_semCreate(char *name, int initValue)
@@ -190,18 +190,16 @@ int sys_increasePriority(int PID)
     // print("\nIncreasing Priority of [%d]...\n", PID);
     // printRoute();
 
-    list_t *currentProcess = getCurrentProcess();
-    int toReturn = countCurrentProcessAppearances();
-    if (toReturn == 5)
+    PCB *toIncrease = get(PCBTable, PID);
+    if (toIncrease->priority == 5)
         return -1;
-    list_push(&route, currentProcess);
-    dlcSize++;
-    PCB *toIncrease = get(PCBTable, 1);
+
     toIncrease->priority++;
-
+    toIncrease->lives++;
     // print("\n---------------------\n");
-
-    return ++toReturn;
+    // printRoute();
+    // printList(PCBTable);
+    return toIncrease->priority;
 }
 
 int sys_decreasePriority(int PID)
@@ -209,20 +207,26 @@ int sys_decreasePriority(int PID)
     // print("\nDecreasing Priority...\n");
     // printRoute();
 
-    list_t *currentProcess = getCurrentProcess();
-    int toReturn = countCurrentProcessAppearances();
-    if (toReturn == 0)
+    PCB *toDecrease = get(PCBTable, PID);
+    if (toDecrease->priority == 5)
         return -1;
-    list_remove(currentProcess);
-    dlcSize--;
 
-    PCB *toDecrease = get(PCBTable, 1);
     toDecrease->priority--;
-
+    toDecrease->lives++;
     // print("\n---------------------\n");
     // printRoute();
 
-    return --toReturn;
+    return toDecrease->priority;
+}
+
+int sys_nice(int pid, int prio)
+{
+    PCB *toChangePrio = get(PCBTable, pid);
+    if (!toChangePrio || toChangePrio->priority == prio || prio <= 0 || prio >= 5)
+        return 0;
+    toChangePrio->priority = prio;
+    toChangePrio->lives = prio;
+    return 1;
 }
 
 void sys_yield()
@@ -253,7 +257,7 @@ int sys_kill(int pid)
             cantElim++;
         }
     }
-    if (cantElim == killedProcess->priority )
+    if (cantElim == killedProcess->priority)
     {
         // print("Murdering... \n");
         PCB *killedProcess = get(PCBTable, pid);
@@ -266,9 +270,10 @@ int sys_kill(int pid)
 void sys_exit()
 {
     // if ( currentProcess() == peek().CPID ) => unblock papi
-    unblock( getCurrentPPid() );
-    if(peek(&waitQueue)!=-1 ){
-        //print("unblocking [%d] \n",getCurrentPPid() );
+    unblock(getCurrentPPid());
+    if (peek(&waitQueue) != -1)
+    {
+        // print("unblocking [%d] \n",getCurrentPPid() );
         pop(&waitQueue);
     }
     // printRoute();
@@ -278,20 +283,23 @@ void sys_exit()
     forceTick();
 }
 
-void sys_waitPid(int pid){  // padre ejecuta esto y quiere que lo despierten cuando termine de ejecutar PID
-    int cPid=getCurrentPid();
+void sys_waitPid(int pid)
+{ // padre ejecuta esto y quiere que lo despierten cuando termine de ejecutar PID
+    int cPid = getCurrentPid();
 
-    push(&waitQueue,cPid);
-//print("blocking [%d] \n",cPid );
-    //push parent pid y pid 
-    //push(&waitQueue,pid);
-    block( cPid);
+    push(&waitQueue, cPid);
+    // print("blocking [%d] \n",cPid );
+    // push parent pid y pid
+    // push(&waitQueue,pid);
+    block(cPid);
     forceTick();
 }
 
-void sys_block(int pid){
+void sys_block(int pid)
+{
     block(pid);
 }
-void sys_unblock(int pid){
+void sys_unblock(int pid)
+{
     unblock(pid);
 }

@@ -44,8 +44,7 @@
 #define SYS_WAITPID_ID 30
 #define SYS_BLOCK_ID 31
 #define SYS_UNBLOCK_ID 32
-
-
+#define SYS_NICE_ID 33
 
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)

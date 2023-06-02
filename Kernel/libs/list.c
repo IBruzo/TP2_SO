@@ -138,11 +138,11 @@ Node *begin(List *list)
 void printList(List *list)
 {
     Node *current = list->head;
-    print("PCB Table\n");
+    print("\nPCB Table\n");
     while (current != NULL)
     {
         // Assuming the data in the PCB structure has a member called 'name'
-        print("PID [%d]  |", current->data->PID);
+        print("PID [%d]  PRIO [%d] STATE[%d] |", current->data->PID, current->data->priority, current->data->state);
         current = current->next;
     }
 }

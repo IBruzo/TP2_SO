@@ -13,18 +13,30 @@ void initScheduler()
 
 uint64_t schedule(uint64_t RSP)
 {
-    // Se actualiza el PCB del Proceso Saliente
+    //  Se actualiza el PCB del Proceso Saliente
     PCB *aux = get(PCBTable, current->data);
     aux->RSP = RSP;
+    // Si todavia tiene vidasm le quito una y lo mando
+    if (aux->lives > 0 && aux->state == READY)
+    {
+        aux->lives--;
+        return aux->RSP;
+    }
+    // Se quedo sin vida se las reinicio pero elijo a otro proceso
+    aux->lives = aux->priority;
+    // Si el proceso abandono por un bloqueo entonces no lo dejo en ready
     if (!flag)
     {
         aux->state = READY;
     }
     // Avanzamos el proceso entrante
     current = dclNext(iterator);
+    // print("current PID : %d", current->data);
     // Si es el nodo centinela lo ignoramos
     if (current->data == 0)
         current = dclNext(iterator);
+    // print("current PID2 : %d", current->data);
+
     // Se actualiza el PCB del Proceso Entrante y se retorna
     if (!dlcSize)
     {
@@ -43,16 +55,14 @@ uint64_t schedule(uint64_t RSP)
 
 void block(int pid)
 {
-  //  print("bloqued %d -->",pid);
+    // print("blocking %d -->", pid);
     PCB *blockedProcess = get(PCBTable, pid);
     blockedProcess->state = BLOCKED;
 
-    flag++;
-
-    int cantElim = 0; 
+    int index = 0;
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
-    while (cantElim != blockedProcess->priority)
+    while (index != dlcSize + 1)
     {
         processIt = dclNext(routeIt);
         if (processIt->data == blockedProcess->PID)
@@ -61,29 +71,31 @@ void block(int pid)
             list_t *toFree = processIt;
             memFree(toFree);
             dlcSize--;
-            cantElim++;
+            flag++;
+            return;
         }
     }
     return;
 }
 
-
 void unblock(int pid)
 {
- //  print("unbloqued %d     ",pid);
+    // printRoute();
+    // print("unblocking %d  |-|", pid);
     if (pid != -1 && flag)
     {
         PCB *blockedProcess = get(PCBTable, pid);
         blockedProcess->state = READY;
-        for (size_t i = 0; i < blockedProcess->priority; i++)
-        {
-            list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
-            newProcess->data = pid;
-            list_push(&route, newProcess);
-            dlcSize++;
-            flag--;
-        }
+
+        list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
+        newProcess->data = pid;
+        list_push(&route, newProcess);
+        dlcSize++;
+        flag--;
     }
+    // printRoute();
+    // printList(PCBTable);
+    //  forceTick();
 }
 
 int getCurrentPid()
@@ -120,7 +132,7 @@ void printRoute()
 {
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < dlcSize + 1; i++)
     {
         processIt = dclNext(routeIt);
         print("||  PID  [%d]  ||  ", processIt->data);
