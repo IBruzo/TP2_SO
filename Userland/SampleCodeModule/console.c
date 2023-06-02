@@ -260,22 +260,27 @@ void commandCat()
 {
 	while (1)
 	{
-		char c = getchar();
-		if (c)
+		void commandCat()
 		{
-			if (c == '\n')
+			while (1)
 			{
-				break;
+				char c = getchar();
+				if (c)
+				{
+					if (c == '\n')
+					{
+						break;
+					}
+					else
+					{
+						checkKey(c);
+					}
+				}
 			}
-			else
-			{
-				checkKey(c);
-			}
+			print("\n");
 		}
 	}
-	print("\n");
 }
-
 void *timmy(int argc, char **argv)
 {
 	print("-Tommy: Dad, Ill take a nap in my last 5 seconds of life\n");
@@ -290,7 +295,7 @@ static void *dad(int argc, char **argv)
 	sleep(1);
 	print("\n-Dad: Please Timmy! Please Dont Die On Me!\n");
 	sleep(1);
-	int timmyPID = createProcess(timmy, 0, NULL);
+	int timmyPID = createFGProcess(timmy, 0, NULL);
 	print("(( Timmy PID [%d] ))\n", timmyPID);
 	waitPid(timmyPID); // estoy esperando a la llegada de este pid
 	sleep(1);
@@ -302,7 +307,7 @@ static void *dad(int argc, char **argv)
 
 static void testWait()
 {
-	createProcess(dad, 0, NULL);
+	createFGProcess(dad, 0, NULL);
 }
 static void testPrio()
 {

@@ -55,6 +55,10 @@ void initialize()
     (fun_sys[SYS_BLOCK_ID]) = (syscall)sys_block;
     (fun_sys[SYS_UNBLOCK_ID]) = (syscall)sys_unblock;
     (fun_sys[SYS_NICE_ID]) = (syscall)sys_nice;
+    (fun_sys[SYS_CHANGEINPUTFD_ID]) = (syscall)sys_changeInputFD;
+    (fun_sys[SYS_CHANGEOUTPUTFD_ID]) = (syscall)sys_changeOutputFD;
+    (fun_sys[SYS_GETINPUTFD_ID]) = (syscall)sys_getInputFD;
+    (fun_sys[SYS_GETOUTPUTFD_ID]) = (syscall)sys_getOutputFD;
 }
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)

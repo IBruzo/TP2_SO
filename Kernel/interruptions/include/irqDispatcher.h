@@ -45,6 +45,10 @@
 #define SYS_BLOCK_ID 31
 #define SYS_UNBLOCK_ID 32
 #define SYS_NICE_ID 33
+#define SYS_CHANGEINPUTFD_ID 34
+#define SYS_CHANGEOUTPUTFD_ID 35
+#define SYS_GETINPUTFD_ID 36
+#define SYS_GETOUTPUTFD_ID 37
 
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)

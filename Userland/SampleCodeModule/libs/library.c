@@ -219,11 +219,18 @@ void appendcharColor(char character, int color)
 		newline();
 		return;
 	}
+	// si es output a foreground se renderiza
+	if (getOutputFD(getPid()) == 1)
+		drawCursor(CURRENT_CURSOR_COLOR);
 
-	drawCursor(CURRENT_CURSOR_COLOR);
 	putcharSpecifics(character, cursorX, cursorY, fontsize, color);
-	updateCursor();
-	drawCursor(FONTCOLOR);
+
+	// si es output a foreground se actualiza
+	if (getOutputFD(getPid()) == 1)
+	{
+		updateCursor();
+		drawCursor(FONTCOLOR);
+	}
 }
 
 void appendchar(char character)
@@ -699,4 +706,16 @@ int scan(char *str, ...)
 	}
 	va_end(vl);
 	return ret;
+}
+
+int createFGProcess(void *(*f)(int, char **), int argc, char **argv)
+{
+	int FGFD[] = {0, 1};
+	return createProcess(f, argc, argv, FGFD);
+}
+
+int createBGProcess(void *(*f)(int, char **), int argc, char **argv)
+{
+	int BGFD[] = {-1, -1};
+	return createProcess(f, argc, argv, BGFD);
 }

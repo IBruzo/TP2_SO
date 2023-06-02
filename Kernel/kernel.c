@@ -50,8 +50,8 @@ int main()
 
 	/* --------------- Creating Kernel PCB -------------- */
 	PCB kernelPCB;
-	int kernelFD[] = {0};
-	buildPCB(&kernelPCB, KERNEL_PID, KERNEL_PID, 0, BLOCKED, 1, kernelFD, 1);
+	int kernelFD[] = {0, 1};
+	buildPCB(&kernelPCB, KERNEL_PID, KERNEL_PID, 0, BLOCKED, 1, kernelFD);
 	insert(PCBTable, &kernelPCB);
 
 	/* ------------ Creating IDLE Process ---------------- */
@@ -60,8 +60,8 @@ int main()
 
 	// Creacion de PCB
 	PCB idlePCB;
-	int idleFD[] = {0};
-	buildPCB(&idlePCB, IDLE_PID, KERNEL_PID, (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE), READY, 1, idleFD, sizeof(idleFD) / sizeof(int));
+	int idleFD[] = {0, 1};
+	buildPCB(&idlePCB, IDLE_PID, KERNEL_PID, (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE), READY, 1, idleFD);
 	// Adicion a la PCBT
 	insert(PCBTable, &idlePCB);
 	// Creacion de Stack

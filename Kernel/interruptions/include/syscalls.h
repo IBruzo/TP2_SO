@@ -31,7 +31,7 @@ char *sys_mem();
 void *sys_allocMem(int bytes);
 void scroll_up_once(uint32_t tamY, uint32_t color);
 void sys_free(void *dir);
-int sys_createProcess(void *(*function)(int, char **), int argc, char **argv);
+int sys_createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd);
 int sys_getPid();
 int sys_increasePriority(int PID);
 int sys_decreasePriority(int PID);
@@ -47,6 +47,10 @@ void sys_waitPid(int pid);
 int sys_block(int pid);
 int sys_unblock(int pid);
 int sys_nice(int pid, int prio);
+void sys_changeInputFD(int pid, int newFD);
+void sys_changeOutputFD(int pid, int newFD);
+int sys_getInputFD(int pid);
+int sys_getOutputFD(int pid);
 
 int getCurrentPid(); //>.>
 

@@ -19,7 +19,7 @@ void test_prio() //
 
     for (i = 0; i < TOTAL_PROCESSES; i++)
     {
-        pids[i] = createProcess(endless_loop_print, 0, argv);
+        pids[i] = createFGProcess(endless_loop_print, 0, argv);
     }
 
     bussy_wait(WAIT);

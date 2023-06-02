@@ -26,13 +26,6 @@ typedef struct
 
 pipeEntry_t pipeTable[MAX_PIPES];
 
-void initPipes();
-int createPipe(const char *name);
-int pipeOpen(const char *name);
-int pipeClose(int fd);
-int pipeRead(int fd, char *buf, int count);
-int pipeWrite(int fd, const char *buf);
-
 void initPipes()
 {
     for (int i = 0; i < MAX_PIPES; i++)
@@ -75,12 +68,12 @@ int getPipeFd(const char *pipeName)
     {
         if (pipeTable[i].used && pipeTable[i].hashName == hashName(pipeName))
         {
-
             return i; // si encontro el pipe
         }
     }
     return -1; // si no encontro el pipe
 }
+
 int createPipe(const char *name)
 {
     int len = pipeCheckName(name);
@@ -140,6 +133,8 @@ int createPipe(const char *name)
     }
     return -1; // No available pipe slot
 }
+
+/* ----------------------------------------------------------------------------------------------------- */
 
 int pipeOpen(const char *name)
 {
@@ -247,3 +242,9 @@ int pipeWrite(int fd, const char *buf)
 
     return i;
 }
+
+// cat | w
+// {in, out}= pipe ( )
+
+// createProcess( cat , argv, argc, {0, in })
+// createProcess( wc , argv, argc, {out, 1 })

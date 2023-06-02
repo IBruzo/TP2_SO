@@ -32,6 +32,11 @@ GLOBAL waitPid
 GLOBAL block
 GLOBAL unblock
 GLOBAL nice
+GLOBAL changeInputFD
+GLOBAL changeOutputFD
+GLOBAL getInputFD
+GLOBAL getOutputFD
+
 
 section .text
 
@@ -189,3 +194,15 @@ unblock:
 
 nice:
 	sys_call 33
+
+changeInputFD:
+	sys_call 34
+
+changeOutputFD:
+	sys_call 35
+
+getInputFD:
+	sys_call 36
+
+getOutputFD:
+	sys_call 37

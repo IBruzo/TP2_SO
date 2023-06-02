@@ -67,4 +67,7 @@ void drawCursor(int color);
 void restartCursor();
 void refreshCursor();
 
+// process creation wrappers
+int createFGProcess(void *(*f)(int, char **), int argc, char **argv);
+int createBGProcess(void *(*f)(int, char **), int argc, char **argv);
 #endif
