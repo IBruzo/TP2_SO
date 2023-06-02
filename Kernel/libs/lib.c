@@ -89,7 +89,7 @@ uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 	return digits;
 }
 
-static void getStringToPrint(char str[], int strSize, char *foundation,  va_list vl)
+static void getStringToPrint(char str[], int strSize, char *foundation, va_list vl)
 {
 
 	int i = 0, j = 0;
@@ -169,27 +169,25 @@ static void getStringToPrint(char str[], int strSize, char *foundation,  va_list
 	str[j] = 0;
 }
 
-
 void print(char *foundation, ...)
 {
 	va_list args;
 	va_start(args, foundation);
 	char str[1024];
 	int strSize = 1024;
-	getStringToPrint(str,strSize, foundation, args);
+	getStringToPrint(str, strSize, foundation, args);
 	va_end(args);
 
 	appendstringColor(str, FONTCOLOR);
-
 }
 
-char * snprintf(char *foundation, ...)
+char *snprintf(char *foundation, ...)
 {
 	va_list args;
 	va_start(args, foundation);
 	static char str[1024];
 	int strSize = 1024;
-	getStringToPrint(str,strSize, foundation, args);
+	getStringToPrint(str, strSize, foundation, args);
 	va_end(args);
 
 	return str;
@@ -217,6 +215,10 @@ void strncat(char *destination, const char *origin, int n)
 	for (j = 0; origin[j] != '\0' && j < n; j++)
 		destination[i + j] = origin[j];
 	destination[i + j] = '\0';
+}
+void strcat(char *destination, const char *origin)
+{
+	strncat(destination, origin, strlen(origin));
 }
 /**
  * @brief pasa a ascii un numero en cualquier base
@@ -337,13 +339,13 @@ void newline()
 
 /* --------------------------------------- NATIVE KERNEL FUNCTIONS -------------------------- */
 
+int strcmp(const char *str1, const char *str2)
+{
+	while (*str1 && (*str1 == *str2))
+	{
+		str1++;
+		str2++;
+	}
 
-
-int strcmp(const char *str1, const char *str2) {
-    while (*str1 && (*str1 == *str2)) {
-        str1++;
-        str2++;
-    }
-    
-    return *(unsigned char *)str1 - *(unsigned char *)str2;
+	return *(unsigned char *)str1 - *(unsigned char *)str2;
 }

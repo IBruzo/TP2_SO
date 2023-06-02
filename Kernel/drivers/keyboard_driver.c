@@ -143,6 +143,10 @@ void changeLanguage(int lan)
 // saca el primero que esta en el vector
 static char popBuffer()
 {
+    if (bufferCount <= 0)
+    {
+        return 0;
+    }
     char key = keyBuffer[0];
     for (int i = 0; i < bufferCount; i++)
     {
@@ -160,7 +164,7 @@ char getKey()
     if (bufferCount <= 0)
     {
         block(getCurrentPid());
-        push(&inputQueue ,getCurrentPid() );
+        push(&inputQueue, getCurrentPid());
         return 0;
     }
     return popBuffer();
@@ -170,6 +174,10 @@ char getKey()
  */
 char getLastChar()
 {
+    if (bufferCount <= 0)
+    {
+        return 0;
+    }
     return keyBuffer[bufferCount - 1];
 }
 
@@ -203,14 +211,10 @@ void storeKey()
         controlActivated = 0;
         break;
     case LSHIFT_PRESSED:
-        shiftActivated = 1;
-        break;
     case RSHIFT_PRESSED:
         shiftActivated = 1;
         break;
     case LSHIFT_RELEASED:
-        shiftActivated = 0;
-        break;
     case RSHIFT_RELEASED:
         shiftActivated = 0;
         break;
@@ -230,16 +234,18 @@ void storeKey()
         keyBuffer[bufferCount++] = ASC_RIGHT;
         break;
     default:
-        if(controlActivated)
+        if (controlActivated)
         {
             int index = shiftActivated || (isLetter(scancode) && capsActivated) ? 1 : 0;
             char combinedChar = keyboards[language][scancode][index];
-            if(combinedChar == 'c' || combinedChar == 'C'){
+            if (combinedChar == 'c' || combinedChar == 'C')
+            {
                 print("And now, it's time for the grand finale of this extraordinary process. Behold as it bids its farewell, leaving us in a cloud of whimsical wonder... Farewell, dear process, may your bits and bytes find eternal joy in templeOS.\n");
+
                 sys_kill(getCurrentPid());
-            
             }
-            if(combinedChar == 'd' || combinedChar == 'D'){
+            if (combinedChar == 'd' || combinedChar == 'D')
+            {
                 print("Control D pressed\n");
                 pop(&inputQueue);
             }
@@ -247,7 +253,7 @@ void storeKey()
         }
         if (isValidScancode(scancode) && bufferCount < MAX_BUFFER)
         {
-            int index = shiftActivated || (isLetter(scancode) && capsActivated) ? 1 : 0;
+            int index = shiftActivated || (isLetter(scancode) && capsActivated) ? 1 : 0; // mayusucla o minuscula?
             keyBuffer[bufferCount] = keyboards[language][scancode][index];
             bufferCount++;
         }
@@ -255,11 +261,11 @@ void storeKey()
     }
     if (bufferCount > 0)
     {
-        /* 
+        /*
         if ( key is ctrl + d )
             pop()
         */
-        unblock( peek(&inputQueue) );
+        unblock(peek(&inputQueue));
     }
     return;
 }

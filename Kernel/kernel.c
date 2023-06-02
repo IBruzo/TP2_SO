@@ -12,6 +12,8 @@
 #include "schedulerLib.h"
 #include "scheduler.h"
 #include "stack.h"
+#include "pipe.h"
+
 void clearBSS(void *bssAddress, uint64_t bssSize);
 void *getStackBase();
 void *initializeKernelBinary();
@@ -36,6 +38,8 @@ int main()
 	/* ------------- Table Loading & Creation ------------ */
 	load_idt();
 	exceptionsBackupValues((uint64_t)sampleCodeModuleAddress, getSP());
+
+	initPipes();
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 	initStack(&waitQueue);
 	initStack(&inputQueue);
@@ -50,12 +54,10 @@ int main()
 	buildPCB(&kernelPCB, KERNEL_PID, KERNEL_PID, 0, BLOCKED, 1, kernelFD, 1);
 	insert(PCBTable, &kernelPCB);
 
-
 	/* ------------ Creating IDLE Process ---------------- */
 	// Reserva de memoria para el Stack
 	uint64_t *idleMemStart = (uint64_t *)sys_allocMem(PAGE_SIZE);
-	
-	
+
 	// Creacion de PCB
 	PCB idlePCB;
 	int idleFD[] = {0};
@@ -70,9 +72,8 @@ int main()
 	int userland = userlandEntryPoint();
 
 	_sti();
-    return userland;
+	return userland;
 }
-
 
 void clearBSS(void *bssAddress, uint64_t bssSize)
 {

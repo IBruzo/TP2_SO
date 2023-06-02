@@ -29,7 +29,6 @@
 #define CTRL_PRESSED 0x1D
 #define CTRL_RELEASED 0x9D
 
-
 extern unsigned char getkeyScancode();
 extern int keyboardActive();
 
