@@ -99,6 +99,7 @@ void put_rectangle(uint32_t x, uint32_t y, uint32_t tamX, uint32_t tamY, uint32_
 */
 int put_letter(char letter, uint32_t x, uint32_t y, uint32_t tam, uint32_t color)
 {
+
 	int a = x;
 	int start = letter - FIRST_CHAR;
 	if (isMinusc(letter))

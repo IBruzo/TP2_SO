@@ -4,18 +4,15 @@ int dlcSize = 0;
 
 /* --------------------------------------- PCB FUNCTIONS -------------------------- */
 
-void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char priority, int FDArr[], int FDSize)
+void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char priority, int *FDArr)
 {
     block->PID = PID;
     block->PPID = PPID;
     block->RSP = RSP;
     block->state = state;
     block->priority = priority;
-    memcpy(block->FD, FDArr, sizeof(int) * FDSize);
-    block->FDSize = FDSize;
+    memcpy(block->FD, FDArr, sizeof(int) * 2);
     block->lives = 1;
-    // block->waitInput = 0;
-    // block->waitChild = 0;
     return;
 }
 

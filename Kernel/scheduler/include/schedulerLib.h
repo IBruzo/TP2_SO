@@ -34,7 +34,7 @@ typedef struct stackFrame
     uint64_t ss;     // 0
 } stackFrame;
 
-void buildPCB(PCB *block, int PID, int PPID, uint64_t RSB, char state, char priority, int FDArr[], int FDSize);
+void buildPCB(PCB *block, int PID, int PPID, uint64_t RSB, char state, char priority, int *FDArr);
 void buildStartUpProcess(uint64_t *stackStart, void (*f)());
 void idleProcess();
 void initializeStackFrame(int argc, char **argv, void *(*fn)(int, char **), uint64_t pid);

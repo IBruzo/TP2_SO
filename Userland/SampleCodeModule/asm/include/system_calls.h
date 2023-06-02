@@ -1,7 +1,7 @@
 #ifndef SYSTEM_CALLS_H
 #define SYSTEM_CALLS_H
 
-extern void write(char character, int x, int y, int size, int color);
+extern void write(char character, int x, int y, int fd, int color);
 extern char getchar();
 extern int gettick();
 extern void halt();
@@ -17,7 +17,7 @@ extern void storeRegisters();
 extern void memAccess(unsigned long int memDir);
 extern void *mAlloc(unsigned long int bytes);
 extern void mFree(void *dir);
-extern int createProcess(void *(*f)(int, char **), int argc, char **argv);
+extern int createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd);
 extern void scrollUp(int tamY, int color);
 extern int getPid();
 extern int increasePriority(int pid);
@@ -35,5 +35,8 @@ extern void waitPid(int pid);
 extern void block(int pid);
 extern void unblock(int pid);
 extern int nice(int pid, int prio);
-
+extern void changeInputFD(int pid, int newFD);
+extern void changeOutputFD(int pid, int newFD);
+extern int getInputFD(int pid);
+extern int getOutputFD(int pid);
 #endif

@@ -9,14 +9,29 @@
 static unsigned int processIDs = 4;
 
 static unsigned char regsBuffer[128] = {0};
+
 void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color)
 {
-    put_letter(character, x, y, size, color);
+    int currPID = getCurrentPid();
+    PCB *currPCB = get(PCBTable, currPID);
+    int fd1 = currPCB->FD[0]; // stdin
+    int fd2 = currPCB->FD[1]; // stdout
+    // output en consola
+    if (currPCB->FD[1] == 1)
+        put_letter(character, x, y, size, color);
+    // pipe si o si
+    // pipeWrite( FD[1], char)
 }
 
 char sys_getchar()
 {
-    return getKey();
+    int currPID = getCurrentPid();
+    PCB *currPCB = get(PCBTable, currPID);
+    // input de consola
+    if (currPCB->FD[0] == 0)
+        return getKey();
+    // es un pipe
+    // pipeRead( FD[1], char)
 }
 
 char sys_getLastKey()
@@ -120,6 +135,7 @@ char *sys_mem(int unit)
 {
     return mem(unit);
 }
+
 void *sys_allocMem(int bytes)
 {
     /* utlizo el memManager que fue inicializado por el kernel ( kernel.c ) */
@@ -136,7 +152,7 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
     scroll_up_once(tamY, color);
 }
 
-int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
+int sys_createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd)
 {
     // Reservo la Memoria para el Stack del Proceso
     uint64_t memStart = (uint64_t)sys_allocMem(PAG_SIZE * 2);
@@ -147,8 +163,7 @@ int sys_createProcess(void *(*f)(int, char **), int argc, char **argv)
     dlcSize++;
     // Añado a el PCB
     PCB *newBlock = (PCB *)sys_allocMem(sizeof(PCB));
-    int newBlockFD[] = {0, 1};
-    buildPCB(newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), READY, 1, newBlockFD, 2);
+    buildPCB(newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), READY, 1, fd);
     insert(PCBTable, newBlock);
 
     initializeStackFrame(argc, argv, f, processIDs - 1);
@@ -299,7 +314,40 @@ void sys_block(int pid)
 {
     block(pid);
 }
+
 void sys_unblock(int pid)
 {
     unblock(pid);
+}
+
+void sys_changeInputFD(int pid, int newFD)
+{
+    PCB *currPCB = get(PCBTable, pid);
+    if (currPCB == NULL)
+        return;
+    currPCB->FD[0] = newFD;
+}
+
+void sys_changeOutputFD(int pid, int newFD)
+{
+    PCB *currPCB = get(PCBTable, pid);
+    if (currPCB == NULL)
+        return;
+    currPCB->FD[1] = newFD;
+}
+
+int sys_getInputFD(int pid)
+{
+    PCB *currPCB = get(PCBTable, pid);
+    if (currPCB == NULL)
+        return -1;
+    return currPCB->FD[0];
+}
+
+int sys_getOutputFD(int pid)
+{
+    PCB *currPCB = get(PCBTable, pid);
+    if (currPCB == NULL)
+        return -1;
+    return currPCB->FD[1];
 }
