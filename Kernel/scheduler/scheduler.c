@@ -7,8 +7,8 @@ int flag = 1;
 void initScheduler()
 {
     list_init(&route);                    // Creo la Ruta del Scheduler
-    iterator = dclCreateIterator(&route); // Iterador sobre los procesos
-    current = dclNext(iterator);
+    iterator = dlcCreateIterator(&route); // Iterador sobre los procesos
+    current = dlcNext(iterator);
 }
 
 uint64_t schedule(uint64_t RSP)
@@ -30,11 +30,11 @@ uint64_t schedule(uint64_t RSP)
         aux->state = READY;
     }
     // Avanzamos el proceso entrante
-    current = dclNext(iterator);
+    current = dlcNext(iterator);
     // print("current PID : %d", current->data);
     // Si es el nodo centinela lo ignoramos
     if (current->data == 0)
-        current = dclNext(iterator);
+        current = dlcNext(iterator);
     // print("current PID2 : %d", current->data);
 
     // Se actualiza el PCB del Proceso Entrante y se retorna
@@ -54,7 +54,7 @@ uint64_t schedule(uint64_t RSP)
         /*
               while (aux2->state != READY)
               {
-                  current = dclNext(iterator);
+                  current = dlcNext(iterator);
                   aux2 = get(PCBTable, current->data);
               }
         */
@@ -67,11 +67,11 @@ int block(int pid)
     PCB *blockedProcess = get(PCBTable, pid);
 
     int index = 0;
-    Iterator *routeIt = dclCreateIterator(&route);
+    Iterator *routeIt = dlcCreateIterator(&route);
     list_t *processIt;
     while (index < dlcSize + 1)
     {
-        processIt = dclNext(routeIt);
+        processIt = dlcNext(routeIt);
         if (processIt->data == blockedProcess->PID)
         {
             list_remove(processIt);
@@ -129,11 +129,11 @@ list_t *getCurrentProcess()
 int countCurrentProcessAppearances()
 {
     int count = 0;
-    Iterator *routeIt = dclCreateIterator(&route);
+    Iterator *routeIt = dlcCreateIterator(&route);
     list_t *processIt;
     for (int i = 0; i < dlcSize + 1; i++)
     {
-        processIt = dclNext(routeIt);
+        processIt = dlcNext(routeIt);
         if (processIt->data == getCurrentPid())
             count++;
     }
@@ -142,11 +142,11 @@ int countCurrentProcessAppearances()
 
 void printRoute()
 {
-    Iterator *routeIt = dclCreateIterator(&route);
+    Iterator *routeIt = dlcCreateIterator(&route);
     list_t *processIt;
     for (int i = 0; i < dlcSize + 1; i++)
     {
-        processIt = dclNext(routeIt);
+        processIt = dlcNext(routeIt);
         print("||  PID  [%d]  ||  ", processIt->data);
     }
 }
@@ -164,11 +164,11 @@ void printRoute()
 void ps(char *buffer)
 {
     char *aux;
-    Iterator *routeIt = dclCreateIterator(&route);
+    Iterator *routeIt = dlcCreateIterator(&route);
     list_t *processIt;
     for (int i = 0; i < dlcSize + 1; i++)
     {
-        processIt = dclNext(routeIt);
+        processIt = dlcNext(routeIt);
         PCB *pcb = get(PCBTable, processIt->data);
         aux = snprintf("PID: %d | Priority: %d | State: %d \n", pcb->PID, pcb->PPID, pcb->state);
         strcat(buffer, aux);

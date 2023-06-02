@@ -272,11 +272,11 @@ int sys_kill(int pid)
         return 1;
     }
 
-    Iterator *routeIter = dclCreateIterator(&route);
+    Iterator *routeIter = dlcCreateIterator(&route);
     list_t *processIt;
     while (index < dlcSize + 1)
     {
-        processIt = dclNext(routeIter);
+        processIt = dlcNext(routeIter);
         if (processIt->data == killedProcess->PID)
         {
             list_remove(processIt);
