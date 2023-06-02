@@ -1,5 +1,5 @@
-#ifndef _DLC_LIST_H_
-#define _DLC_LIST_H_
+#ifndef _DLC_LIST_H_ 
+#define _DLC_LIST_H_ // dlc = doubly linked circular 
 #include <memoryManager.h>
 #define NULL ((void *)0)
 

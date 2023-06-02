@@ -3,7 +3,7 @@
 Stack waitQueue;
 Stack inputQueue;
 
-void initializeStack(Stack* stack) {
+void initStack(Stack* stack) {
     stack->top = -1;
 }
 

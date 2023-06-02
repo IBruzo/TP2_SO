@@ -6,22 +6,11 @@
 #include <stddef.h>
 #include "syscalls.h"
 #include "list.h"
-#include "dlc_list.h"
+#include "dlcList.h"
 #include "moduleLoader.h"
 
-extern uint8_t text;
-extern uint8_t rodata;
-extern uint8_t data;
-extern uint8_t bss;
-extern uint8_t endOfKernelBinary;
-extern uint8_t endOfKernel;
 
-static const uint64_t PageSize = 0x1000;
-static void *const sampleCodeModuleAddress = (void *)0x400000; // punteros a user land
-static void *const sampleDataModuleAddress = (void *)0x500000;
-static void *const heapAddress = (void *)0x600000;
 
-typedef int (*EntryPoint)();
 #define BACKGROUND_COLOR 0x002B36
 #define USER_TEXT_COLOR 0x95CD28
 #define TERMINAL_BLUE 0x12488B

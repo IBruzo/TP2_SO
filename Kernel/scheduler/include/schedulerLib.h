@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include "syscalls.h"
 #include "list.h"
-#include <dlc_list.h>
+#include <dlcList.h>
 
 extern List *PCBTable;
 extern int dlcSize;

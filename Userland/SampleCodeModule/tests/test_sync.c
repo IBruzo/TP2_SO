@@ -74,11 +74,12 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
     pids[i + TOTAL_PAIR_PROCESSES] = createProcess(my_process_inc, 3, argvInc);
   }
 
-//   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
-//     my_wait(pids[i]);
-//     my_wait(pids[i + TOTAL_PAIR_PROCESSES]);
-//   }
-// no se si va
+  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
+    uint64_t primerpid = pids[i];
+    print("primer pid: %d\n", primerpid);
+    //my_wait(pids[i]);
+    //my_wait(pids[i + TOTAL_PAIR_PROCESSES]);
+  }
   print("Final value: %d\n", global);
 
   return 0;

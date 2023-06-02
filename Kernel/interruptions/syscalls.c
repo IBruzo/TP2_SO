@@ -1,7 +1,7 @@
 #include <syscalls.h>
 #include <lib.h>
 #include "memoryManager.h"
-#include "scheduler_lib.h"
+#include "schedulerLib.h"
 #include "scheduler.h"
 #include "semaphores.h"
 #include "list.h"

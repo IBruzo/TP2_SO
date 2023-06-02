@@ -1,13 +1,14 @@
 #ifndef _SCHEDULER_H_
 #define _SCHEDULER_H_
 #include "lib.h"
-#include <scheduler_lib.h>
+#include <schedulerLib.h>
 #include "stack.h"
 
 uint64_t schedule(uint64_t RSP);
 void initScheduler();
 void block(int pid);
 void unblock(int pid);
+int getCurrentPPid();
 int getCurrentPid();
 struct list_t *getCurrentProcess();
 int countCurrentProcessAppearances();

@@ -187,7 +187,7 @@ char * snprintf(char *foundation, ...)
 {
 	va_list args;
 	va_start(args, foundation);
-	char str[1024];
+	static char str[1024];
 	int strSize = 1024;
 	getStringToPrint(str,strSize, foundation, args);
 	va_end(args);
@@ -337,28 +337,7 @@ void newline()
 
 /* --------------------------------------- NATIVE KERNEL FUNCTIONS -------------------------- */
 
-void clearBSS(void *bssAddress, uint64_t bssSize)
-{
-	memset(bssAddress, 0, bssSize);
-}
 
-void *getStackBase()
-{
-	return (void *)((uint64_t)&endOfKernel + PageSize * 8 // The size of the stack itself, 32KiB
-					- sizeof(uint64_t)					  // Begin at the top of the stack
-	);
-}
-
-void *initializeKernelBinary()
-{
-	void *moduleAddresses[] = {
-		sampleCodeModuleAddress,
-		sampleDataModuleAddress};
-
-	loadModules(&endOfKernelBinary, moduleAddresses);
-	clearBSS(&bss, &endOfKernel - &bss);
-	return getStackBase();
-}
 
 int strcmp(const char *str1, const char *str2) {
     while (*str1 && (*str1 == *str2)) {

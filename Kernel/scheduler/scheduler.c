@@ -104,7 +104,6 @@ list_t *getCurrentProcess()
 
 int countCurrentProcessAppearances()
 {
-    int a = dlcSize;
     int count = 0;
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
