@@ -59,6 +59,8 @@ void initialize()
     (fun_sys[SYS_CHANGEOUTPUTFD_ID]) = (syscall)sys_changeOutputFD;
     (fun_sys[SYS_GETINPUTFD_ID]) = (syscall)sys_getInputFD;
     (fun_sys[SYS_GETOUTPUTFD_ID]) = (syscall)sys_getOutputFD;
+    (fun_sys[SYS_OPENPIPE_ID]) = (syscall)sys_openPipe;
+    (fun_sys[SYS_CLOSEPIPE_ID]) = (syscall)sys_closePipe;
 }
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)

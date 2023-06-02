@@ -36,6 +36,9 @@ GLOBAL changeInputFD
 GLOBAL changeOutputFD
 GLOBAL getInputFD
 GLOBAL getOutputFD
+GLOBAL openPipe
+GLOBAL closePipe
+
 
 
 section .text
@@ -206,3 +209,9 @@ getInputFD:
 
 getOutputFD:
 	sys_call 37
+
+openPipe:
+	sys_call 38
+
+closePipe:
+	sys_call 39
