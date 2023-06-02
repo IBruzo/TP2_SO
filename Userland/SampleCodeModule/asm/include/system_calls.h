@@ -32,5 +32,8 @@ extern int semWait(char *name);
 extern int semPost(char *name);
 extern char * mem(int unit);
 extern void waitPid(int pid);
+extern void block(int pid);
+extern void unblock(int pid);
+
 
 #endif

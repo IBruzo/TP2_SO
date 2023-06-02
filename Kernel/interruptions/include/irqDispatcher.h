@@ -42,6 +42,9 @@
 #define SYS_SEMPOST_ID 28
 #define SYS_MEM_ID 29
 #define SYS_WAITPID_ID 30
+#define SYS_BLOCK_ID 31
+#define SYS_UNBLOCK_ID 32
+
 
 
 void initialize();

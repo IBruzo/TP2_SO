@@ -29,6 +29,10 @@ GLOBAL semWait
 GLOBAL semPost
 GLOBAL mem
 GLOBAL waitPid
+GLOBAL block
+GLOBAL unblock
+
+
 section .text
 
 %macro pushState 0
@@ -149,10 +153,13 @@ decreasePriority:
 
 yield:
 	sys_call 21
+
 kill:
 	sys_call 22
+
 exit:
 	sys_call 23
+
 semCreate:
 	sys_call 24
 
@@ -167,8 +174,15 @@ semWait:
 
 semPost:
 	sys_call 28
+
 mem:
 	sys_call 29
 
 waitPid:
 	sys_call 30
+	
+block:
+	sys_call 31
+
+unblock:
+	sys_call 32

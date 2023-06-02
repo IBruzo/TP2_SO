@@ -8,6 +8,7 @@
 #include <interrupts.h>
 #include <lib.h>
 #include <list.h>
+
 #define STDOUT 1
 #define STDRED 2
 #define MAXBUFFER 500
@@ -43,6 +44,9 @@ int sys_semClose(char *name);
 int sys_semWait(char *name);
 int sys_semPost(char *name);
 void sys_waitPid(int pid);
+void sys_block(int pid);
+void sys_unblock(int pid);
+
 int getCurrentPid();
 
 #endif

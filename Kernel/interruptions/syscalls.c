@@ -242,10 +242,9 @@ int sys_kill(int pid)
     int cantElim = 0; // found a killable process
     Iterator *routeIt = dclCreateIterator(&route);
     list_t *processIt;
-    int aprearences = countCurrentProcessAppearances();
-    while (cantElim != aprearences)
+    PCB *killedProcess = get(PCBTable, pid);
+    while (cantElim != killedProcess->priority)
     {
-        // print("CYCLE PID [%d]\n", processIt->data);
         processIt = dclNext(routeIt);
         if (processIt->data == pid)
         {
@@ -254,7 +253,7 @@ int sys_kill(int pid)
             cantElim++;
         }
     }
-    if (cantElim > 0)
+    if (cantElim == killedProcess->priority )
     {
         // print("Murdering... \n");
         PCB *killedProcess = get(PCBTable, pid);
@@ -267,9 +266,9 @@ int sys_kill(int pid)
 void sys_exit()
 {
     // if ( currentProcess() == peek().CPID ) => unblock papi
+    unblock( getCurrentPPid() );
     if(peek(&waitQueue)!=-1 ){
-        unblock( getCurrentPPid() );
-        print("unblocking [%d] \n",getCurrentPPid() );
+        //print("unblocking [%d] \n",getCurrentPPid() );
         pop(&waitQueue);
     }
     // printRoute();
@@ -281,14 +280,18 @@ void sys_exit()
 
 void sys_waitPid(int pid){  // padre ejecuta esto y quiere que lo despierten cuando termine de ejecutar PID
     int cPid=getCurrentPid();
-    /* struct lala{
-        int PPID;
-        int CPID;
-    } */
+
     push(&waitQueue,cPid);
-    print("blocking [%d] \n",cPid );
+//print("blocking [%d] \n",cPid );
     //push parent pid y pid 
     //push(&waitQueue,pid);
     block( cPid);
     forceTick();
+}
+
+void sys_block(int pid){
+    block(pid);
+}
+void sys_unblock(int pid){
+    unblock(pid);
 }

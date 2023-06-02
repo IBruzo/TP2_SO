@@ -16,7 +16,7 @@ uint64_t schedule(uint64_t RSP)
     // Se actualiza el PCB del Proceso Saliente
     PCB *aux = get(PCBTable, current->data);
     aux->RSP = RSP;
-    if (flag)
+    if (!flag)
     {
         aux->state = READY;
     }
@@ -43,10 +43,11 @@ uint64_t schedule(uint64_t RSP)
 
 void block(int pid)
 {
+  //  print("bloqued %d -->",pid);
     PCB *blockedProcess = get(PCBTable, pid);
     blockedProcess->state = BLOCKED;
 
-    flag = 0;
+    flag++;
 
     int cantElim = 0; 
     Iterator *routeIt = dclCreateIterator(&route);
@@ -66,24 +67,11 @@ void block(int pid)
     return;
 }
 
-static int getBlockedPid()
-{
-    Node *curr = begin(PCBTable);
-    while (curr != NULL)
-    {
-        if (curr->data->state == BLOCKED)
-        {
-            return curr->data->PID;
-        }
-        curr = next(curr);
-    }
-    return -1;
-}
 
 void unblock(int pid)
 {
-    //  int pid = getBlockedPid();
-    if (pid != -1 && !flag)
+ //  print("unbloqued %d     ",pid);
+    if (pid != -1 && flag)
     {
         PCB *blockedProcess = get(PCBTable, pid);
         blockedProcess->state = READY;
@@ -93,7 +81,7 @@ void unblock(int pid)
             newProcess->data = pid;
             list_push(&route, newProcess);
             dlcSize++;
-            flag = 1;
+            flag--;
         }
     }
 }

@@ -52,6 +52,9 @@ void initialize()
     (fun_sys[SYS_SEMPOST_ID]) = (syscall)sys_semPost;
     (fun_sys[SYS_MEM_ID]) = (syscall)sys_mem;
     (fun_sys[SYS_WAITPID_ID]) = (syscall)sys_waitPid;
+    (fun_sys[SYS_BLOCK_ID]) = (syscall)sys_block;
+    (fun_sys[SYS_UNBLOCK_ID]) = (syscall)sys_unblock;
+
 }
 
 void irqDispatcher(uint64_t irq, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)

@@ -289,6 +289,7 @@ static void *dad(int argc, char **argv)
     waitPid(timmyPID);  // estoy esperando a la llegada de este pid
     sleep(1);
     print("-Dad: F in the chat\n");
+	checkKey(ENTER);
     exit();
     return NULL;
 }
