@@ -7,8 +7,8 @@ int flag = 1;
 void initScheduler()
 {
     list_init(&route);                    // Creo la Ruta del Scheduler
-    iterator = dclCreateIterator(&route); // Iterador sobre los procesos
-    current = dclNext(iterator);
+    iterator = dlcCreateIterator(&route); // Iterador sobre los procesos
+    current = dlcNext(iterator);
 }
 
 uint64_t schedule(uint64_t RSP)
@@ -30,11 +30,11 @@ uint64_t schedule(uint64_t RSP)
         aux->state = READY;
     }
     // Avanzamos el proceso entrante
-    current = dclNext(iterator);
+    current = dlcNext(iterator);
     // print("current PID : %d", current->data);
     // Si es el nodo centinela lo ignoramos
     if (current->data == 0)
-        current = dclNext(iterator);
+        current = dlcNext(iterator);
     // print("current PID2 : %d", current->data);
 
     // Se actualiza el PCB del Proceso Entrante y se retorna
@@ -47,24 +47,31 @@ uint64_t schedule(uint64_t RSP)
     else
     {
         // New Process
+
         PCB *aux2 = get(PCBTable, current->data);
         aux2->state = RUNNING;
         return aux2->RSP;
+        /*
+              while (aux2->state != READY)
+              {
+                  current = dlcNext(iterator);
+                  aux2 = get(PCBTable, current->data);
+              }
+        */
     }
 }
 
-void block(int pid)
+int block(int pid)
 {
     // print("blocking %d -->", pid);
     PCB *blockedProcess = get(PCBTable, pid);
-    blockedProcess->state = BLOCKED;
 
     int index = 0;
-    Iterator *routeIt = dclCreateIterator(&route);
+    Iterator *routeIt = dlcCreateIterator(&route);
     list_t *processIt;
-    while (index != dlcSize + 1)
+    while (index < dlcSize + 1)
     {
-        processIt = dclNext(routeIt);
+        processIt = dlcNext(routeIt);
         if (processIt->data == blockedProcess->PID)
         {
             list_remove(processIt);
@@ -72,30 +79,35 @@ void block(int pid)
             memFree(toFree);
             dlcSize--;
             flag++;
-            return;
+            blockedProcess->state = BLOCKED;
+            blockedProcess->lives = 0;
+            blockedProcess->priority = 0;
+            return 1;
         }
+        index++;
     }
-    return;
+    return -1;
 }
 
-void unblock(int pid)
+int unblock(int pid)
 {
     // printRoute();
     // print("unblocking %d  |-|", pid);
+    PCB *blockedProcess = get(PCBTable, pid);
     if (pid != -1 && flag)
     {
-        PCB *blockedProcess = get(PCBTable, pid);
-        blockedProcess->state = READY;
-
         list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
         newProcess->data = pid;
         list_push(&route, newProcess);
         dlcSize++;
         flag--;
+        blockedProcess->state = READY;
+        return 1;
     }
     // printRoute();
     // printList(PCBTable);
     //  forceTick();
+    return -1;
 }
 
 int getCurrentPid()
@@ -117,11 +129,11 @@ list_t *getCurrentProcess()
 int countCurrentProcessAppearances()
 {
     int count = 0;
-    Iterator *routeIt = dclCreateIterator(&route);
+    Iterator *routeIt = dlcCreateIterator(&route);
     list_t *processIt;
     for (int i = 0; i < dlcSize + 1; i++)
     {
-        processIt = dclNext(routeIt);
+        processIt = dlcNext(routeIt);
         if (processIt->data == getCurrentPid())
             count++;
     }
@@ -130,11 +142,35 @@ int countCurrentProcessAppearances()
 
 void printRoute()
 {
-    Iterator *routeIt = dclCreateIterator(&route);
+    Iterator *routeIt = dlcCreateIterator(&route);
     list_t *processIt;
     for (int i = 0; i < dlcSize + 1; i++)
     {
-        processIt = dclNext(routeIt);
+        processIt = dlcNext(routeIt);
         print("||  PID  [%d]  ||  ", processIt->data);
+    }
+}
+
+/*
+    Imprime la lista de todos los procesos con sus propiedades:
+    nombre,
+    ID,
+    prioridad,
+    stack y base pointer,
+    foreground
+    y cualquier otra variable que consideren necesaria.
+*/
+
+void ps(char *buffer)
+{
+    char *aux;
+    Iterator *routeIt = dlcCreateIterator(&route);
+    list_t *processIt;
+    for (int i = 0; i < dlcSize + 1; i++)
+    {
+        processIt = dlcNext(routeIt);
+        PCB *pcb = get(PCBTable, processIt->data);
+        aux = snprintf("PID: %d | Priority: %d | State: %d \n", pcb->PID, pcb->PPID, pcb->state);
+        strcat(buffer, aux);
     }
 }

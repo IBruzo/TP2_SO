@@ -260,22 +260,27 @@ void commandCat()
 {
 	while (1)
 	{
-		char c = getchar();
-		if (c)
+		void commandCat()
 		{
-			if (c == '\n')
+			while (1)
 			{
-				break;
+				char c = getchar();
+				if (c)
+				{
+					if (c == '\n')
+					{
+						break;
+					}
+					else
+					{
+						checkKey(c);
+					}
+				}
 			}
-			else
-			{
-				checkKey(c);
-			}
+			print("\n");
 		}
 	}
-	print("\n");
 }
-
 void *timmy(int argc, char **argv)
 {
 	print("-Tommy: Dad, Ill take a nap in my last 5 seconds of life\n");
@@ -304,7 +309,20 @@ static void testWait()
 {
 	createFGProcess(dad, 0, NULL);
 }
+static void testPrio()
+{
+	print("TESTING PRIORITY\n");
+	test_prio();
+	print("TEST ENDED\n");
+}
 
+static void testProcesses()
+{
+	print("TESTING PROCESSES\n");
+	char *argv[] = {"10"};
+	test_processes(1, argv);
+	print("TEST ENDED\n");
+}
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
 void checkCommand()
 {
@@ -376,6 +394,12 @@ void checkCommand()
 			break;
 		case TEST_WAIT:
 			testWait();
+			break;
+		case TEST_PRIO:
+			testPrio();
+			break;
+		case TEST_PROC:
+			testProcesses();
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);

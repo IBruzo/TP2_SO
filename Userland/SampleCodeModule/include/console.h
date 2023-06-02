@@ -48,7 +48,8 @@ extern char *snapshot();
 #define TEST_SYNC 2561222465
 #define CAT 193452189
 #define TEST_WAIT 2561339929
-
+#define TEST_PRIO 2561106878
+#define TEST_PROC 2561107064
 void checkCommand();
 void checkKey(char c);
 void storeRegisters();

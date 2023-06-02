@@ -6,8 +6,8 @@
 
 uint64_t schedule(uint64_t RSP);
 void initScheduler();
-void block(int pid);
-void unblock(int pid);
+int block(int pid);
+int unblock(int pid);
 int getCurrentPPid();
 int getCurrentPid();
 struct list_t *getCurrentProcess();
@@ -15,5 +15,6 @@ int countCurrentProcessAppearances();
 void printRoute();
 extern int getTime(int op);
 extern void forceTick();
+void ps(char *);
 
 #endif

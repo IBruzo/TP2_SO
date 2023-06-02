@@ -36,7 +36,7 @@ list_t *list_pop(list_t *list)
   return back;
 }
 
-Iterator *dclCreateIterator(list_t *list)
+Iterator *dlcCreateIterator(list_t *list)
 {
   Iterator *iterator = (Iterator *)memAlloc(sizeof(Iterator));
   if (iterator == NULL)
@@ -49,14 +49,14 @@ Iterator *dclCreateIterator(list_t *list)
   return iterator;
 }
 
-list_t *dclNext(Iterator *iterator)
+list_t *dlcNext(Iterator *iterator)
 {
   list_t *current = iterator->current;
   iterator->current = current->next;
   return current;
 }
 
-void dclSkipNode(Iterator *iterator, list_t *node)
+void dlcSkipNode(Iterator *iterator, list_t *node)
 {
   if (iterator == NULL || node == NULL)
     return;
@@ -68,7 +68,7 @@ void dclSkipNode(Iterator *iterator, list_t *node)
   list_remove(node);
 }
 
-void dclFreeIterator(Iterator *iterator)
+void dlcFreeIterator(Iterator *iterator)
 {
   memFree(iterator);
 }
@@ -82,7 +82,7 @@ void list_print(list_t *list, int numElements)
     return;
   }
 
-  Iterator *printIterator = dclCreateIterator(list);
+  Iterator *printIterator = dlcCreateIterator(list);
   if (printIterator == NULL)
   {
     print("Failed to create iterator.\n");
@@ -91,7 +91,7 @@ void list_print(list_t *list, int numElements)
 
   int count = 0;
   list_t *node;
-  while ((node = dclNext(printIterator)) != NULL && count < numElements)
+  while ((node = dlcNext(printIterator)) != NULL && count < numElements)
   {
     // Print the element from the node
     // Assuming the list node contains some data you want to print
@@ -100,6 +100,6 @@ void list_print(list_t *list, int numElements)
     count++;
   }
 
-  dclFreeIterator(printIterator);
+  dlcFreeIterator(printIterator);
   print("\n");
 }
