@@ -356,8 +356,8 @@ int sys_block(int pid)
 
     int ret = block(pid);
     /*  if (pid == getCurrentPid())
-     {
-         forceTick();
+    {
+        forceTick();
      } */
     return ret;
 }

@@ -51,7 +51,8 @@ void sys_changeInputFD(int pid, int newFD);
 void sys_changeOutputFD(int pid, int newFD);
 int sys_getInputFD(int pid);
 int sys_getOutputFD(int pid);
-
+int sys_openPipe(char *name);
+int sys_closePipe(int fd);
 int getCurrentPid(); //>.>
 
 #endif
