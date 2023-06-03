@@ -18,6 +18,7 @@ typedef struct memInfo
 
 typedef struct PCB
 {
+    char name[100];
     int PID;
     int PPID;
     uint64_t RSP;

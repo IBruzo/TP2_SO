@@ -30,7 +30,7 @@ void sys_memAccess(uint64_t memDir);
 void *sys_mAlloc(int bytes);
 void scroll_up_once(uint32_t tamY, uint32_t color);
 void sys_mFree(void *dir);
-int sys_createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd);
+int sys_createProcess(char *pname, void *(*f)(int, char **), int argc, char **argv, int *fd);
 int sys_getPid();
 int sys_increasePriority(int PID);
 int sys_decreasePriority(int PID);

@@ -721,14 +721,14 @@ int scan(char *str, ...)
 	return ret;
 }
 
-int createFGProcess(void *(*f)(int, char **), int argc, char **argv)
+int createFGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 {
 	int FGFD[] = {0, 1};
-	return createProcess(f, argc, argv, FGFD);
+	return createProcess(name, f, argc, argv, FGFD);
 }
 
-int createBGProcess(void *(*f)(int, char **), int argc, char **argv)
+int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 {
 	int BGFD[] = {-1, -1};
-	return createProcess(f, argc, argv, BGFD);
+	return createProcess(name, f, argc, argv, BGFD);
 }

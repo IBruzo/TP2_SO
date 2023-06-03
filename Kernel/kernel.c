@@ -30,6 +30,7 @@ static void *const sampleDataModuleAddress = (void *)0x500000;
 static void *const heapAddress = (void *)0x600000;
 typedef int (*EntryPoint)();
 
+void kernelProcess() {}
 int main()
 {
 	// Desactivadoo Interrupciones mientras se configuran las Estructuras
@@ -51,7 +52,7 @@ int main()
 	/* --------------- Creating Kernel PCB -------------- */
 	PCB kernelPCB;
 	int kernelFD[] = {0, 1};
-	buildPCB(&kernelPCB, KERNEL_PID, KERNEL_PID, 0, BLOCKED, 1, kernelFD);
+	buildPCB("kernelProcess", &kernelPCB, KERNEL_PID, KERNEL_PID, 0, BLOCKED, 1, kernelFD);
 	insert(PCBTable, &kernelPCB);
 
 	/* ------------ Creating IDLE Process ---------------- */
@@ -61,7 +62,7 @@ int main()
 	// Creacion de PCB
 	PCB idlePCB;
 	int idleFD[] = {0, 1};
-	buildPCB(&idlePCB, IDLE_PID, KERNEL_PID, (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE), READY, 1, idleFD);
+	buildPCB("idleProcess", &idlePCB, IDLE_PID, KERNEL_PID, (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE), READY, 1, idleFD);
 	// Adicion a la PCBT
 	insert(PCBTable, &idlePCB);
 	// Creacion de Stack

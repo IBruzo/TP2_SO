@@ -163,10 +163,23 @@ void printRoute()
 
 void ps(char *buffer)
 {
+    /* print header */
     char header[100];
     int headerSize = sprintf(header, "Process ID Prioridad | Stack Base | Context\n");
     strcpy(buffer, header);
     char line[100];
     int lineSize = sprintf(line, "---------------------------------------\n");
     strcat(buffer, line);
+
+    /* print processes */
+    Iterator *it = dlcCreateIterator(&route);
+    list_t *processIt;
+    for (int i = 0; i < dlcSize + 1; i++)
+    {
+        processIt = dlcNext(it);
+        PCB *pcb = get(PCBTable, processIt->data);
+        char process[100];
+        int processSize = sprintf(process, "%s  %d    %d    |  %x  |  %d\n", pcb->name, pcb->PID, pcb->priority, pcb->RSP, pcb->state);
+        strcat(buffer, process);
+    }
 }

@@ -395,7 +395,7 @@ static void *dad(int argc, char **argv)
 	sleep(1);
 	print("\n-Dad: Please Timmy! Please Dont Die On Me!\n");
 	sleep(1);
-	int timmyPID = createFGProcess(timmy, 0, NULL);
+	int timmyPID = createFGProcess("timmy", timmy, 0, NULL);
 	print("(( Timmy PID [%d] ))\n", timmyPID);
 	waitPid(timmyPID); // estoy esperando a la llegada de este pid
 	sleep(1);
@@ -430,7 +430,7 @@ void commandPrintProcesses()
 
 static void testWait()
 {
-	createFGProcess(dad, 0, NULL);
+	createFGProcess("dad", dad, 0, NULL);
 }
 static void testPrio()
 {

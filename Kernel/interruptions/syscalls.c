@@ -169,7 +169,7 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
     scroll_up_once(tamY, color);
 }
 
-int sys_createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd)
+int sys_createProcess(char *pname, void *(*f)(int, char **), int argc, char **argv, int *fd)
 {
     // Reservo la Memoria para el Stack del Proceso
     uint64_t memStart = (uint64_t)sys_mAlloc(PAG_SIZE * 2);
@@ -180,7 +180,7 @@ int sys_createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd)
     dlcSize++;
     // Añado a el PCB
     PCB *newBlock = (PCB *)sys_mAlloc(sizeof(PCB));
-    buildPCB(newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), READY, 1, fd);
+    buildPCB(pname, newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), READY, 1, fd);
     insert(PCBTable, newBlock);
 
     initializeStackFrame(argc, argv, f, processIDs - 1);

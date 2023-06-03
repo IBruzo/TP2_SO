@@ -4,8 +4,9 @@ int dlcSize = 0;
 
 /* --------------------------------------- PCB FUNCTIONS -------------------------- */
 
-void buildPCB(PCB *block, int PID, int PPID, uint64_t RSP, char state, char priority, int *FDArr)
+void buildPCB(char *name, PCB *block, int PID, int PPID, uint64_t RSP, char state, char priority, int *FDArr)
 {
+    strncpy(block->name, name, 7);
     block->PID = PID;
     block->PPID = PPID;
     block->RSP = RSP;
