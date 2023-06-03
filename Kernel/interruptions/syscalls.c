@@ -17,8 +17,8 @@ char sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
     PCB *currPCB = get(PCBTable, currPID);
 
     // debugging
-    //int fd1 = currPCB->FD[0]; // stdin
-    //int fd2 = currPCB->FD[1]; // stdout
+    // int fd1 = currPCB->FD[0]; // stdin
+    // int fd2 = currPCB->FD[1]; // stdout
 
     // output en consola
     if (currPCB->FD[1] == 1)
@@ -106,11 +106,13 @@ void sys_beep(int freq, int time)
     beeep(freq, time);
 }
 
-static void * wakeUp(int argc, char* argv[]){
+static void *wakeUp(int argc, char *argv[])
+{
     int start = seconds_elapsed();
-    int sec= strToInt(argv[0]);
-    int pid= strToInt(argv[1]);
-    while (seconds_elapsed() - start < sec){
+    int sec = strToInt(argv[0]);
+    int pid = strToInt(argv[1]);
+    while (seconds_elapsed() - start < sec)
+    {
     }
 
     unblock(pid);
@@ -119,19 +121,18 @@ static void * wakeUp(int argc, char* argv[]){
 }
 
 void sys_sleep(int seconds)
-{   
-    int *fd = {1,0};
+{
+    int fd[] = {1, 0};
 
-    char * argd[2];
-    argd[0]=sys_mAlloc(sizeof(char));
-    argd[1]=sys_mAlloc(sizeof(char));
+    char *argd[2];
+    argd[0] = sys_mAlloc(sizeof(char));
+    argd[1] = sys_mAlloc(sizeof(char));
 
-    
-    int read = sprintf(argd[0], "%d", seconds);
-    sprintf(argd[1],"%d",getCurrentPid());
-   int pid = sys_createProcess("im the one who knocks",wakeUp,2,argd,fd);
-   sys_waitPid(pid);
-   sys_mFree(argd[0]);
+    sprintf(argd[0], "%d", seconds);
+    sprintf(argd[1], "%d", getCurrentPid());
+    int pid = sys_createProcess("im the one who knocks", wakeUp, 2, argd, fd);
+    sys_waitPid(pid);
+    sys_mFree(argd[0]);
     sys_mFree(argd[1]);
     forceTick();
 }
@@ -352,8 +353,9 @@ int sys_kill(int pid)
 void sys_exit()
 {
     // if ( currentProcess() == peek().CPID ) => unblock papi
-    if(peekWaitStack(&waitQueue).cpid==getCurrentPid() && peekWaitStack(&waitQueue).pid==getCurrentPPid()){
-        unblock(getCurrentPPid());  
+    if (peekWaitStack(&waitQueue).cpid == getCurrentPid() && peekWaitStack(&waitQueue).pid == getCurrentPPid())
+    {
+        unblock(getCurrentPPid());
         popWaitStack(&waitQueue);
     }
 
@@ -371,15 +373,16 @@ void sys_exit()
 
 void sys_waitPid(int pid)
 { // padre ejecuta esto y quiere que lo despierten cuando termine de ejecutar PID
-    PCB * child = get(PCBTable,pid);
+    PCB *child = get(PCBTable, pid);
 
-    if(child->state == EXITED){
+    if (child->state == EXITED)
+    {
         return;
     }
 
     int PPid = getCurrentPid();
 
-    pushWaitStack(&waitQueue, getCurrentPid() ,pid);
+    pushWaitStack(&waitQueue, getCurrentPid(), pid);
     // push parent pid y pid
     // push(&waitQueue,pid);
     block(PPid);
