@@ -5,38 +5,55 @@
 #include "scheduler.h"
 #include "semaphores.h"
 #include "list.h"
+#include "pipe.h"
 
 static unsigned int processIDs = 4;
-
 static unsigned char regsBuffer[128] = {0};
 
 void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color)
 {
     int currPID = getCurrentPid();
     PCB *currPCB = get(PCBTable, currPID);
+
+    // debugging
     int fd1 = currPCB->FD[0]; // stdin
     int fd2 = currPCB->FD[1]; // stdout
+
     // output en consola
     if (currPCB->FD[1] == 1)
     {
         put_letter(character, x, y, size, color);
+        return;
     }
-    // pipe si o si
-    // pipeWrite( FD[1], char)
+
+    // output en pipe buffer
+    int bytesWritten = pipeWrite(currPCB->FD[1], character);
+    if (bytesWritten == -1)
+    {
+        /* Aca entraria un Background Process ya que no encuentra el FD = -1 */
+    }
 }
 
 char sys_getchar()
 {
     int currPID = getCurrentPid();
     PCB *currPCB = get(PCBTable, currPID);
+
     // input de consola
     if (currPCB->FD[0] == 0)
     {
         return getKey();
-    }
 
-    // es un pipe
-    // pipeRead( FD[1], char)
+        // input de un buffer
+        char buffer[1]; // alloc mem?
+        int bytesRead = pipeRead(currPCB->FD[0], buffer, 1);
+        if (bytesRead == -1)
+        {
+            /* Aca entraria un Background Process ya que no encuentra el FD = -1 */
+            return;
+        }
+        return buffer[0];
+    }
 }
 
 char sys_getLastKey()
@@ -344,8 +361,8 @@ int sys_block(int pid)
 
     int ret = block(pid);
     /*  if (pid == getCurrentPid())
-     {
-         forceTick();
+    {
+        forceTick();
      } */
     return ret;
 }
@@ -386,6 +403,16 @@ int sys_getOutputFD(int pid)
         return -1;
     }
     return currPCB->FD[1];
+}
+
+int sys_openPipe(char *name)
+{
+    return pipeOpen(name);
+}
+
+int sys_closePipe(int fd)
+{
+    return pipeClose(fd);
 }
 
 void sys_ps(char *buffer)
