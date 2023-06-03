@@ -32,9 +32,9 @@ void *initialize_shell(int argc, char **argv)
 	// int writeFD[] = {0, pipeFD};
 	// int readFD[] = {pipeFD, 1};
 
-	// int writerPID = createProcess("writer",writer, 0, NULL, writeFD);
+	// int writerPID = createProcess("writer", writer, 0, NULL, writeFD);
 	// waitPid(writerPID);
-	// int readerPID = createProcess(reader, 0, NULL, readFD);
+	// int readerPID = createProcess("reader", reader, 0, NULL, readFD);
 	// waitPid(readerPID);
 
 	// closePipe(pipeFD);
