@@ -49,7 +49,7 @@
 #define SYS_CHANGEOUTPUTFD_ID 35
 #define SYS_GETINPUTFD_ID 36
 #define SYS_GETOUTPUTFD_ID 37
-
+#define SYS_PS_ID 38
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)
 

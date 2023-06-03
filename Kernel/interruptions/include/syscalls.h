@@ -51,6 +51,7 @@ void sys_changeInputFD(int pid, int newFD);
 void sys_changeOutputFD(int pid, int newFD);
 int sys_getInputFD(int pid);
 int sys_getOutputFD(int pid);
+void sys_ps(char *buffer);
 
 int getCurrentPid(); //>.>
 

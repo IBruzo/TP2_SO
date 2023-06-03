@@ -36,7 +36,7 @@ GLOBAL changeInputFD
 GLOBAL changeOutputFD
 GLOBAL getInputFD
 GLOBAL getOutputFD
-
+GLOBAL ps
 
 section .text
 
@@ -206,3 +206,5 @@ getInputFD:
 
 getOutputFD:
 	sys_call 37
+ps:
+	sys_call 38

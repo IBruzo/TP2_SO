@@ -40,6 +40,9 @@ void print(char *foundation, ...);
 void printf(char *foundation, void *parameters[]);
 char *snprintf(char *foundation, ...);
 void strcat(char *destination, const char *origin);
+char *strcpyR(char *destination, const char *source);
+int sprintf(char *buffer, char *foundation, ...);
+int snprintf2(char *buffer, size_t size, char *foundation, ...);
 
 // Funciones Nativas del Kernel
 void clearBSS(void *bssAddress, uint64_t bssSize);

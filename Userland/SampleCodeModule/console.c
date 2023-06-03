@@ -1,8 +1,10 @@
 #include <console.h>
 #include "tests.h"
 
-extern void INVALID_OP_CODE();
+#define MAX_PID 5000
+void handleHelp(char *helping);
 
+extern void INVALID_OP_CODE();
 static char consoleBuffer[MAX_CONSOLE_BUFFER] = {0};
 static int lastChar = 0;
 
@@ -158,6 +160,11 @@ void commandBeep()
 
 void commandMemAccess(char *memdirHexa)
 {
+	if (strlen(memdirHexa) > 16 || !onlyHexChars(memdirHexa))
+	{
+		printColor("Error : ingrese una direccion en hexadecimal de 64 bits.\n", ORANGY);
+		return;
+	}
 	clearScreen();
 	uint64_t num = hexstringToInt(memdirHexa);
 	// tal vez por la cantidad de memoria asignada para el proceso, o a la VM
@@ -251,7 +258,7 @@ void testSemaphoresSync()
 	test_sync(2, argv);
 	return;
 }
-void printMemoryState(size_t unit)
+void commandPrintMemState(size_t unit)
 {
 	char *string = mem(unit);
 	print(string);
@@ -260,27 +267,124 @@ void commandCat()
 {
 	while (1)
 	{
-		void commandCat()
+		char c = getchar();
+		if (c)
 		{
-			while (1)
+			if (c == '\n')
 			{
-				char c = getchar();
-				if (c)
-				{
-					if (c == '\n')
-					{
-						break;
-					}
-					else
-					{
-						checkKey(c);
-					}
-				}
+				break;
 			}
-			print("\n");
+			else
+			{
+				handleKey(c);
+			}
+		}
+	}
+	print("\n");
+}
+
+void commandKill(char *str)
+{
+	/* if (streql(str, "ALL"))
+	{
+		for (int i = 0; i < MAX_PID; i++)
+		{
+			int pid = kill(i);
+			if (pid == -1)
+			{
+				print("No se pudo matar el proceso con pid %d\n", i);
+			}
+			else
+			{
+				print("Se mato el proceso con pid %d\n", pid);
+			}
+		}
+	} */
+	if (str[0] != 0)
+	{
+		int pid = strToInt(str);
+		if (pid < 0 || pid > MAX_PID)
+		{
+			print("PID invalido\n");
+			return;
+		}
+		int i = kill(pid); // intento matar
+		if (i == -1)
+		{
+			print("No se pudo matar el proceso con pid %d\n", pid);
+		}
+		else
+		{
+			print("Se mato el proceso con pid %d\n", pid);
 		}
 	}
 }
+void commandNice(char *pid, char *priority)
+{
+	int pidInt = strToInt(pid);
+	int priorityInt = strToInt(priority);
+	if (pidInt < 0 || pidInt > MAX_PID)
+	{
+		print("PID invalido\n");
+		return;
+	}
+	if (priorityInt < 0 || priorityInt > 4)
+	{
+		print("Prioridad invalida\n");
+		return;
+	}
+	int ans = nice(pidInt, priorityInt);
+	if (ans == -1)
+	{
+		print("No se pudo cambiar la prioridad del proceso con pid %d\n", pidInt);
+	}
+	else if (ans == 0)
+	{
+		print("El proceso con pid %d ya tiene prioridad %d \n", pidInt, priorityInt);
+	}
+	else
+	{
+		print("Se cambio la prioridad del proceso con pid %d a %d\n", pidInt, priorityInt);
+	}
+}
+
+void commandBlock(char *pid)
+{
+	int pidInt = strToInt(pid);
+	if (pidInt < 0 || pidInt > MAX_PID)
+	{
+		print("PID invalido\n");
+		return;
+	}
+	int ans = block(pidInt);
+	if (ans == -1)
+	{
+		print("No se pudo bloquear el proceso con pid %d\n", pidInt);
+	}
+	else
+	{
+		print("Se bloqueo el proceso con pid %d\n", pidInt);
+	}
+}
+void commandUnblock(char *pid)
+{
+	int pidInt = strToInt(pid);
+	if (pidInt < 0 || pidInt > MAX_PID)
+	{
+		print("PID invalido\n");
+		return;
+	}
+	int ans = unblock(pidInt);
+	if (ans == -1)
+	{
+		print("No se pudo desbloquear el proceso con pid %d\n", pidInt);
+	}
+	else
+	{
+		print("Se desbloqueo el proceso con pid %d\n", pidInt);
+	}
+}
+
 void *timmy(int argc, char **argv)
 {
 	print("-Tommy: Dad, Ill take a nap in my last 5 seconds of life\n");
@@ -300,9 +404,26 @@ static void *dad(int argc, char **argv)
 	waitPid(timmyPID); // estoy esperando a la llegada de este pid
 	sleep(1);
 	print("-Dad: F in the chat\n");
-	checkKey(ENTER);
+	handleKey(ENTER);
 	exit();
 	return NULL;
+}
+
+void commandLoop()
+{
+	int currentPid = getPid();
+	while (1)
+	{
+		print("cuchau PID: %d\n", currentPid);
+		sleep(1);
+	}
+}
+
+void commandPrintProcesses()
+{
+	char *s;
+	ps(s);
+	// print("%s", s);
 }
 
 static void testWait()
@@ -324,14 +445,16 @@ static void testProcesses()
 	print("TEST ENDED\n");
 }
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
-void checkCommand()
+void handleCommand()
 {
 	char section[128] = {0};
 	char *command = toUpper(consoleBuffer);
 	splitString(command, section, ' ');
+	int hashedCommand = hash(command);
+	int hashedSection = hash(section);
 	if (section[0] == 0)
 	{
-		switch (hash(command))
+		switch (hashedCommand)
 		{
 		case HELP:
 			commandHelp();
@@ -377,20 +500,26 @@ void checkCommand()
 		case LANG_EN:
 			changelanguage(0);
 			break;
-		case TEST_MM:
-			testMemoryManager();
-			break;
 		case MEM:
-			printMemoryState(0);
+			commandPrintMemState(0);
 			break;
 		case MEMB:
-			printMemoryState(1);
+			commandPrintMemState(1);
 			break;
-		case TEST_SYNC:
-			testSemaphoresSync();
+		case PS:
+			commandPrintProcesses();
+			break;
+		case LOOP:
+			commandLoop();
 			break;
 		case CAT:
 			commandCat();
+			break;
+		case TEST_MM:
+			testMemoryManager();
+			break;
+		case TEST_SYNC:
+			testSemaphoresSync();
 			break;
 		case TEST_WAIT:
 			testWait();
@@ -407,161 +536,177 @@ void checkCommand()
 			break;
 		}
 	}
-	else if (streql(consoleBuffer, "HELP"))
+	else // composed commands
 	{
-		clearScreen();
-		restartCursor();
-		switch (hash(section))
+		switch (hashedCommand)
 		{
-		case HELP:
+		case KILL:
+			commandKill(section);
+			break;
+		case NICE:
 		{
-			appendstring("En serio?\n\n");
-			printColor("HELP: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Ayuda.\n");
-			appendstring("De no ser seguido por nada, lista los comandos disponibles.\n");
-			appendstring("De ser seguido por un comando, da informacion sobre el mismo.\n\n");
-			printExitHelp();
-			waitForKey(ESC);
+			char priority[64] = {0};
+			splitString(section, priority, ' ');
+			commandNice(section, priority);
 			break;
 		}
-		case TRON:
-		{
-			printColor("TRON: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Juego de dos jugadores, al mejor de 5.\n");
-			appendstring("Pierde quien choque contra si mismo,\nel otro jugador, o los bordes.\n");
-			appendstring("El jugador 1 se mueve con las flechas.\n");
-			appendstring("El jugador 2 se mueve con las teclas W,A,S y D.\n");
-			appendstring("Sorpresa al final :)\n\n");
-			printExitHelp();
-			waitForKey(ESC);
+		case BLOCK:
+			commandBlock(section);
 			break;
-		}
-		case BEEP:
-		{
-			printColor("BEEP: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Emite un beeeeep\n\n");
-			beep(440, 1);
-			printExitHelp();
-			waitForKey(ESC);
-		}
-		break;
-		case ANTHEM:
-		{
-			printColor("ANTHEM: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("El himno de mi corazon, \npero no el de los abuelos de la nada.\n\n");
-			printExitHelp();
-			waitForKey(ESC);
+		case UNBLOCK:
+			commandUnblock(section);
 			break;
-		}
-		case INFOREG:
-		{
-			printColor("INFOREG: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Imprime en pantalla el valor de los registros\nal momento de ejecucion.\n");
-			appendstring("Para realizar una toma de estado, presione ':' .\n\n");
-			printExitHelp();
-			waitForKey(ESC);
-			break;
-		}
-		case TIME:
-		{
-			printColor("TIME: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("De encontrarse en una isla desierta \nsin medios para saber la hora,\nuse este comando\n\n");
-			printExitHelp();
-			waitForKey(ESC);
-			break;
-		}
-		case INVOP:
-		{
-			printColor("INVOP: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Envia un codigo de operacion invalido.\n");
-			appendstring("Que puede salir mal?\n\n");
-			printExitHelp();
-			waitForKey(ESC);
-			break;
-		}
-		case DIVCERO:
-		{
-			printColor("DIVCERO: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Divide por cero.\n");
-			appendstring("Totalmente inocuo.\n\n");
-			printExitHelp();
-			waitForKey(ESC);
-			break;
-		}
-		case PIANO:
-		{
-			printColor("PIANO: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Componga su proxima obra maestra.\n");
-			appendstring("Piano de eleccion de: \nPablo Lescano, Paul McCartney y Wolfgang Amadeus Mozart.\n");
-			appendstring("Blancas: ASDFGHJ\n");
-			appendstring("Negras: WETYUOP\n\n");
-			printExitHelp();
-			waitForKey(ESC);
-			break;
-		}
 		case MEMACCESS:
-		{
-			printColor("MEMACCESS (MEM ADRESS): <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Imprime por pantalla los 32 bits posteriores\na la direccion de memoria especificada.\n");
-			appendstring("Debe ser ingresada la zona de memoria a acceder luego del comando separado por una espacio.\n");
-			appendstring("Modo de uso: <memaccess [direccion]>\n\n");
-			printExitHelp();
-			waitForKey(ESC);
+			commandMemAccess(section);
 			break;
-		}
-		case CLEAR:
-		{
-			printColor("CLEAR: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Limpia la pantalla.\n");
-			appendstring("AUSPICIADO POR MR MUSCULO\n");
-			appendstring("ANIQUILA LOS GERMENES, SUFRIMIENTO MAXIMO\n\n");
-			printExitHelp();
-			waitForKey(ESC);
+		case HELP:
+			handleHelp(section);
 			break;
-		}
-		case LANGUAGE:
-		{
-			printColor("LANGUAGE: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Cambia el teclado.\n");
-			appendstring("Seguido por '=es' -> espa~ol\n");
-			appendstring("Seguido por '=en' -> ingles\n");
-			appendstring("Modo de uso <language=es> o <language=en> \n");
-			appendstring("Ruso y Klingon disponibles proximamente.\n\n");
-			printExitHelp();
-			waitForKey(ESC);
-			break;
-		}
-		case SIZE:
-		{
-			printColor("SIZE: <User Commands>\n\n", 0x0F66151, 0);
-			appendstring("Agrande o achique el tama~o del texto en pantalla \nsiguiendo el comando con un + o un -,\nrespectivamente.\n");
-			appendstring("Modo de uso: <size+>\n\n");
-			printExitHelp();
-			waitForKey(ESC);
-			break;
-		}
 		default:
-			printColor("'%s %s'", ORANGY, command, section);
+			printColor("'%s'", ORANGY, command);
 			print(" : comando no encontrado.\n");
 			break;
 		}
 	}
-	else if (streql(consoleBuffer, "MEMACCESS"))
-	{
-		if (strlen(section) <= 16 && onlyHexChars(section))
-		{
-			commandMemAccess(section);
-		}
-		else
-		{
-			printColor("Error : ingrese una direccion en hexadecimal de 64 bits.\n", ORANGY);
-		}
-	}
-	else
-	{
+}
 
-		printColor("'%s'", ORANGY, command);
-		print(" : comando no encontrado.\n");
+void handleHelp(char *helping)
+{
+	int hashedHelp = hash(helping);
+	clearScreen();
+	restartCursor();
+	switch (hashedHelp)
+	{
+	case HELP:
+	{
+		appendstring("En serio?\n\n");
+		printColor("HELP: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Ayuda.\n");
+		appendstring("De no ser seguido por nada, lista los comandos disponibles.\n");
+		appendstring("De ser seguido por un comando, da informacion sobre el mismo.\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case TRON:
+	{
+		printColor("TRON: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Juego de dos jugadores, al mejor de 5.\n");
+		appendstring("Pierde quien choque contra si mismo,\nel otro jugador, o los bordes.\n");
+		appendstring("El jugador 1 se mueve con las flechas.\n");
+		appendstring("El jugador 2 se mueve con las teclas W,A,S y D.\n");
+		appendstring("Sorpresa al final :)\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case BEEP:
+	{
+		printColor("BEEP: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Emite un beeeeep\n\n");
+		beep(440, 1);
+		printExitHelp();
+		waitForKey(ESC);
+	}
+	break;
+	case ANTHEM:
+	{
+		printColor("ANTHEM: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("El himno de mi corazon, \npero no el de los abuelos de la nada.\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case INFOREG:
+	{
+		printColor("INFOREG: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Imprime en pantalla el valor de los registros\nal momento de ejecucion.\n");
+		appendstring("Para realizar una toma de estado, presione ':' .\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case TIME:
+	{
+		printColor("TIME: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("De encontrarse en una isla desierta \nsin medios para saber la hora,\nuse este comando\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case INVOP:
+	{
+		printColor("INVOP: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Envia un codigo de operacion invalido.\n");
+		appendstring("Que puede salir mal?\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case DIVCERO:
+	{
+		printColor("DIVCERO: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Divide por cero.\n");
+		appendstring("Totalmente inocuo.\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case PIANO:
+	{
+		printColor("PIANO: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Componga su proxima obra maestra.\n");
+		appendstring("Piano de eleccion de: \nPablo Lescano, Paul McCartney y Wolfgang Amadeus Mozart.\n");
+		appendstring("Blancas: ASDFGHJ\n");
+		appendstring("Negras: WETYUOP\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case MEMACCESS:
+	{
+		printColor("MEMACCESS (MEM ADRESS): <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Imprime por pantalla los 32 bits posteriores\na la direccion de memoria especificada.\n");
+		appendstring("Debe ser ingresada la zona de memoria a acceder luego del comando separado por una espacio.\n");
+		appendstring("Modo de uso: <memaccess [direccion]>\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case CLEAR:
+	{
+		printColor("CLEAR: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Limpia la pantalla.\n");
+		appendstring("AUSPICIADO POR MR MUSCULO\n");
+		appendstring("ANIQUILA LOS GERMENES, SUFRIMIENTO MAXIMO\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case LANGUAGE:
+	{
+		printColor("LANGUAGE: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Cambia el teclado.\n");
+		appendstring("Seguido por '=es' -> espa~ol\n");
+		appendstring("Seguido por '=en' -> ingles\n");
+		appendstring("Modo de uso <language=es> o <language=en> \n");
+		appendstring("Ruso y Klingon disponibles proximamente.\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	case SIZE:
+	{
+		printColor("SIZE: <User Commands>\n\n", 0x0F66151, 0);
+		appendstring("Agrande o achique el tama~o del texto en pantalla \nsiguiendo el comando con un + o un -,\nrespectivamente.\n");
+		appendstring("Modo de uso: <size+>\n\n");
+		printExitHelp();
+		waitForKey(ESC);
+		break;
+	}
+	default:
+
+		break;
 	}
 }
 
@@ -569,45 +714,65 @@ void checkCommand()
 static void loadHistory(const char *s)
 {
 	int len = strlen(s);
-	if (historyDim > 0 && strcmp(historyBuffer[historyDim - 1], s) == 0)
+	if (historyDim > 0 && strcmp(historyBuffer[(historyDim - 1) % MAX_COMMANDS], s) == 0)
 	{
 		return;
 	}
-	strcpy(historyBuffer[historyDim], s);
-
-	historyBuffer[historyDim++][len] = 0;
+	strncpy(historyBuffer[historyDim % MAX_COMMANDS], s, MAX_COMMAND_LENGTH - 1);
+	historyBuffer[historyDim % MAX_COMMANDS][len] = '\0';
+	historyDim++;
 	historyIndex = historyDim;
 }
+
 // SUBE EN EL HISTORIAL A MAS VIEJOS
 static char *upHistory()
 {
 	if (historyIndex > 0)
 	{
-		return historyBuffer[--historyIndex];
+		if (historyIndex == historyDim && historyDim > 0)
+		{
+			return historyBuffer[--historyIndex % MAX_COMMANDS];
+		}
+		historyIndex--;
+		return historyBuffer[historyIndex % MAX_COMMANDS];
 	}
 	beep(100, 1);
 	return "";
 }
+
 // BAJA EN EL HISTORIAL A MAS RECIENTES
 static char *downHistory()
 {
 	if (historyIndex < historyDim)
 	{
-		return historyBuffer[historyIndex++];
+		historyIndex++;
+		if (historyIndex == historyDim)
+		{
+			clearconsoleBuffer();
+			return "";
+		}
+		return historyBuffer[historyIndex % MAX_COMMANDS];
 	}
 	beep(100, 1);
 	return "";
 }
+
 // RESETEA LA LINEA
 static void inLineReset()
 {
-	int i = 0;
-	while (i <= strlen(consoleBuffer) - 1)
+	for (int i = 0; i < lastChar; i++)
 	{
 		backspace();
-		i++;
 	}
+	lastChar = 0;
 	clearconsoleBuffer();
+}
+void printHistory()
+{
+	for (int i = 0; i < historyDim; i++)
+	{
+		printColor("%s\n", FONTCOLOR, historyBuffer[i]);
+	}
 }
 // FUNCION QUE EJECUTA UP OR DOWN
 void upArrow(int arrowUp)
@@ -616,34 +781,33 @@ void upArrow(int arrowUp)
 	char *aux;
 	if (arrowUp)
 	{
-		aux = upHistory();
+		if (historyIndex > 0)
+		{
+			aux = upHistory();
+		}
+		else
+		{
+			return;
+		}
 	}
 	else
 	{
 		aux = downHistory();
 	}
 	printColor("%s", FONTCOLOR, aux);
-	lastChar = 0;
-	for (int i = 0; i < strlen(aux); i++)
-	{
-		consoleBuffer[lastChar++] = aux[i];
-	}
+	strncpy(consoleBuffer, aux, MAX_COMMAND_LENGTH - 1);
+	lastChar = strlen(consoleBuffer);
 }
+
 // RESETEA EL HISTORIAL
 void clearHistoryBuffer()
 {
-	for (int i = 0; i < MAX_COMMANDS; i++)
-	{
-		for (int j = 0; j < MAX_COMMAND_LENGTH; j++)
-		{
-			historyBuffer[i][j] = 0;
-		}
-	}
+	memset(historyBuffer, 0, sizeof(historyBuffer));
 	historyDim = historyIndex = 0;
 }
 
 // SE FIJA QUE TECLA HA SIDO ACCINOADA Y QUE HACER AL RESPECTO...
-void checkKey(char c)
+void handleKey(char c)
 {
 	switch (c)
 	{
@@ -682,8 +846,9 @@ void checkKey(char c)
 
 		if (consoleBuffer != 0 && consoleBuffer[0])
 		{
+			historyIndex = historyDim;
 			loadHistory(consoleBuffer);
-			checkCommand(consoleBuffer);
+			handleCommand(consoleBuffer);
 			clearconsoleBuffer();
 		}
 		printColor("user@Qemu:", USER_TEXT_COLOR, 0);

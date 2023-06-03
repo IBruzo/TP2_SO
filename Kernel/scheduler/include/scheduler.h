@@ -15,6 +15,6 @@ int countCurrentProcessAppearances();
 void printRoute();
 extern int getTime(int op);
 extern void forceTick();
-void ps(char *);
+void ps(char *buffer);
 
 #endif

@@ -163,14 +163,12 @@ void printRoute()
 
 void ps(char *buffer)
 {
-    char *aux;
-    Iterator *routeIt = dlcCreateIterator(&route);
-    list_t *processIt;
-    for (int i = 0; i < dlcSize + 1; i++)
+    char *aux = NULL;
+    int read = sprintf(aux, "HOLA EST ES ST ESING A\n");
+    if (read < 0)
     {
-        processIt = dlcNext(routeIt);
-        PCB *pcb = get(PCBTable, processIt->data);
-        aux = snprintf("PID: %d | Priority: %d | State: %d \n", pcb->PID, pcb->PPID, pcb->state);
-        strcat(buffer, aux);
+        print("Error en sprintf");
     }
+    print("ps: %s", aux);
+    strcpy(buffer, aux);
 }

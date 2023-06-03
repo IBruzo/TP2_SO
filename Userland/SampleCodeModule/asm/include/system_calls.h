@@ -39,4 +39,5 @@ extern void changeInputFD(int pid, int newFD);
 extern void changeOutputFD(int pid, int newFD);
 extern int getInputFD(int pid);
 extern int getOutputFD(int pid);
+extern void ps(char *buffer);
 #endif

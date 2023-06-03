@@ -92,7 +92,6 @@ int64_t test_processes(uint64_t argc, char *argv[])
                         printTableRow(p_rqs[rq].pid, "Killing ", "Killed ");
                     }
                     break;
-
                 case 1:
                     if (p_rqs[rq].state == RUNNING)
                     {

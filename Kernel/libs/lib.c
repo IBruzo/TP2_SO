@@ -94,8 +94,7 @@ static void getStringToPrint(char str[], int strSize, char *foundation, va_list 
 
 	int i = 0, j = 0;
 	// el buffer final y el buffer temporal para las conversiones numericas
-	// buff deberia ser dinamico pero no tenemos malloc :/
-	char buff[1024] = {0}, tmp[20];
+	char buff[4096] = {0}, tmp[1000];
 	// buffer para el string
 	char *str_arg;
 
@@ -185,26 +184,55 @@ char *snprintf(char *foundation, ...)
 {
 	va_list args;
 	va_start(args, foundation);
-	static char str[1024];
-	int strSize = 1024;
+	static char str[4096];
+	int strSize = 4096;
 	getStringToPrint(str, strSize, foundation, args);
 	va_end(args);
-
 	return str;
+}
+
+int snprintf2(char *buffer, size_t size, char *foundation, ...)
+{
+	va_list args;
+	va_start(args, foundation);
+	getStringToPrint(buffer, size, foundation, args);
+	va_end(args);
+	return size;
+}
+int sprintf(char *buffer, char *foundation, ...)
+{
+	va_list args;
+	va_start(args, foundation);
+	getStringToPrint(buffer, 4096, foundation, args);
+	va_end(args);
+	return 4096;
 }
 
 void strncpy(char *destination, const char *origin, int n)
 {
 	int i;
-	for (i = 0; origin[i] != '\0' && i < n; i++)
+	for (i = 0; i < n - 1 && origin[i] != '\0'; i++)
+	{
 		destination[i] = origin[i];
+	}
 	destination[i] = '\0';
 }
 
-// copia el string de origian a destination
 void strcpy(char *destination, const char *origin)
 {
-	strncpy(destination, origin, strlen(origin));
+	strncpy(destination, origin, strlen(origin) + 1);
+}
+char *strcpyR(char *destination, const char *source)
+{
+	char *dest = destination;
+	while (*source != '\0')
+	{
+		*dest = *source;
+		dest++;
+		source++;
+	}
+	*dest = '\0';
+	return destination;
 }
 
 void strncat(char *destination, const char *origin, int n)

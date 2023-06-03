@@ -18,7 +18,9 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
     int fd2 = currPCB->FD[1]; // stdout
     // output en consola
     if (currPCB->FD[1] == 1)
+    {
         put_letter(character, x, y, size, color);
+    }
     // pipe si o si
     // pipeWrite( FD[1], char)
 }
@@ -29,7 +31,10 @@ char sys_getchar()
     PCB *currPCB = get(PCBTable, currPID);
     // input de consola
     if (currPCB->FD[0] == 0)
+    {
         return getKey();
+    }
+
     // es un pipe
     // pipeRead( FD[1], char)
 }
@@ -237,8 +242,14 @@ int sys_decreasePriority(int PID)
 int sys_nice(int pid, int prio)
 {
     PCB *toChangePrio = get(PCBTable, pid);
-    if (!toChangePrio || toChangePrio->priority == prio || prio <= 0 || prio >= 5)
+    if (!toChangePrio || prio <= 0 || prio >= 5)
+    {
+        return -1;
+    }
+    else if (toChangePrio->priority == prio)
+    {
         return 0;
+    }
     toChangePrio->priority = prio;
     toChangePrio->lives = prio;
     return 1;
@@ -252,9 +263,6 @@ void sys_yield()
 
 int sys_kill(int pid)
 {
-    // print("Killing Process...\n");
-    // print("WANTING TO MURDER PID [%d]\n", pid);
-
     if (pid == 0 || pid == 1)
     {
         return -1;
@@ -374,6 +382,13 @@ int sys_getOutputFD(int pid)
 {
     PCB *currPCB = get(PCBTable, pid);
     if (currPCB == NULL)
+    {
         return -1;
+    }
     return currPCB->FD[1];
+}
+
+void sys_ps(char *buffer)
+{
+    ps(buffer);
 }

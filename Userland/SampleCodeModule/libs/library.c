@@ -34,7 +34,17 @@ unsigned char atointhex(unsigned char a)
 		returnChar = a % '0';
 	return returnChar;
 }
-
+int strToInt(char *str)
+{
+	int i = 0;
+	int rta = 0;
+	while (str[i] != 0)
+	{
+		rta = rta * 10 + str[i] - '0';
+		i++;
+	}
+	return rta;
+}
 uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 {
 	char *p = buffer;
@@ -408,12 +418,15 @@ void print(char *foundation, ...)
 // copia el string de origian a destination
 void strcpy(char *destination, const char *origin)
 {
+	strncpy(destination, origin, strlen(origin));
+}
+void strncpy(char *destination, const char *origin, int n)
+{
 	int i;
-	for (i = 0; origin[i] != '\0'; i++)
+	for (i = 0; origin[i] != '\0' && i < n; i++)
 		destination[i] = origin[i];
 	destination[i] = '\0';
 }
-
 // da vuelta el string ABC -> CBA
 char *strrev(char *str)
 {

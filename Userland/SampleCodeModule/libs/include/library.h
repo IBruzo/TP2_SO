@@ -32,6 +32,7 @@ void appendstringColor(char *string, int color);
 
 // string
 void strcpy(char *destination, const char *origin);
+void strncpy(char *destination, const char *origin, int n);
 char streql(const char *str1, const char *str2);
 int strcmp(const char *s1, const char *s2);
 int strlen(const char *str);
@@ -53,6 +54,7 @@ unsigned char hexToChar(unsigned char a, unsigned char b);
 int pow(int base, unsigned int exp);
 char onlyHexChars(char *string);
 char isHexChar(char character);
+int strToInt(char *str);
 
 // consoleControl
 int canWrite();
