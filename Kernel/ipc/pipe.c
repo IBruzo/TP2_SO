@@ -4,6 +4,8 @@
 #include <semaphores.h>
 // https://tldp.org/LDP/lpg/node11.html
 
+void printBuffer(int fd);
+
 typedef struct pipe
 {
     int pipePID;                       // Process ID of the pipe
@@ -74,7 +76,7 @@ int getPipeFd(const char *pipeName)
     return -1; // si no encontro el pipe
 }
 
-int createPipe(const char *name)
+int createPipe(char *name)
 {
     int len = pipeCheckName(name);
     if ((len == -1))
@@ -136,7 +138,7 @@ int createPipe(const char *name)
 
 /* ----------------------------------------------------------------------------------------------------- */
 
-int pipeOpen(const char *name)
+int pipeOpen(char *name)
 {
     print("Opening Pipe...\n");
     int fd = getPipeFd(name);

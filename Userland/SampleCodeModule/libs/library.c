@@ -758,20 +758,18 @@ char toLower(char c)
 	return c;
 }
 
-char * filter(char * str){
+void filter(char * str, char * buffer){
 	int len = strlen(str);
-	char result[512] = {0};
     int j = 0;
 
     for (int i = 0; i < len; i++) {
         if (toLower(str[i]) != 'a' && toLower(str[i]) != 'e' &&
             toLower(str[i]) != 'i' && toLower(str[i]) != 'o' &&
             toLower(str[i]) != 'u') {
-            result[j++] = str[i];
+            buffer[j++] = str[i];
         }
     }
 
-    result[j] = '\0';
-    return result;
+    buffer[j] = '\0';
 }
 

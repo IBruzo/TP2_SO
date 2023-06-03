@@ -222,7 +222,7 @@ _irq60Handler:
 	sti
 	iretq
 
-.conti
+.conti:
 	pushStateNoRAX
 	push r9
 	mov r9, r8

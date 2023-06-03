@@ -285,7 +285,9 @@ void commandWc(char *str){
 }
 
 void commandFilter(char *str){
-	print("%s\n", filter(str));
+	char buf[512] = {0};
+	filter(str,buf);
+	print("%s\n", buf);
 }
 
 void commandKill(char *str)
@@ -433,7 +435,7 @@ void commandPrintProcesses()
 {
 	char s[1000];
 	ps(s);
-	int n = strlen(s);
+	//int n = strlen(s);
 	print("%s", s);
 }
 
@@ -495,7 +497,7 @@ void handleRegularCommand(){
 	char *command = toUpper(consoleBuffer);
 	splitString(command, section, ' ');
 	int hashedCommand = hash(command);
-	int hashedSection = hash(section);
+	//int hashedSection = hash(section);
 	if (section[0] == 0)
 	{
 		switch (hashedCommand)
@@ -852,8 +854,14 @@ void upArrow(int arrowUp)
 // RESETEA EL HISTORIAL
 void clearHistoryBuffer()
 {
-	memset(historyBuffer, 0, sizeof(historyBuffer));
-	historyDim = historyIndex = 0;
+	for (int i = 0; i < MAX_COMMANDS; i++)
+    {
+        for (int j = 0; j < MAX_COMMAND_LENGTH; j++)
+        {
+            historyBuffer[i][j] = 0;
+        }
+    }
+    historyDim = historyIndex = 0;
 }
 
 // SE FIJA QUE TECLA HA SIDO ACCINOADA Y QUE HACER AL RESPECTO...

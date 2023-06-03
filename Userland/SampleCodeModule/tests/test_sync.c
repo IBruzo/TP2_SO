@@ -5,12 +5,12 @@
 
 #define SEM_ID "sem"
 
-uint64_t global; // shared memory
+int global; // shared memory
 
 
 void * processInc(int argc, char *argv[]) {
-  uint64_t n;
-  uint64_t process;
+  int n;
+  int process;
 
   if (argc != 2)
     return NULL;
@@ -20,7 +20,7 @@ void * processInc(int argc, char *argv[]) {
   if ((process = satoi(argv[1])) <= 0)
     return NULL;
 
-  uint64_t i;
+  int i;
   for (i = 0; i < n; i++) {
       semWait(SEM_ID);
      // printColor("wait ", 0xFF0000);
@@ -37,15 +37,15 @@ void * processInc(int argc, char *argv[]) {
   return NULL;
 }
 
-uint64_t test_sync() { //{n, use_sem, 0}
-  uint64_t pids[3];
+int test_sync() { //{n, use_sem, 0}
+  int pids[3];
 
   global = 0;
 
   semOpen(SEM_ID, 1);
   print("opening semaphore\n");
   
-  uint64_t i;
+  int i;
 
   char *argv1[] = {"10", "1", NULL};
   char *argv2[] = {"10", "2", NULL};
@@ -56,7 +56,7 @@ uint64_t test_sync() { //{n, use_sem, 0}
   pids[2] = createFGProcess("NIGGER3",processInc, 2, argv3);
 
   for (i = 0; i < 3; i++) {
-    uint64_t primerpid = pids[i];
+    int primerpid = pids[i];
     waitPid(pids[i]);
     //kill(pids[i]);
     print("process %d brutally murdered\n", primerpid);

@@ -77,6 +77,6 @@ int hasPipe(char *str);
 
 char * cat(char *str);
 int wc(char *str);
-char * filter(char * str);
+void filter(char * str, char * buffer);
 
 #endif
