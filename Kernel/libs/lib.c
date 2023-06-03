@@ -180,7 +180,7 @@ void print(char *foundation, ...)
 	appendstringColor(str, FONTCOLOR);
 }
 
-char *snprintf(char *foundation, ...)
+char *snprintf2(char *foundation, ...)
 {
 	va_list args;
 	va_start(args, foundation);
@@ -191,7 +191,7 @@ char *snprintf(char *foundation, ...)
 	return str;
 }
 
-int snprintf2(char *buffer, size_t size, char *foundation, ...)
+int snprintf(char *buffer, size_t size, char *foundation, ...)
 {
 	va_list args;
 	va_start(args, foundation);
@@ -201,11 +201,12 @@ int snprintf2(char *buffer, size_t size, char *foundation, ...)
 }
 int sprintf(char *buffer, char *foundation, ...)
 {
+	int len = strlen(foundation);
 	va_list args;
 	va_start(args, foundation);
-	getStringToPrint(buffer, 4096, foundation, args);
+	getStringToPrint(buffer, len, foundation, args);
 	va_end(args);
-	return 4096;
+	return len;
 }
 
 void strncpy(char *destination, const char *origin, int n)

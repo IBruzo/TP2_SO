@@ -35,7 +35,7 @@ int main()
 	// Desactivadoo Interrupciones mientras se configuran las Estructuras
 	_cli();
 
-		/* ------------- Table Loading & Creation ------------ */
+	/* ------------- Table Loading & Creation ------------ */
 	load_idt();
 	exceptionsBackupValues((uint64_t)sampleCodeModuleAddress, getSP());
 
@@ -56,7 +56,7 @@ int main()
 
 	/* ------------ Creating IDLE Process ---------------- */
 	// Reserva de memoria para el Stack
-	uint64_t *idleMemStart = (uint64_t *)sys_allocMem(PAGE_SIZE);
+	uint64_t *idleMemStart = (uint64_t *)sys_mAlloc(PAGE_SIZE);
 
 	// Creacion de PCB
 	PCB idlePCB;

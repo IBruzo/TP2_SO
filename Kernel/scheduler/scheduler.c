@@ -96,7 +96,7 @@ int unblock(int pid)
     PCB *blockedProcess = get(PCBTable, pid);
     if (pid != -1 && flag)
     {
-        list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
+        list_t *newProcess = (list_t *)sys_mAlloc(sizeof(list_t));
         newProcess->data = pid;
         list_push(&route, newProcess);
         dlcSize++;
@@ -163,12 +163,10 @@ void printRoute()
 
 void ps(char *buffer)
 {
-    char *aux = NULL;
-    int read = sprintf(aux, "HOLA EST ES ST ESING A\n");
-    if (read < 0)
-    {
-        print("Error en sprintf");
-    }
-    print("ps: %s", aux);
-    strcpy(buffer, aux);
+    char header[100];
+    int headerSize = sprintf(header, "Process ID Prioridad | Stack Base | Context\n");
+    strcpy(buffer, header);
+    char line[100];
+    int lineSize = sprintf(line, "---------------------------------------\n");
+    strcat(buffer, line);
 }

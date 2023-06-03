@@ -30,7 +30,6 @@ extern int semOpen(char *name, int initValue);
 extern int semClose(char *name);
 extern int semWait(char *name);
 extern int semPost(char *name);
-extern char *mem(int unit);
 extern void waitPid(int pid);
 extern int block(int pid);
 extern int unblock(int pid);
@@ -40,4 +39,5 @@ extern void changeOutputFD(int pid, int newFD);
 extern int getInputFD(int pid);
 extern int getOutputFD(int pid);
 extern void ps(char *buffer);
+extern void mem(char *buffer, int unit);
 #endif

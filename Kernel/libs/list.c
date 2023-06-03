@@ -16,7 +16,7 @@ static int compare_PCB(const PCB *a, const PCB *b)
 
 void insert(List *list, PCB *data)
 {
-    Node *newNode = (Node *)sys_allocMem(sizeof(Node));
+    Node *newNode = (Node *)sys_mAlloc(sizeof(Node));
     newNode->data = data;
 
     // If the list is empty or the new element should be inserted at the beginning
@@ -62,7 +62,7 @@ void delete(List *list, int targetPID)
                 prev->next = current->next;
             }
 
-            sys_free(current);
+            sys_mFree(current);
             list->size--;
             return;
         }
@@ -113,7 +113,7 @@ void freeList(List *list)
     {
         Node *temp = current;
         current = current->next;
-        sys_free(temp);
+        sys_mFree(temp);
     }
     list->head = NULL;
     list->size = 0;

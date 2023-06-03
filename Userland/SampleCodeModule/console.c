@@ -258,11 +258,7 @@ void testSemaphoresSync()
 	test_sync(2, argv);
 	return;
 }
-void commandPrintMemState(size_t unit)
-{
-	char *string = mem(unit);
-	print(string);
-}
+
 void commandCat()
 {
 	while (1)
@@ -418,12 +414,18 @@ void commandLoop()
 		sleep(1);
 	}
 }
-
+void commandPrintMemState(int unit)
+{
+	char s[1000];
+	mem(s, unit);
+	print("%s", s);
+}
 void commandPrintProcesses()
 {
-	char *s;
+	char s[1000];
 	ps(s);
-	// print("%s", s);
+	int n = strlen(s);
+	print("%s", s);
 }
 
 static void testWait()

@@ -27,10 +27,9 @@ void sys_clearkeybuffer();
 void sys_changeLanguage(int lan);
 void sys_storeRegisters(void);
 void sys_memAccess(uint64_t memDir);
-char *sys_mem();
-void *sys_allocMem(int bytes);
+void *sys_mAlloc(int bytes);
 void scroll_up_once(uint32_t tamY, uint32_t color);
-void sys_free(void *dir);
+void sys_mFree(void *dir);
 int sys_createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd);
 int sys_getPid();
 int sys_increasePriority(int PID);
@@ -54,6 +53,7 @@ int sys_getOutputFD(int pid);
 int sys_openPipe(char *name);
 int sys_closePipe(int fd);
 void sys_ps(char *buffer);
+void sys_mem(char *buffer, int unit);
 
 int getCurrentPid(); //>.>
 

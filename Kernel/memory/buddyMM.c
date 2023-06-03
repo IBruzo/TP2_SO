@@ -2,7 +2,6 @@
 
 #include "memoryManager.h"
 
-
 #define HEADER_SIZE 8
 #define MIN_ALLOC_LOG2 12 // 4kibibyte
 #define MIN_ALLOC ((size_t)1 << MIN_ALLOC_LOG2)
@@ -20,34 +19,39 @@ static uint8_t *max_ptr;
 
 size_t allocatedBytes = 0;
 
-char * mem(int unit) // crea string de memoria total, ocupada y libre
-{ 
-  size_t total; 
+void mem(char *buffer, int unit) // crea string de memoria total, ocupada y libre
+{
+  size_t total;
   size_t allocated;
   size_t free;
-  char* memStateString;
+  char memStateString[150];
+  int read;
 
-  size_t kibiConvert = 1024*1024;
-  //size_t gibiConvert = 1024*1024*1024;
-  if(unit == 0){ // mb
-    total = (size_t) memSize /kibiConvert; 
-    allocated = allocatedBytes/kibiConvert; 
-    free = (total - allocated); 
-    memStateString = snprintf( "Estado de la Memoria\n TOTAL: %d MB \n En uso: %d MB \n Libre: %d MB \nPara mayor precision usar el comando 'memb'\n", total, allocated, free);
+  size_t kibiConvert = 1024 * 1024;
+  // size_t gibiConvert = 1024*1024*1024;
+  if (unit == 0)
+  { // mb
+    total = (size_t)memSize / kibiConvert;
+    allocated = allocatedBytes / kibiConvert;
+    free = (total - allocated);
+    read = sprintf(memStateString, "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
   }
-  else if(unit == 1){ //GB
-    total = (size_t) memSize; 
-    allocated = allocatedBytes; 
-    free = (total - allocated); 
-    memStateString = snprintf( "Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, allocated, free);
+  else if (unit == 1)
+  { // GB
+    total = (size_t)memSize;
+    allocated = allocatedBytes;
+    free = (total - allocated);
+    read = sprintf(memStateString, "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
   }
-  else{
-    memStateString = snprintf( "Unidad no reconocida\n");
+  else
+  {
+    read = sprintf(memStateString, "Unidad no reconocida\n");
   }
-  return memStateString;
-  
+  if (read > 0)
+  {
+    strcpy(buffer, memStateString);
+  }
 }
-
 
 static int update_max_ptr(uint8_t *new_value)
 {
@@ -128,7 +132,7 @@ static int lower_bucket_limit(size_t bucket)
 
 void *memAlloc(int request)
 {
-  if(request < 0)
+  if (request < 0)
   {
     return NULL;
   }
@@ -202,10 +206,11 @@ void *memAlloc(int request)
 
     *(size_t *)ptr = request;
 
-    if(request < 0){
+    if (request < 0)
+    {
       return NULL;
     }
-    int currentAllocation = (size_t)1 << (MAX_ALLOC_LOG2-bucket);
+    int currentAllocation = (size_t)1 << (MAX_ALLOC_LOG2 - bucket);
     allocatedBytes += currentAllocation;
 
     return ptr + HEADER_SIZE;
@@ -242,8 +247,6 @@ void memFree(void *ptr)
     bucket--;
   }
   list_push(&buckets[bucket], (list_t *)ptr_for_node(i, bucket));
-
-
 }
 
 void initMemoryManager(void *hBase, uint32_t hSize)
@@ -256,8 +259,5 @@ void initMemoryManager(void *hBase, uint32_t hSize)
   memSize = hSize;
   return;
 }
-
-
-
 
 #endif

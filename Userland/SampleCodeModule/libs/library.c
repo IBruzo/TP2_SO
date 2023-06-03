@@ -328,7 +328,7 @@ static void wrapperprint(char *foundation, int color, va_list vl)
 	int i = 0, j = 0;
 	// el buffer final y el buffer temporal para las conversiones numericas
 	// buff deberia ser dinamico pero no tenemos malloc :/
-	char buff[128] = {0}, tmp[20];
+	char buff[4096] = {0}, tmp[20];
 	// buffer para el string
 	char *str_arg;
 

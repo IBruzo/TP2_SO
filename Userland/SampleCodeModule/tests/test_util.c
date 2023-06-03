@@ -84,12 +84,3 @@ void endless_loop_print(int argc, char *argv[])
     }
   }
 }
-
-/* void endless_loop_print(uint64_t wait) {
-  int64_t pid = my_getpid();
-
-  while (1) {
-    printf("%d ", pid);
-    bussy_wait(wait);
-  }
-} */

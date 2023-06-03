@@ -153,18 +153,13 @@ void sys_memAccess(uint64_t memDir)
     put_word("Presione ESC para salir", 0, 212 + 4 * 16 * 2, 2, 0xf65194);
 }
 
-char *sys_mem(int unit)
-{
-    return mem(unit);
-}
-
-void *sys_allocMem(int bytes)
+void *sys_mAlloc(int bytes)
 {
     /* utlizo el memManager que fue inicializado por el kernel ( kernel.c ) */
     return memAlloc(bytes);
 }
 
-void sys_free(void *dir)
+void sys_mFree(void *dir)
 {
     memFree(dir);
 }
@@ -177,14 +172,14 @@ void sys_scroll_up(uint32_t tamY, uint32_t color)
 int sys_createProcess(void *(*f)(int, char **), int argc, char **argv, int *fd)
 {
     // Reservo la Memoria para el Stack del Proceso
-    uint64_t memStart = (uint64_t)sys_allocMem(PAG_SIZE * 2);
+    uint64_t memStart = (uint64_t)sys_mAlloc(PAG_SIZE * 2);
     // Añado el proceso a la Ruta del Scheduler
-    list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
+    list_t *newProcess = (list_t *)sys_mAlloc(sizeof(list_t));
     newProcess->data = processIDs;
     list_push(&route, newProcess);
     dlcSize++;
     // Añado a el PCB
-    PCB *newBlock = (PCB *)sys_allocMem(sizeof(PCB));
+    PCB *newBlock = (PCB *)sys_mAlloc(sizeof(PCB));
     buildPCB(newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), READY, 1, fd);
     insert(PCBTable, newBlock);
 
@@ -418,4 +413,8 @@ int sys_closePipe(int fd)
 void sys_ps(char *buffer)
 {
     ps(buffer);
+}
+void sys_mem(char *buffer, int unit)
+{
+    mem(buffer, unit);
 }

@@ -27,7 +27,6 @@ GLOBAL semOpen
 GLOBAL semClose
 GLOBAL semWait
 GLOBAL semPost
-GLOBAL mem
 GLOBAL waitPid
 GLOBAL block
 GLOBAL unblock
@@ -39,6 +38,7 @@ GLOBAL getOutputFD
 GLOBAL openPipe
 GLOBAL closePipe
 GLOBAL ps
+GLOBAL mem
 
 section .text
 

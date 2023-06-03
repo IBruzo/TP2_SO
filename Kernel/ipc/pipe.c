@@ -139,7 +139,7 @@ int createPipe(const char *name)
 int pipeOpen(const char *name)
 {
     int fd = getPipeFd(name);
-    if (fd == -1 || pipeCheckName(name) == -1)
+    if (pipeCheckName(name) == -1)
     {
         return -1;
     }

@@ -139,34 +139,34 @@ void *memAlloc(int sizeBytes)
     return 0;
 }
 
-char *mem(int unit) // crea string de memoria total, ocupada y libre
+void mem(char *buffer, int unit) // crea string de memoria total, ocupada y libre
 {
     size_t memSize = 8 * BIT_MAP_SIZE * PAG_SIZE;
     size_t total;
     size_t allocated;
     size_t free;
-    char *memStateString;
-
+    char memStateString[150];
+    int read;
     if (unit == 0)
     { // mb
         size_t kibiConvert = 1024 * 1024;
         total = (size_t)memSize / kibiConvert;
         allocated = allocatedBytes / kibiConvert;
         free = (total - allocated);
-        memStateString = snprintf("Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
+        read = sprintf(memStateString, "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
     }
     else if (unit == 1)
     { // bytes
-        total = (size_t)memSize;
+        total = memSize;
         allocated = allocatedBytes;
         free = (total - allocated);
-        memStateString = snprintf("Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, allocatedBytes, free);
+        read = sprintf(memStateString, "Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, allocatedBytes, free);
     }
     else
     {
-        memStateString = snprintf("Unidad no reconocida\n");
+        read = sprintf(memStateString, "Unidad no reconocida\n");
     }
-    return memStateString;
+    strcpy(buffer, memStateString);
 }
 
 #endif

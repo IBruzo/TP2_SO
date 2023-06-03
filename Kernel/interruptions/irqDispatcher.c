@@ -35,8 +35,8 @@ void initialize()
     (fun_sys[SYS_CHANGELANGUAGE_ID]) = (syscall)sys_changeLanguage;
     (fun_sys[SYS_STOREREGISTERS_ID]) = (syscall)sys_storeRegisters;
     (fun_sys[SYS_MEMACCESS_ID]) = (syscall)sys_memAccess;
-    (fun_sys[SYS_ALLOCMEM_ID]) = (syscall)sys_allocMem;
-    (fun_sys[SYS_FREE_ID]) = (syscall)sys_free;
+    (fun_sys[SYS_MALLOC_ID]) = (syscall)sys_mAlloc;
+    (fun_sys[SYS_MFREE_ID]) = (syscall)sys_mFree;
     (fun_sys[SYS_CREATEPROCESS_ID]) = (syscall)sys_createProcess;
     (fun_sys[SYS_SCROLL_UP_ONCE_ID]) = (syscall)scroll_up_once;
     (fun_sys[SYS_GETPID_ID]) = (syscall)sys_getPid;
