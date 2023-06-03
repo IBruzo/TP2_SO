@@ -8,7 +8,7 @@
 #define MAX_BLOCKS 128
 
 uint64_t test_mm(uint64_t argc, char *argv[]);
-uint64_t test_sync(uint64_t argc, char *argv[]);
+uint64_t test_sync();
 /********** TEST_PRIORITY **************/
 void test_prio();
 
