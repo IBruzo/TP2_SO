@@ -165,10 +165,10 @@ void ps(char *buffer)
 {
     /* print header */
     char header[100];
-    int headerSize = sprintf(header, "Process ID Prioridad | Stack Base | Context\n");
+    sprintf(header, "Process ID Prioridad | Stack Base | Context\n");
     strcpy(buffer, header);
     char line[100];
-    int lineSize = sprintf(line, "---------------------------------------\n");
+    sprintf(line, "---------------------------------------\n");
     strcat(buffer, line);
 
     /* print processes */
@@ -179,7 +179,7 @@ void ps(char *buffer)
         processIt = dlcNext(it);
         PCB *pcb = get(PCBTable, processIt->data);
         char process[100];
-        int processSize = sprintf(process, "%s  %d    %d    |  %x  |  %s\n", pcb->name, pcb->PID, pcb->priority, pcb->RSP, (pcb->FD[0]== 0 && pcb->FD[1] == 1) ? "FG" : "BG" );
+        sprintf(process, "%s  %d    %d    |  %x  |  %s\n", pcb->name, pcb->PID, pcb->priority, pcb->RSP, (pcb->FD[0]== 0 && pcb->FD[1] == 1) ? "FG" : "BG" );
         strcat(buffer, process);
     }
 }

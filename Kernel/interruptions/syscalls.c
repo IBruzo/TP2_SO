@@ -17,8 +17,8 @@ char sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
     PCB *currPCB = get(PCBTable, currPID);
 
     // debugging
-    int fd1 = currPCB->FD[0]; // stdin
-    int fd2 = currPCB->FD[1]; // stdout
+    //int fd1 = currPCB->FD[0]; // stdin
+    //int fd2 = currPCB->FD[1]; // stdout
 
     // output en consola
     if (currPCB->FD[1] == 1)

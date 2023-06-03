@@ -133,7 +133,7 @@ void splitString(char *original, char *firstSplit, char splitter)
 	int flag = 0;
 	for (; original[i] != 0; i++)
 	{
-		if (original[i] == ' ' && flag == 0)
+		if (original[i] == splitter && flag == 0)
 		{
 			flag = 1;
 			i++;
@@ -732,3 +732,44 @@ int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 	int BGFD[] = {-1, -1};
 	return createProcess(name, f, argc, argv, BGFD);
 }
+
+int hasPipe(char *str) {
+    while (*str != '\0') {
+        if (*str == '|') {
+            return 1;
+        }
+        str++;
+    }
+    return 0;
+}
+
+char * cat(char *str){
+	return str;
+}
+
+int wc(char *str){
+	return (strlen(str)*fontsize*8) / 1024 + 1;
+}
+
+char toLower(char c)
+{
+	if (c >= 'A' && c <= 'Z')
+		c = c + 32;
+	return c;
+}
+
+void filter(char * str, char * buffer){
+	int len = strlen(str);
+    int j = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (toLower(str[i]) != 'a' && toLower(str[i]) != 'e' &&
+            toLower(str[i]) != 'i' && toLower(str[i]) != 'o' &&
+            toLower(str[i]) != 'u') {
+            buffer[j++] = str[i];
+        }
+    }
+
+    buffer[j] = '\0';
+}
+

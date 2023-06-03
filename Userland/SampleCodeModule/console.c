@@ -258,24 +258,36 @@ void testSemaphoresSync()
 	return;
 }
 
-void commandCat()
+void commandCat(char *str)
 {
-	while (1)
-	{
-		char c = getchar();
-		if (c)
-		{
-			if (c == '\n')
-			{
-				break;
-			}
-			else
-			{
-				handleKey(c);
-			}
-		}
-	}
-	print("\n");
+	// while (1)
+	// {
+	// 	char c = getchar();
+	// 	if (c)
+	// 	{
+	// 		if (c == '\n')
+	// 		{
+	// 			break;
+	// 		}
+	// 		else
+	// 		{
+	// 			handleKey(c);
+	// 		}
+	// 	}
+	// }
+	// print("\n");
+	print("%s\n", cat(str));
+}
+
+void commandWc(char *str){
+	printInt(wc(str));
+	newline();
+}
+
+void commandFilter(char *str){
+	char buf[512] = {0};
+	filter(str,buf);
+	print("%s\n", buf);
 }
 
 void commandKill(char *str)
@@ -423,7 +435,7 @@ void commandPrintProcesses()
 {
 	char s[1000];
 	ps(s);
-	int n = strlen(s);
+	//int n = strlen(s);
 	print("%s", s);
 }
 
@@ -448,11 +460,44 @@ static void testProcesses()
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
 void handleCommand()
 {
+	if(hasPipe(consoleBuffer)){
+		handlePipe();
+		return;
+	}
+	else{
+		handleRegularCommand();
+		return;
+	}
+}
+
+void handlePipe(){
+	char leftCommand[128] = {0};
+	char rightCommand[128] = {0};
+	char leftSection[128] = {0};
+	char rightSection[128] = {0};
+	
+	splitString(consoleBuffer, rightCommand, '|');
+
+	strcpy(leftCommand, consoleBuffer);
+
+	splitString(leftCommand, leftSection, ' ');
+	
+	while(rightCommand[0] == ' '){
+		strcpy(rightCommand, rightCommand + 1);
+	}
+	splitString(rightCommand, rightSection, ' ');
+
+	// leftCommand = toUpper(leftCommand);
+	// rightCommand = toUpper(rightCommand);
+
+}
+
+void handleRegularCommand(){
 	char section[128] = {0};
 	char *command = toUpper(consoleBuffer);
 	splitString(command, section, ' ');
 	int hashedCommand = hash(command);
-	int hashedSection = hash(section);
+	//int hashedSection = hash(section);
 	if (section[0] == 0)
 	{
 		switch (hashedCommand)
@@ -513,9 +558,6 @@ void handleCommand()
 		case LOOP:
 			commandLoop();
 			break;
-		case CAT:
-			commandCat();
-			break;
 		case TEST_MM:
 			testMemoryManager();
 			break;
@@ -562,6 +604,15 @@ void handleCommand()
 			break;
 		case HELP:
 			handleHelp(section);
+			break;
+		case CAT:
+			commandCat(section);
+			break;
+		case WC:
+			commandWc(section);
+			break;
+		case FILTER:
+			commandFilter(section);
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);
@@ -803,8 +854,14 @@ void upArrow(int arrowUp)
 // RESETEA EL HISTORIAL
 void clearHistoryBuffer()
 {
-	memset(historyBuffer, 0, sizeof(historyBuffer));
-	historyDim = historyIndex = 0;
+	for (int i = 0; i < MAX_COMMANDS; i++)
+    {
+        for (int j = 0; j < MAX_COMMAND_LENGTH; j++)
+        {
+            historyBuffer[i][j] = 0;
+        }
+    }
+    historyDim = historyIndex = 0;
 }
 
 // SE FIJA QUE TECLA HA SIDO ACCINOADA Y QUE HACER AL RESPECTO...

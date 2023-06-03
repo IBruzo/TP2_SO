@@ -42,7 +42,6 @@ uint64_t test_sync() { //{n, use_sem, 0}
   uint64_t pids[3];
 
   global = 0;
-
   semOpen(SEM_ID, 1);
   print("opening semaphore\n");
   

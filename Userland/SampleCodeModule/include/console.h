@@ -47,6 +47,8 @@ extern char *snapshot();
 #define MEMB 2089318502
 #define TEST_SYNC 2561222465
 #define CAT 193452189
+#define WC 5862847
+#define FILTER 2960931051
 #define TEST_WAIT 2561339929
 #define TEST_PRIO 2561106878
 #define TEST_PROC 2561107064
@@ -60,5 +62,6 @@ void handleCommand();
 void handleKey(char c);
 void storeRegisters();
 void clearScreen();
-
+void handlePipe();
+void handleRegularCommand();
 #endif

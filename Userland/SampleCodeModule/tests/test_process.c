@@ -1,5 +1,6 @@
 #include "tests.h"
 #include "library.h"
+#include "console.h"
 
 enum State
 {

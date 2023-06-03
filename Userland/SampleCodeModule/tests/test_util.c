@@ -73,7 +73,7 @@ void endless_loop()
   while (1)
     ;
 }
-void endless_loop_print(int argc, char *argv[])
+void * endless_loop_print(int argc, char *argv[])
 {
   int i = 0;
   while (1)
