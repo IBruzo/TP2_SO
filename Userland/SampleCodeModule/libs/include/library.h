@@ -32,6 +32,7 @@ void appendstringColor(char *string, int color);
 
 // string
 void strcpy(char *destination, const char *origin);
+void strncpy(char *destination, const char *origin, int n);
 char streql(const char *str1, const char *str2);
 int strcmp(const char *s1, const char *s2);
 int strlen(const char *str);
@@ -53,6 +54,7 @@ unsigned char hexToChar(unsigned char a, unsigned char b);
 int pow(int base, unsigned int exp);
 char onlyHexChars(char *string);
 char isHexChar(char character);
+int strToInt(char *str);
 
 // consoleControl
 int canWrite();
@@ -68,6 +70,6 @@ void restartCursor();
 void refreshCursor();
 
 // process creation wrappers
-int createFGProcess(void *(*f)(int, char **), int argc, char **argv);
-int createBGProcess(void *(*f)(int, char **), int argc, char **argv);
+int createFGProcess(char *name, void *(*f)(int, char **), int argc, char **argv);
+int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv);
 #endif

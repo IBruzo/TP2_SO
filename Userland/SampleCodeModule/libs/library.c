@@ -34,7 +34,17 @@ unsigned char atointhex(unsigned char a)
 		returnChar = a % '0';
 	return returnChar;
 }
-
+int strToInt(char *str)
+{
+	int i = 0;
+	int rta = 0;
+	while (str[i] != 0)
+	{
+		rta = rta * 10 + str[i] - '0';
+		i++;
+	}
+	return rta;
+}
 uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 {
 	char *p = buffer;
@@ -318,7 +328,7 @@ static void wrapperprint(char *foundation, int color, va_list vl)
 	int i = 0, j = 0;
 	// el buffer final y el buffer temporal para las conversiones numericas
 	// buff deberia ser dinamico pero no tenemos malloc :/
-	char buff[128] = {0}, tmp[20];
+	char buff[4096] = {0}, tmp[20];
 	// buffer para el string
 	char *str_arg;
 
@@ -408,12 +418,15 @@ void print(char *foundation, ...)
 // copia el string de origian a destination
 void strcpy(char *destination, const char *origin)
 {
+	strncpy(destination, origin, strlen(origin));
+}
+void strncpy(char *destination, const char *origin, int n)
+{
 	int i;
-	for (i = 0; origin[i] != '\0'; i++)
+	for (i = 0; origin[i] != '\0' && i < n; i++)
 		destination[i] = origin[i];
 	destination[i] = '\0';
 }
-
 // da vuelta el string ABC -> CBA
 char *strrev(char *str)
 {
@@ -708,14 +721,14 @@ int scan(char *str, ...)
 	return ret;
 }
 
-int createFGProcess(void *(*f)(int, char **), int argc, char **argv)
+int createFGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 {
 	int FGFD[] = {0, 1};
-	return createProcess(f, argc, argv, FGFD);
+	return createProcess(name, f, argc, argv, FGFD);
 }
 
-int createBGProcess(void *(*f)(int, char **), int argc, char **argv)
+int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 {
 	int BGFD[] = {-1, -1};
-	return createProcess(f, argc, argv, BGFD);
+	return createProcess(name, f, argc, argv, BGFD);
 }

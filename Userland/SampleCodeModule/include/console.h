@@ -50,8 +50,14 @@ extern char *snapshot();
 #define TEST_WAIT 2561339929
 #define TEST_PRIO 2561106878
 #define TEST_PROC 2561107064
-void checkCommand();
-void checkKey(char c);
+#define KILL 2089250961
+#define NICE 2089358468
+#define BLOCK 215242544
+#define UNBLOCK 1302167955
+#define PS 5862632
+#define LOOP 2089293535
+void handleCommand();
+void handleKey(char c);
 void storeRegisters();
 void clearScreen();
 

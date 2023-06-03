@@ -46,7 +46,7 @@ void *initialize_shell(int argc, char **argv)
 		char c = getchar();
 		if (c != 0)
 		{
-			checkKey(c);
+			handleKey(c);
 		}
 	}
 	return NULL;

@@ -27,6 +27,7 @@
 void *memset(void *destination, int32_t character, uint64_t length);
 void *memcpy(void *destination, const void *source, uint64_t length);
 void strcpy(char *destination, const char *origin);
+void strncpy(char *destination, const char *origin, int n);
 int strlen(const char *str);
 char *strrev(char *str);
 void appendstringColor(char *string, int color);
@@ -37,9 +38,11 @@ void putcharSpecifics(char character, int x, int y, int size, int color);
 void updateCursor();
 char *itoa(int i, char *strout, int base);
 void print(char *foundation, ...);
-void printf(char *foundation, void *parameters[]);
-char *snprintf(char *foundation, ...);
 void strcat(char *destination, const char *origin);
+char *strcpyR(char *destination, const char *source);
+int sprintf(char *buffer, char *foundation, ...);
+int snprintf(char *buffer, size_t size, char *foundation, ...);
+char *snprintf2(char *foundation, ...);
 
 // Funciones Nativas del Kernel
 void clearBSS(void *bssAddress, uint64_t bssSize);

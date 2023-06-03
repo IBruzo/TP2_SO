@@ -96,7 +96,7 @@ int unblock(int pid)
     PCB *blockedProcess = get(PCBTable, pid);
     if (pid != -1 && flag)
     {
-        list_t *newProcess = (list_t *)sys_allocMem(sizeof(list_t));
+        list_t *newProcess = (list_t *)sys_mAlloc(sizeof(list_t));
         newProcess->data = pid;
         list_push(&route, newProcess);
         dlcSize++;
@@ -163,14 +163,23 @@ void printRoute()
 
 void ps(char *buffer)
 {
-    char *aux;
-    Iterator *routeIt = dlcCreateIterator(&route);
+    /* print header */
+    char header[100];
+    int headerSize = sprintf(header, "Process ID Prioridad | Stack Base | Context\n");
+    strcpy(buffer, header);
+    char line[100];
+    int lineSize = sprintf(line, "---------------------------------------\n");
+    strcat(buffer, line);
+
+    /* print processes */
+    Iterator *it = dlcCreateIterator(&route);
     list_t *processIt;
     for (int i = 0; i < dlcSize + 1; i++)
     {
-        processIt = dlcNext(routeIt);
+        processIt = dlcNext(it);
         PCB *pcb = get(PCBTable, processIt->data);
-        aux = snprintf("PID: %d | Priority: %d | State: %d \n", pcb->PID, pcb->PPID, pcb->state);
-        strcat(buffer, aux);
+        char process[100];
+        int processSize = sprintf(process, "%s  %d    %d    |  %x  |  %d\n", pcb->name, pcb->PID, pcb->priority, pcb->RSP, pcb->state);
+        strcat(buffer, process);
     }
 }

@@ -25,8 +25,8 @@
 #define SYS_CHANGELANGUAGE_ID 11
 #define SYS_STOREREGISTERS_ID 12
 #define SYS_MEMACCESS_ID 13
-#define SYS_ALLOCMEM_ID 14
-#define SYS_FREE_ID 15
+#define SYS_MALLOC_ID 14
+#define SYS_MFREE_ID 15
 #define SYS_CREATEPROCESS_ID 16
 #define SYS_SCROLL_UP_ONCE_ID 17
 #define SYS_GETPID_ID 18
@@ -51,7 +51,7 @@
 #define SYS_GETOUTPUTFD_ID 37
 #define SYS_OPENPIPE_ID 38
 #define SYS_CLOSEPIPE_ID 39
-
+#define SYS_PS_ID 40
 void initialize();
 char *getBuffer(); // esta quien es? (joaco)
 

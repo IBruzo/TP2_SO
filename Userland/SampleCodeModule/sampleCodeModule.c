@@ -2,6 +2,6 @@
 
 int main()
 {
-    createFGProcess(initialize_shell, 0, NULL);
+    createFGProcess("shell", initialize_shell, 0, NULL);
     return 0;
 }

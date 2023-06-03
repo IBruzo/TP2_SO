@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include "syscalls.h"
 #include "list.h"
+#include "lib.h"
 #include <dlcList.h>
 
 extern List *PCBTable;
@@ -33,8 +34,8 @@ typedef struct stackFrame
     uint64_t rsp;    // rbp
     uint64_t ss;     // 0
 } stackFrame;
+void buildPCB(char *name, PCB *block, int PID, int PPID, uint64_t RSP, char state, char priority, int *FDArr);
 
-void buildPCB(PCB *block, int PID, int PPID, uint64_t RSB, char state, char priority, int *FDArr);
 void buildStartUpProcess(uint64_t *stackStart, void (*f)());
 void idleProcess();
 void initializeStackFrame(int argc, char **argv, void *(*fn)(int, char **), uint64_t pid);

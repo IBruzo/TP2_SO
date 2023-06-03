@@ -77,8 +77,8 @@ uint64_t test_sync(uint64_t argc, char *argv[])
   uint64_t i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
-    pids[i] = createFGProcess(my_process_inc, 3, argvDec);
-    pids[i + TOTAL_PAIR_PROCESSES] = createFGProcess(my_process_inc, 3, argvInc);
+    pids[i] = createFGProcess("sync", my_process_inc, 3, argvDec);
+    pids[i + TOTAL_PAIR_PROCESSES] = createFGProcess("sync2", my_process_inc, 3, argvInc);
   }
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
