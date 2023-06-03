@@ -43,6 +43,7 @@ char *strcpyR(char *destination, const char *source);
 int sprintf(char *buffer, char *foundation, ...);
 int snprintf(char *buffer, size_t size, char *foundation, ...);
 char *snprintf2(char *foundation, ...);
+int strToInt(char *str);
 
 // Funciones Nativas del Kernel
 void clearBSS(void *bssAddress, uint64_t bssSize);

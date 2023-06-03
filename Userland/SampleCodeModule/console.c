@@ -254,8 +254,7 @@ void testMemoryManager()
 }
 void testSemaphoresSync()
 {
-	char *argv[] = {"123456789"};
-	test_sync(2, argv);
+	test_sync();
 	return;
 }
 

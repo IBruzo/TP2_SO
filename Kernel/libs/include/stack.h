@@ -9,7 +9,6 @@ typedef struct {
     int top;
 } Stack;
 
-extern Stack waitQueue;
 extern Stack inputQueue;
 
 void initStack(Stack* stack);

@@ -13,6 +13,7 @@
 #include "scheduler.h"
 #include "stack.h"
 #include "pipe.h"
+#include "waitStack.h"
 
 void clearBSS(void *bssAddress, uint64_t bssSize);
 void *getStackBase();
@@ -42,7 +43,7 @@ int main()
 
 	initPipes();
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
-	initStack(&waitQueue);
+	initializeWaitStack(&waitQueue);
 	initStack(&inputQueue);
 
 	newList(PCBTable);

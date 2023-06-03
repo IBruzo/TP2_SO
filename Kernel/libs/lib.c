@@ -89,6 +89,25 @@ uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 	return digits;
 }
 
+
+
+
+
+
+int strToInt(char *str)
+{
+	int i = 0;
+	int rta = 0;
+	while (str[i] != 0)
+	{
+		rta = rta * 10 + str[i] - '0';
+		i++;
+	}
+	return rta;
+}
+
+
+
 static void getStringToPrint(char str[], int strSize, char *foundation, va_list vl)
 {
 

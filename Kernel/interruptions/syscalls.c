@@ -6,6 +6,7 @@
 #include "semaphores.h"
 #include "list.h"
 #include "pipe.h"
+#include "waitStack.h"
 
 static unsigned int processIDs = 4;
 static unsigned char regsBuffer[128] = {0};
@@ -55,6 +56,7 @@ char sys_getchar()
         }
         return buffer[0];
     }
+    return 0;
 }
 
 char sys_getLastKey()
@@ -104,11 +106,34 @@ void sys_beep(int freq, int time)
     beeep(freq, time);
 }
 
-void sys_sleep(int seconds)
-{
+static void * wakeUp(int argc, char* argv[]){
     int start = seconds_elapsed();
-    while (seconds_elapsed() - start < seconds)
-        _hlt();
+    int sec= strToInt(argv[0]);
+    int pid= strToInt(argv[1]);
+    while (seconds_elapsed() - start < sec){
+    }
+
+    unblock(pid);
+    sys_exit();
+    return NULL;
+}
+
+void sys_sleep(int seconds)
+{   
+    int *fd = {1,0};
+
+    char * argd[2];
+    argd[0]=sys_mAlloc(sizeof(char));
+    argd[1]=sys_mAlloc(sizeof(char));
+
+    
+    int read = sprintf(argd[0], "%d", seconds);
+    sprintf(argd[1],"%d",getCurrentPid());
+   int pid = sys_createProcess("im the one who knocks",wakeUp,2,argd,fd);
+   sys_waitPid(pid);
+   sys_mFree(argd[0]);
+    sys_mFree(argd[1]);
+    forceTick();
 }
 
 void sys_clearkeybuffer()
@@ -320,18 +345,22 @@ int sys_kill(int pid)
         return 1;
     }
 
-    // print(" PID: %d %d\n", killedProcess->PID, killedProcess->state);
+    // print(" PID: %d %d\n", killedProcess->PID, killedProcess->state
     return -1;
 }
 
 void sys_exit()
 {
     // if ( currentProcess() == peek().CPID ) => unblock papi
-    unblock(getCurrentPPid());
-    if (peek(&waitQueue) != -1)
+    if(peekWaitStack(&waitQueue).cpid==getCurrentPid() && peekWaitStack(&waitQueue).pid==getCurrentPPid()){
+        unblock(getCurrentPPid());  
+        popWaitStack(&waitQueue);
+    }
+
+    if (peekWaitStack(&waitQueue).pid != -1)
     {
         // print("unblocking [%d] \n",getCurrentPPid() );
-        pop(&waitQueue);
+        popWaitStack(&waitQueue);
     }
     // printRoute();
     // print("Exiting Process...\n");
@@ -342,25 +371,24 @@ void sys_exit()
 
 void sys_waitPid(int pid)
 { // padre ejecuta esto y quiere que lo despierten cuando termine de ejecutar PID
-    int cPid = getCurrentPid();
+    PCB * child = get(PCBTable,pid);
 
-    push(&waitQueue, cPid);
-    // print("blocking [%d] \n",cPid );
+    if(child->state == EXITED){
+        return;
+    }
+
+    int PPid = getCurrentPid();
+
+    pushWaitStack(&waitQueue, getCurrentPid() ,pid);
     // push parent pid y pid
     // push(&waitQueue,pid);
-    block(cPid);
+    block(PPid);
     forceTick();
 }
 
 int sys_block(int pid)
 {
-
-    int ret = block(pid);
-    /*  if (pid == getCurrentPid())
-    {
-        forceTick();
-     } */
-    return ret;
+    return block(pid);
 }
 int sys_unblock(int pid)
 {

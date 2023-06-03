@@ -25,7 +25,7 @@ typedef struct PCB
     char state;
     char priority;
     char lives;
-    int FD[2];
+    int FD[2];//f 0:1 , -1-1 back
     // char waitInput;
     // char waitChild;
     memInfo memInfo;

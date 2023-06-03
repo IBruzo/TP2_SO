@@ -120,10 +120,10 @@ uint64_t semWait(uint64_t semIndex)
 
         _xchg(&sem->lock, 0);
 
-        // if (block(pid) == -1)
-        // {
-        //     return -1;
-        // }
+        if (sys_block(pid) == -1)
+        {
+            return -1;
+        }
         block(pid);
         sem->value--;
     }
@@ -151,8 +151,7 @@ uint64_t semPost(uint64_t semIndex)
         }
     }
     _xchg(&sem->lock, 0);
-    unblock(pid);
-    forceTick();
+    unblock(pid)?:forceTick();
     return 0;
 }
 

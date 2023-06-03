@@ -265,6 +265,8 @@ void storeKey()
             pop()
         */
         unblock(peek(&inputQueue));
+        pop(&inputQueue);
+
     }
     return;
 }

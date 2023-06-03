@@ -19,11 +19,23 @@ void *reader(int argc, char **argv)
 	return NULL;
 }
 
+void *sleepyJoe(int argc, char **argv){
+	print("\nIm going to sleep 5 seconds, like Timmy...\n");
+	sleep(5);
+	print("Im waking up, I FEEL IT IN MY BONES\n");
+	exit();
+	return NULL;
+}
+
+
 void *initialize_shell(int argc, char **argv)
 {
 	putSquare(0, 0, 1024, BACKGROUND_COLOR);
 	printColor("user@Qemu:", USER_TEXT_COLOR, 0);
 	printColor("> $ ", TERMINAL_BLUE, 0);
+
+
+//	createFGProcess("sleepyJoe", sleepyJoe, 0, NULL );
 
 	/* --------------------------PIPE TEST---------------------------- */
 

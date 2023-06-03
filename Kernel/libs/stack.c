@@ -1,6 +1,5 @@
 #include "stack.h"
 
-Stack waitQueue;
 Stack inputQueue;
 
 void initStack(Stack* stack) {

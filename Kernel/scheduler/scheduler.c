@@ -25,7 +25,7 @@ uint64_t schedule(uint64_t RSP)
     // Se quedo sin vida se las reinicio pero elijo a otro proceso
     aux->lives = aux->priority;
     // Si el proceso abandono por un bloqueo entonces no lo dejo en ready
-    if (!flag)
+    if (!flag && !aux->state==EXITED)
     {
         aux->state = READY;
     }
@@ -179,7 +179,7 @@ void ps(char *buffer)
         processIt = dlcNext(it);
         PCB *pcb = get(PCBTable, processIt->data);
         char process[100];
-        int processSize = sprintf(process, "%s  %d    %d    |  %x  |  %d\n", pcb->name, pcb->PID, pcb->priority, pcb->RSP, pcb->state);
+        int processSize = sprintf(process, "%s  %d    %d    |  %x  |  %s\n", pcb->name, pcb->PID, pcb->priority, pcb->RSP, (pcb->FD[0]== 0 && pcb->FD[1] == 1) ? "FG" : "BG" );
         strcat(buffer, process);
     }
 }
