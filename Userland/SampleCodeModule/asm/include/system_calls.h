@@ -1,7 +1,7 @@
 #ifndef SYSTEM_CALLS_H
 #define SYSTEM_CALLS_H
 
-extern void write(char character, int x, int y, int fd, int color);
+extern char write(char character, int x, int y, int fd, int color);
 extern char getchar();
 extern int gettick();
 extern void halt();
@@ -39,4 +39,7 @@ extern void changeInputFD(int pid, int newFD);
 extern void changeOutputFD(int pid, int newFD);
 extern int getInputFD(int pid);
 extern int getOutputFD(int pid);
+extern int openPipe(char *name);
+extern int closePipe(int fd);
+
 #endif

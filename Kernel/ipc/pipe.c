@@ -46,7 +46,7 @@ int pipeCheckName(const char *name)
 
 int isValidFd(int fd)
 { // valido y en uso
-    return fd >= 0 && fd < MAX_PIPES && pipeTable[fd].used;
+    return fd >= 2 && fd < MAX_PIPES && pipeTable[fd].used;
 }
 
 uint64_t hashName(const char *str)
@@ -64,7 +64,7 @@ uint64_t hashName(const char *str)
 
 int getPipeFd(const char *pipeName)
 {
-    for (int i = 0; i < MAX_PIPES; i++)
+    for (int i = 2; i < MAX_PIPES; i++)
     {
         if (pipeTable[i].used && pipeTable[i].hashName == hashName(pipeName))
         {
@@ -86,7 +86,7 @@ int createPipe(const char *name)
         return -1;
     }
     // Busco el primer lugar libre en la tabla de pipes
-    for (int i = 0; i < MAX_PIPES; i++)
+    for (int i = 2; i < MAX_PIPES; i++)
     {
         if (pipeTable[i].used == 0)
         {
@@ -138,12 +138,13 @@ int createPipe(const char *name)
 
 int pipeOpen(const char *name)
 {
+    print("Opening Pipe...\n");
     int fd = getPipeFd(name);
-    if (fd == -1 || pipeCheckName(name) == -1)
+    if (pipeCheckName(name) == -1)
     {
         return -1;
     }
-    semWait(pipeTable[fd].mutex);
+    // semWait(pipeTable[fd].mutex);
 
     if (fd == -1)
     {                          // no existe tal pipe, lo creo
@@ -155,27 +156,29 @@ int pipeOpen(const char *name)
             return -1;
         }
     }
-    semPost(pipeTable[fd].mutex);
+    // semPost(pipeTable[fd].mutex);
 
     return fd;
 }
 
 int pipeClose(int fd)
 {
+    printBuffer(fd);
+    print("Closing pipe...;\n");
     if (!isValidFd(fd))
     {
         return -1;
     }
-    semWait(pipeTable[fd].mutex);
+    // semWait(pipeTable[fd].mutex);
 
     // Cierro los semaforos de lectura y escritura
-    semClose(getSemName(pipeTable[fd].pipe.sem[0]));
-    semClose(getSemName(pipeTable[fd].pipe.sem[1]));
+    // semClose(getSemName(pipeTable[fd].pipe.sem[0]));
+    // semClose(getSemName(pipeTable[fd].pipe.sem[1]));
 
     // Libero el lugar en la tabla de pipes
     pipeTable[fd].used = 0;
 
-    semPost(pipeTable[fd].mutex);
+    // semPost(pipeTable[fd].mutex);
     return 0;
 }
 
@@ -197,7 +200,7 @@ int pipeRead(int fd, char *buf, int count)
     int rIndex = pipeTable[fd].pipe.readIndex;
     int wIndex = pipeTable[fd].pipe.writeIndex;
     int i = 0;
-    semWait(pipeTable[fd].pipe.sem[0]);
+    // semWait(pipeTable[fd].pipe.sem[0]);
 
     while (i < count && rIndex != wIndex)
     {
@@ -208,7 +211,7 @@ int pipeRead(int fd, char *buf, int count)
     }
 
     pipeTable[fd].pipe.readIndex = rIndex;
-    semPost(pipeTable[fd].pipe.sem[1]);
+    // semPost(pipeTable[fd].pipe.sem[1]);
 
     return i;
 }
@@ -241,6 +244,28 @@ int pipeWrite(int fd, const char *buf)
     semWait(pipeTable[fd].pipe.sem[0]);
 
     return i;
+}
+
+void printBuffer(int fd)
+{
+    if (!isValidFd(fd))
+    {
+        print("Invalid file descriptor.\n");
+        return;
+    }
+
+    char buffer[MAX_PIPE_BUFFER_SIZE];
+    int bytesRead = pipeRead(fd, buffer, MAX_PIPE_BUFFER_SIZE - 1);
+    if (bytesRead == -1)
+    {
+        print("Error reading from the pipe.\n");
+        return;
+    }
+
+    buffer[bytesRead] = '\0'; // Add null terminator to treat buffer as a string
+    print("Buffer contents: ");
+    print(buffer);
+    print("\n");
 }
 
 // cat | w

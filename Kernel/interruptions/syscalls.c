@@ -10,7 +10,7 @@
 static unsigned int processIDs = 4;
 static unsigned char regsBuffer[128] = {0};
 
-void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color)
+char sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color)
 {
     int currPID = getCurrentPid();
     PCB *currPCB = get(PCBTable, currPID);
@@ -23,15 +23,16 @@ void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_
     if (currPCB->FD[1] == 1)
     {
         put_letter(character, x, y, size, color);
-        return;
+        return 1;
     }
-
     // output en pipe buffer
-    int bytesWritten = pipeWrite(currPCB->FD[1], character);
+    int bytesWritten = pipeWrite(currPCB->FD[1], (const char *)&character);
     if (bytesWritten == -1)
     {
+        return -1;
         /* Aca entraria un Background Process ya que no encuentra el FD = -1 */
     }
+    return 1;
 }
 
 char sys_getchar()
@@ -49,7 +50,7 @@ char sys_getchar()
     if (bytesRead == -1)
     {
         /* Aca entraria un Background Process ya que no encuentra el FD = -1 */
-        return;
+        return 0;
     }
     return buffer[0];
 }

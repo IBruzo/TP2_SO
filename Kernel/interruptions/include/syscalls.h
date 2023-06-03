@@ -14,7 +14,7 @@
 #define MAXBUFFER 500
 
 char sys_getchar();
-void sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color);
+char sys_write(uint8_t character, uint32_t x, uint32_t y, uint32_t size, uint32_t color);
 int sys_tick();
 void sys_halt();
 void sys_putSquare(uint32_t x, uint32_t y, uint32_t tam, uint32_t color);
@@ -53,6 +53,7 @@ int sys_getInputFD(int pid);
 int sys_getOutputFD(int pid);
 int sys_openPipe(char *name);
 int sys_closePipe(int fd);
+
 int getCurrentPid(); //>.>
 
 #endif
