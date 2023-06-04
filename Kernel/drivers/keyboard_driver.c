@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <keyboard_driver.h>
 
 static int language = SPANISH;
@@ -200,7 +202,7 @@ static int isLetter(int scancode)
 void storeKey()
 {
     int scancode = inb(0x60);
- //   printList(PCBTable);
+    //   printList(PCBTable);
     switch (scancode)
     {
     case CTRL_PRESSED:
@@ -239,41 +241,42 @@ void storeKey()
             char combinedChar = keyboards[language][scancode][index];
             if (combinedChar == 'c' || combinedChar == 'C')
             {
-              
-                if( peek(&inputQueue)!=-1){
-                   //  printList(PCBTable);
-                  //  unblock(peek(&inputQueue));
-                    PCB * curr = get(PCBTable,peek(&inputQueue));
-               
-        
+
+                if (peek(&inputQueue) != -1)
+                {
+                    //  printList(PCBTable);
+                    //  unblock(peek(&inputQueue));
+                    // PCB *curr = get(PCBTable, peek(&inputQueue));
+
                     sys_kill(peek(&inputQueue));
-                    pop(peek(&inputQueue));
+                    pop(&inputQueue); // bruzo que clase de falopa es esto pasalo al sys_kill hash poponeta <-- dormiste capo
 
                     forceTick();
                     return;
-                }else{
-                Iterator * it = dlcCreateIterator(&route);
-                int iter = 0;
-                list_t * aux;
-                while (iter<dlcSize+1)
+                }
+                else
                 {
-                    aux=dlcNext(it);
-                    PCB * curr = get(PCBTable,aux->data);
-                    if(curr->FD[0]==1){
-                        unblock(curr->PPID);
-                        sys_kill(curr->PID);
-                        return;
-                    }
+                    Iterator *it = dlcCreateIterator(&route);
+                    int iter = 0;
+                    list_t *aux;
+                    while (iter < dlcSize + 1)
+                    {
+                        aux = dlcNext(it);
+                        PCB *curr = get(PCBTable, aux->data);
+                        if (curr->FD[0] == 1)
+                        {
+                            unblock(curr->PPID);
+                            sys_kill(curr->PID);
+                            return;
+                        }
 
-                    iter++;
+                        iter++;
+                    }
                 }
-                               
-                }
-    
             }
             if (combinedChar == 'd' || combinedChar == 'D')
             {
-                keyBuffer[bufferCount++]= EOF;
+                keyBuffer[bufferCount++] = EOF;
             }
             break;
         }
@@ -290,7 +293,6 @@ void storeKey()
 
         unblock(peek(&inputQueue));
         pop(&inputQueue);
-
     }
     return;
 }

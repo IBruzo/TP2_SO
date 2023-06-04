@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscalls.h>
 #include <lib.h>
 #include "memoryManager.h"
@@ -303,11 +305,9 @@ int sys_kill(int pid)
 {
     PCB *killedProcess = get(PCBTable, pid);
 
-    Process a = peekWaitStack(&waitQueue);
-
     if (peekWaitStack(&waitQueue).cpid == killedProcess->PID && peekWaitStack(&waitQueue).pid == killedProcess->PPID)
     {
-      int b =  unblock(killedProcess->PPID);
+        unblock(killedProcess->PPID);
         popWaitStack(&waitQueue);
     }
 
@@ -324,7 +324,7 @@ int sys_kill(int pid)
 
     int index = 0; // found a killable process
 
-//PCB *killedProcess = get(PCBTable, pid);
+    // PCB *killedProcess = get(PCBTable, pid);
 
     if (killedProcess->state == BLOCKED)
     {

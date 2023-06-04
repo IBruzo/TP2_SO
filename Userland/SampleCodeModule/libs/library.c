@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <library.h>
 #define CURSOR_TICKS 9
 
@@ -18,10 +20,10 @@ int canWrite()
 
 unsigned char inthextoa(unsigned char a)
 {
-	if (a >= 0 && a <= 9)
+	if (a <= 9)
 		return a + '0';
-	else if (a >= 10 && a <= 15)
-		return a + 'A' - 10;
+	else if (a <= 15)
+		return a - 10 + 'A';
 	return a;
 }
 
@@ -567,7 +569,7 @@ void changeFontSize(int increment)
 {
 	if (fontsize + increment > 5)
 		return;
-	if ((fontsize + increment) > 0 && (fontsize + increment) <= 64)
+	if ((fontsize + increment) > 0)
 		fontsize += increment;
 }
 /**
@@ -733,19 +735,22 @@ int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 	return createProcess(name, f, argc, argv, BGFD);
 }
 
-int hasPipe(char *str) {
-    while (*str != '\0') {
-        if (*str == '|') {
-            return 1;
-        }
-        str++;
-    }
-    return 0;
+int hasPipe(char *str)
+{
+	while (*str != '\0')
+	{
+		if (*str == '|')
+		{
+			return 1;
+		}
+		str++;
+	}
+	return 0;
 }
 
-
-int wc(char *str){
-	return (strlen(str)*fontsize*8) / 1024 + 1;
+int wc(char *str)
+{
+	return (strlen(str) * fontsize * 8) / 1024 + 1;
 }
 
 char toLower(char c)
@@ -755,18 +760,20 @@ char toLower(char c)
 	return c;
 }
 
-void filter(char * str, char * buffer){
+void filter(char *str, char *buffer)
+{
 	int len = strlen(str);
-    int j = 0;
+	int j = 0;
 
-    for (int i = 0; i < len; i++) {
-        if (toLower(str[i]) != 'a' && toLower(str[i]) != 'e' &&
-            toLower(str[i]) != 'i' && toLower(str[i]) != 'o' &&
-            toLower(str[i]) != 'u') {
-            buffer[j++] = str[i];
-        }
-    }
+	for (int i = 0; i < len; i++)
+	{
+		if (toLower(str[i]) != 'a' && toLower(str[i]) != 'e' &&
+			toLower(str[i]) != 'i' && toLower(str[i]) != 'o' &&
+			toLower(str[i]) != 'u')
+		{
+			buffer[j++] = str[i];
+		}
+	}
 
-    buffer[j] = '\0';
+	buffer[j] = '\0';
 }
-

@@ -1,5 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
-#include <stdio.h>
 #include "tests.h"
 
 // Random
@@ -73,7 +74,7 @@ void endless_loop()
   while (1)
     ;
 }
-void * endless_loop_print(int argc, char *argv[])
+void *endless_loop_print(int argc, char *argv[])
 {
   int i = 0;
   while (1)

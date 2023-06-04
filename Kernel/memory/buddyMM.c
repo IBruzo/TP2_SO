@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #ifndef BITMAP_MM
 
 #include "memoryManager.h"
@@ -21,24 +23,24 @@ size_t allocatedBytes = 0;
 
 void mem(char *buffer, int unit) // crea string de memoria total, ocupada y libre
 {
-  size_t total;
-  size_t allocated;
-  size_t free;
+  int total;
+  int allocated;
+  int free;
   char memStateString[150];
   int read;
 
-  size_t kibiConvert = 1024 * 1024;
+  int kibiConvert = 1024 * 1024;
   // size_t gibiConvert = 1024*1024*1024;
   if (unit == 0)
   { // mb
-    total = (size_t)memSize / kibiConvert;
+    total = (int)memSize / kibiConvert;
     allocated = allocatedBytes / kibiConvert;
     free = (total - allocated);
     read = sprintf(memStateString, "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
   }
   else if (unit == 1)
   { // GB
-    total = (size_t)memSize;
+    total = (int)memSize;
     allocated = allocatedBytes;
     free = (total - allocated);
     read = sprintf(memStateString, "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
@@ -206,10 +208,6 @@ void *memAlloc(int request)
 
     *(size_t *)ptr = request;
 
-    if (request < 0)
-    {
-      return NULL;
-    }
     int currentAllocation = (size_t)1 << (MAX_ALLOC_LOG2 - bucket);
     allocatedBytes += currentAllocation;
 

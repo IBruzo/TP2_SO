@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "semaphores.h"
 
 extern void forceTick();
@@ -51,8 +53,6 @@ int semCreate(char *name, int initValue)
         semSpaces[pos].sem.size = 0;
         semSpaces[pos].sem.listSize = 0;
     }
-    print("Semaphore created");
-    print("Saved Name : [%s]", semSpaces[pos].sem.name);
     return pos;
 }
 
@@ -215,7 +215,7 @@ int getSemIndex(char *name)
 {
     for (int i = 0; i < MAX_SEM; i++)
     {
-        if (semSpaces[i].available == FALSE && strcmp(name, semSpaces[i].sem.name))
+        if (semSpaces[i].available == FALSE && strcmp(name, semSpaces[i].sem.name) == 0)
         {
             return i;
         }

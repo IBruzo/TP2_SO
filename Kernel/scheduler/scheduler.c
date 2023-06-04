@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "scheduler.h"
 
 list_t *current;
@@ -25,7 +27,7 @@ uint64_t schedule(uint64_t RSP)
     // Se quedo sin vida se las reinicio pero elijo a otro proceso
     aux->lives = aux->priority;
     // Si el proceso abandono por un bloqueo entonces no lo dejo en ready
-    if (!flag && aux->state!=EXITED)
+    if (!flag && aux->state != EXITED)
     {
         aux->state = READY;
     }
@@ -51,7 +53,6 @@ uint64_t schedule(uint64_t RSP)
         PCB *aux2 = get(PCBTable, current->data);
         aux2->state = RUNNING;
         return aux2->RSP;
-  
     }
 }
 
@@ -87,9 +88,10 @@ int unblock(int pid)
     // printRoute();
     // print("unblocking %d  |-|", pid);
     PCB *blockedProcess = get(PCBTable, pid);
-     if(blockedProcess->state==EXITED){
+    if (blockedProcess->state == EXITED)
+    {
         return -1;
-     }
+    }
     if (pid != -1 && flag)
     {
         list_t *newProcess = (list_t *)sys_mAlloc(sizeof(list_t));
@@ -175,8 +177,9 @@ void ps(char *buffer)
     {
         processIt = dlcNext(it);
         PCB *pcb = get(PCBTable, processIt->data);
-        char process[100];
-        sprintf(process, "%s  %d    %d    |  %x  |  %s\n", pcb->name, pcb->PID, pcb->priority, pcb->RSP, (pcb->FD[0]== 0 && pcb->FD[1] == 1) ? "FG" : "BG" );
+        char *process = (char *)sys_mAlloc(sizeof(char) * 200);
+        sprintf(process, "%s  %d    %d    |  %x  |  %s\n", pcb->name, pcb->PID, pcb->priority, (uint32_t)pcb->RSP, (pcb->FD[0] == 0 && pcb->FD[1] == 1) ? "FG" : "BG");
         strcat(buffer, process);
+        sys_mFree(process);
     }
 }

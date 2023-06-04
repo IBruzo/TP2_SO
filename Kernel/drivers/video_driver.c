@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <video_driver.h>
 #include <fonts.h>
 
@@ -102,17 +104,12 @@ int put_letter(char letter, uint32_t x, uint32_t y, uint32_t tam, uint32_t color
 
 	int a = x;
 	int start = letter - FIRST_CHAR;
-	if (isMinusc(letter))
-		start = letter - 'a';
+
 	if (letter == ' ')
 	{
 		return a + tam * ANCHO_LETRA_PIX;
 	}
 	// extended ascii table ñ y Ñ en el vector de fonts
-	if (letter == 255)
-		start = 29;
-	if (letter == 254)
-		start = 28;
 
 	for (int i = 0; i < 32; i++)
 	{

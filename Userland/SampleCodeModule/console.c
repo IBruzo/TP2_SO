@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <console.h>
 #include "tests.h"
 
@@ -258,24 +260,28 @@ void testSemaphoresSync()
 	return;
 }
 
-void * catpro(int argc, char * argv[]){
+void *catpro(int argc, char *argv[])
+{
 	clearScreen();
-	printColor("edit here-",0x547891);
-	char c =1;
+	printColor("edit here-", 0x547891);
+	char c = 1;
 	char buff[100];
-	int lastch=0;
-	while (c!=EOF)
+	int lastch = 0;
+	while (c != (char)EOF)
 	{
 		c = getchar();
-		if(c=='\n'){
+		if (c == '\n')
+		{
 			newline();
-			buff[lastch]='\0';
-			printColor("%s\n",0x547891,buff);
-			lastch=0;
-			printColor("-",0x547891);
-		}else if(c!=0){
+			buff[lastch] = '\0';
+			printColor("%s\n", 0x547891, buff);
+			lastch = 0;
+			printColor("-", 0x547891);
+		}
+		else if (c != 0)
+		{
 			handleKey(c);
-			buff[lastch++]=c;
+			buff[lastch++] = c;
 		}
 	}
 	newline();
@@ -283,23 +289,24 @@ void * catpro(int argc, char * argv[]){
 	return NULL;
 }
 
-
 void commandCat(char *str)
 {
 
-	int catpid= createFGProcess("cat",catpro,0,NULL);
+	int catpid = createFGProcess("cat", catpro, 0, NULL);
 	waitPid(catpid);
 	return;
 }
 
-void commandWc(char *str){
+void commandWc(char *str)
+{
 	printInt(wc(str));
 	newline();
 }
 
-void commandFilter(char *str){
+void commandFilter(char *str)
+{
 	char buf[512] = {0};
-	filter(str,buf);
+	filter(str, buf);
 	print("%s\n", buf);
 }
 
@@ -447,7 +454,7 @@ void commandPrintProcesses()
 {
 	char s[1000];
 	ps(s);
-	//int n = strlen(s);
+	// int n = strlen(s);
 	print("%s", s);
 }
 
@@ -473,44 +480,48 @@ static void testProcesses()
 // CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
 void handleCommand()
 {
-	if(hasPipe(consoleBuffer)){
+	if (hasPipe(consoleBuffer))
+	{
 		handlePipe();
 		return;
 	}
-	else{
+	else
+	{
 		handleRegularCommand();
 		return;
 	}
 }
 
-void handlePipe(){
+void handlePipe()
+{
 	char leftCommand[128] = {0};
 	char rightCommand[128] = {0};
 	char leftSection[128] = {0};
 	char rightSection[128] = {0};
-	
+
 	splitString(consoleBuffer, rightCommand, '|');
 
 	strcpy(leftCommand, consoleBuffer);
 
 	splitString(leftCommand, leftSection, ' ');
-	
-	while(rightCommand[0] == ' '){
+
+	while (rightCommand[0] == ' ')
+	{
 		strcpy(rightCommand, rightCommand + 1);
 	}
 	splitString(rightCommand, rightSection, ' ');
 
 	// leftCommand = toUpper(leftCommand);
 	// rightCommand = toUpper(rightCommand);
-
 }
 
-void handleRegularCommand(){
+void handleRegularCommand()
+{
 	char section[128] = {0};
 	char *command = toUpper(consoleBuffer);
 	splitString(command, section, ' ');
 	int hashedCommand = hash(command);
-	//int hashedSection = hash(section);
+	// int hashedSection = hash(section);
 	if (section[0] == 0)
 	{
 		switch (hashedCommand)
@@ -794,7 +805,7 @@ static char *upHistory()
 {
 	if (historyIndex > 0)
 	{
-		if (historyIndex == historyDim && historyDim > 0)
+		if (historyIndex == historyDim)
 		{
 			return historyBuffer[--historyIndex % MAX_COMMANDS];
 		}
@@ -868,13 +879,13 @@ void upArrow(int arrowUp)
 void clearHistoryBuffer()
 {
 	for (int i = 0; i < MAX_COMMANDS; i++)
-    {
-        for (int j = 0; j < MAX_COMMAND_LENGTH; j++)
-        {
-            historyBuffer[i][j] = 0;
-        }
-    }
-    historyDim = historyIndex = 0;
+	{
+		for (int j = 0; j < MAX_COMMAND_LENGTH; j++)
+		{
+			historyBuffer[i][j] = 0;
+		}
+	}
+	historyDim = historyIndex = 0;
 }
 
 // SE FIJA QUE TECLA HA SIDO ACCINOADA Y QUE HACER AL RESPECTO...
@@ -915,7 +926,7 @@ void handleKey(char c)
 			clearScreen();
 		}
 
-		if (consoleBuffer != 0 && consoleBuffer[0])
+		if (consoleBuffer[0])
 		{
 			historyIndex = historyDim;
 			loadHistory(consoleBuffer);
@@ -954,7 +965,7 @@ void handleKey(char c)
 	}
 	case EOF:
 	{
-		appendstringColor("EOF",0xFF0303);
+		appendstringColor("EOF", 0xFF0303);
 		for (int i = 0; i < 3; i++)
 		{
 			consoleBuffer[lastChar + i] = -1;

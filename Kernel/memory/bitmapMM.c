@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #ifndef BUDDY_MM
 
 #include "memoryManager.h"
@@ -16,6 +18,7 @@ typedef struct
     size_t size;
 } Allocation;
 Allocation allocations[BIT_MAP_SIZE];
+
 int numAllocations = 0;
 
 void initMemoryManager(void *hBase, uint32_t hSize)
@@ -28,7 +31,7 @@ void initMemoryManager(void *hBase, uint32_t hSize)
     memSize = hSize;
 
     memset(bitMap, 0, BIT_MAP_SIZE);
-    memset(allocations, 0, BIT_MAP_SIZE);
+    memset(allocations, 0, BIT_MAP_SIZE * sizeof(Allocation));
     numAllocations = 0;
 }
 
@@ -141,30 +144,29 @@ void *memAlloc(int sizeBytes)
 
 void mem(char *buffer, int unit) // crea string de memoria total, ocupada y libre
 {
-    size_t memSize = 8 * BIT_MAP_SIZE * PAG_SIZE;
-    size_t total;
-    size_t allocated;
-    size_t free;
+    int memSize = 8 * BIT_MAP_SIZE * PAG_SIZE;
+    int total;
+    int allocated;
+    int free;
     char memStateString[150];
-    int read;
     if (unit == 0)
     { // mb
-        size_t kibiConvert = 1024 * 1024;
-        total = (size_t)memSize / kibiConvert;
+        int kibiConvert = 1024 * 1024;
+        total = (int)memSize / kibiConvert;
         allocated = allocatedBytes / kibiConvert;
         free = (total - allocated);
-        read = sprintf(memStateString, "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
+        sprintf(memStateString, "Estado de la Memoria\n %d MB de memoria total\n %d MB en uso\n %d MB libres\n Para mayor precision usar el comando 'memb'\n", total, allocated, free);
     }
     else if (unit == 1)
     { // bytes
         total = memSize;
         allocated = allocatedBytes;
         free = (total - allocated);
-        read = sprintf(memStateString, "Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, allocatedBytes, free);
+        sprintf(memStateString, "Estado de la Memoria\n %d Bytes de memoria total\n %d Bytes en uso\n %d Bytes libres\n", total, (int)allocatedBytes, free);
     }
     else
     {
-        read = sprintf(memStateString, "Unidad no reconocida\n");
+        sprintf(memStateString, "Unidad no reconocida\n");
     }
     strcpy(buffer, memStateString);
 }
