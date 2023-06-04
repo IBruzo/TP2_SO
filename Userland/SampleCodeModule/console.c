@@ -258,25 +258,38 @@ void testSemaphoresSync()
 	return;
 }
 
+void * catpro(int argc, char * argv[]){
+	clearScreen();
+	printColor("edit here-",0x547891);
+	char c =1;
+	char buff[100];
+	int lastch=0;
+	while (c!=EOF)
+	{
+		c = getchar();
+		if(c=='\n'){
+			newline();
+			buff[lastch]='\0';
+			printColor("%s\n",0x547891,buff);
+			lastch=0;
+			printColor("-",0x547891);
+		}else if(c!=0){
+			handleKey(c);
+			buff[lastch++]=c;
+		}
+	}
+	newline();
+	exit();
+	return NULL;
+}
+
+
 void commandCat(char *str)
 {
-	// while (1)
-	// {
-	// 	char c = getchar();
-	// 	if (c)
-	// 	{
-	// 		if (c == '\n')
-	// 		{
-	// 			break;
-	// 		}
-	// 		else
-	// 		{
-	// 			handleKey(c);
-	// 		}
-	// 	}
-	// }
-	// print("\n");
-	print("%s\n", cat(str));
+
+	int catpid= createFGProcess("cat",catpro,0,NULL);
+	waitPid(catpid);
+	return;
 }
 
 void commandWc(char *str){
@@ -411,7 +424,6 @@ static void *dad(int argc, char **argv)
 	waitPid(timmyPID); // estoy esperando a la llegada de este pid
 	sleep(1);
 	print("-Dad: F in the chat\n");
-	handleKey(ENTER);
 	exit();
 	return NULL;
 }
@@ -442,6 +454,7 @@ void commandPrintProcesses()
 static void testWait()
 {
 	createFGProcess("dad", dad, 0, NULL);
+	handleKey(ENTER);
 }
 static void testPrio()
 {
@@ -573,6 +586,9 @@ void handleRegularCommand(){
 		case TEST_PROC:
 			testProcesses();
 			break;
+		case CAT:
+			commandCat(section);
+			break;
 		default:
 			printColor("'%s'", ORANGY, command);
 			print(" : comando no encontrado.\n");
@@ -604,9 +620,6 @@ void handleRegularCommand(){
 			break;
 		case HELP:
 			handleHelp(section);
-			break;
-		case CAT:
-			commandCat(section);
 			break;
 		case WC:
 			commandWc(section);
@@ -937,6 +950,16 @@ void handleKey(char c)
 	case ':':
 	{					  // right arrow key ascii
 		storeRegisters(); // saca el screenshot de los registros
+		break;
+	}
+	case EOF:
+	{
+		appendstringColor("EOF",0xFF0303);
+		for (int i = 0; i < 3; i++)
+		{
+			consoleBuffer[lastChar + i] = -1;
+		}
+		lastChar += 3;
 		break;
 	}
 	default:

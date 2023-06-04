@@ -301,6 +301,22 @@ void sys_yield()
 
 int sys_kill(int pid)
 {
+    PCB *killedProcess = get(PCBTable, pid);
+
+    Process a = peekWaitStack(&waitQueue);
+
+    if (peekWaitStack(&waitQueue).cpid == killedProcess->PID && peekWaitStack(&waitQueue).pid == killedProcess->PPID)
+    {
+      int b =  unblock(killedProcess->PPID);
+        popWaitStack(&waitQueue);
+    }
+
+    if (peekWaitStack(&waitQueue).pid != -1)
+    {
+        // print("unblocking [%d] \n",getCurrentPPid() );
+        popWaitStack(&waitQueue);
+    }
+
     if (pid == 0 || pid == 1)
     {
         return -1;
@@ -308,7 +324,7 @@ int sys_kill(int pid)
 
     int index = 0; // found a killable process
 
-    PCB *killedProcess = get(PCBTable, pid);
+//PCB *killedProcess = get(PCBTable, pid);
 
     if (killedProcess->state == BLOCKED)
     {
@@ -352,17 +368,7 @@ int sys_kill(int pid)
 void sys_exit()
 {
     // if ( currentProcess() == peek().CPID ) => unblock papi
-    if (peekWaitStack(&waitQueue).cpid == getCurrentPid() && peekWaitStack(&waitQueue).pid == getCurrentPPid())
-    {
-        unblock(getCurrentPPid());
-        popWaitStack(&waitQueue);
-    }
 
-    if (peekWaitStack(&waitQueue).pid != -1)
-    {
-        // print("unblocking [%d] \n",getCurrentPPid() );
-        popWaitStack(&waitQueue);
-    }
     // printRoute();
     // print("Exiting Process...\n");
     sys_kill(getCurrentPid());

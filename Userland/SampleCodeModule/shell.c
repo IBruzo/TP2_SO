@@ -21,14 +21,6 @@ void *reader(int argc, char **argv)
 	return NULL;
 }
 
-void *sleepyJoe(int argc, char **argv)
-{
-	print("\nIm going to sleep 5 seconds, like Timmy...\n");
-	sleep(5);
-	print("Im waking up, I FEEL IT IN MY BONES\n");
-	exit();
-	return NULL;
-}
 
 void *initialize_shell(int argc, char **argv)
 {

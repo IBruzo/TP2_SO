@@ -75,7 +75,6 @@ int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 
 int hasPipe(char *str);
 
-char * cat(char *str);
 int wc(char *str);
 void filter(char * str, char * buffer);
 

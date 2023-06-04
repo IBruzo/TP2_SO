@@ -22,6 +22,7 @@ extern char *snapshot();
 #define ASC_DOWN '\201'
 #define ASC_LEFT '\202'
 #define ASC_RIGHT '\203'
+#define EOF -1
 
 // hashcodes de los strings comandos en mayuscula
 #define HELP 2089138798

@@ -199,9 +199,8 @@ static int isLetter(int scancode)
  */
 void storeKey()
 {
-
     int scancode = inb(0x60);
-
+ //   printList(PCBTable);
     switch (scancode)
     {
     case CTRL_PRESSED:
@@ -240,13 +239,41 @@ void storeKey()
             char combinedChar = keyboards[language][scancode][index];
             if (combinedChar == 'c' || combinedChar == 'C')
             {
-                print("And now, it's time for the grand finale of this extraordinary process. Behold as it bids its farewell, leaving us in a cloud of whimsical wonder... Farewell, dear process, may your bits and bytes find eternal joy in templeOS.\n");
-                sys_kill(getCurrentPid());
+              
+                if( peek(&inputQueue)!=-1){
+                   //  printList(PCBTable);
+                  //  unblock(peek(&inputQueue));
+                    PCB * curr = get(PCBTable,peek(&inputQueue));
+               
+        
+                    sys_kill(peek(&inputQueue));
+                    pop(peek(&inputQueue));
+
+                    forceTick();
+                    return;
+                }else{
+                Iterator * it = dlcCreateIterator(&route);
+                int iter = 0;
+                list_t * aux;
+                while (iter<dlcSize+1)
+                {
+                    aux=dlcNext(it);
+                    PCB * curr = get(PCBTable,aux->data);
+                    if(curr->FD[0]==1){
+                        unblock(curr->PPID);
+                        sys_kill(curr->PID);
+                        return;
+                    }
+
+                    iter++;
+                }
+                               
+                }
+    
             }
             if (combinedChar == 'd' || combinedChar == 'D')
             {
-                print("Control D pressed\n");
-                pop(&inputQueue);
+                keyBuffer[bufferCount++]= EOF;
             }
             break;
         }
@@ -260,10 +287,7 @@ void storeKey()
     }
     if (bufferCount > 0)
     {
-        /*
-        if ( key is ctrl + d )
-            pop()
-        */
+
         unblock(peek(&inputQueue));
         pop(&inputQueue);
 

@@ -25,7 +25,7 @@ uint64_t schedule(uint64_t RSP)
     // Se quedo sin vida se las reinicio pero elijo a otro proceso
     aux->lives = aux->priority;
     // Si el proceso abandono por un bloqueo entonces no lo dejo en ready
-    if (!flag && !aux->state==EXITED)
+    if (!flag && aux->state!=EXITED)
     {
         aux->state = READY;
     }
@@ -51,13 +51,7 @@ uint64_t schedule(uint64_t RSP)
         PCB *aux2 = get(PCBTable, current->data);
         aux2->state = RUNNING;
         return aux2->RSP;
-        /*
-              while (aux2->state != READY)
-              {
-                  current = dlcNext(iterator);
-                  aux2 = get(PCBTable, current->data);
-              }
-        */
+  
     }
 }
 
@@ -81,7 +75,6 @@ int block(int pid)
             flag++;
             blockedProcess->state = BLOCKED;
             blockedProcess->lives = 0;
-            blockedProcess->priority = 0;
             return 1;
         }
         index++;
@@ -94,6 +87,9 @@ int unblock(int pid)
     // printRoute();
     // print("unblocking %d  |-|", pid);
     PCB *blockedProcess = get(PCBTable, pid);
+     if(blockedProcess->state==EXITED){
+        return -1;
+     }
     if (pid != -1 && flag)
     {
         list_t *newProcess = (list_t *)sys_mAlloc(sizeof(list_t));
@@ -102,6 +98,7 @@ int unblock(int pid)
         dlcSize++;
         flag--;
         blockedProcess->state = READY;
+        blockedProcess->lives = blockedProcess->priority;
         return 1;
     }
     // printRoute();

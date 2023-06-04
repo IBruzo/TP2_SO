@@ -743,9 +743,6 @@ int hasPipe(char *str) {
     return 0;
 }
 
-char * cat(char *str){
-	return str;
-}
 
 int wc(char *str){
 	return (strlen(str)*fontsize*8) / 1024 + 1;

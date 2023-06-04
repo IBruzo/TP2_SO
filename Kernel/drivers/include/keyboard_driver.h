@@ -5,6 +5,7 @@
 #include <lib.h>
 #include "scheduler.h"
 #include "syscalls.h"
+#include "waitStack.h"
 
 #define ESC 27
 #define MAX_SCANCODE 58
@@ -28,6 +29,7 @@
 #define CAPSLOCK_RELEASED 0xBA
 #define CTRL_PRESSED 0x1D
 #define CTRL_RELEASED 0x9D
+#define EOF -1
 
 extern unsigned char getkeyScancode();
 extern int keyboardActive();
