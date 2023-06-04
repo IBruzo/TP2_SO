@@ -55,15 +55,6 @@ int createPipe(char *name)
     {
         if (pipeTable[i].used == 0)
         {
-            char readEndName[MAX_PIPE_NAME_SIZE];
-            strcpy(readEndName, name);
-            strcat(readEndName, "R");
-            pipeTable[i].pipe.sem[0] = semCreate(readEndName, 0);
-
-            char writeEndName[MAX_PIPE_NAME_SIZE];
-            strcpy(writeEndName, name);
-            strcat(writeEndName, "W");
-            pipeTable[i].pipe.sem[1] = semCreate(readEndName, MAX_PIPE_BUFFER_SIZE);
 
             pipeTable[i].pipe.pipePID = i;
             pipeTable[i].pipe.readIndex = 0;
@@ -79,10 +70,6 @@ int createPipe(char *name)
             pipeTable[i].hashName = hashName(name);
             pipeTable[i].used = 1;
 
-            char mutexN[MAX_PIPE_NAME_SIZE];
-            strcpy(mutexN, name);
-            strcat(mutexN, "M");
-            pipeTable[i].mutex = semCreate(mutexN, 1);
             return i;
         }
     }
@@ -97,7 +84,6 @@ int pipeOpen(char *name)
     {
         return -1;
     }
-    // semWait(pipeTable[fd].mutex);
 
     if (fd == -1)
     {                          // no existe tal pipe, lo creo
@@ -109,7 +95,6 @@ int pipeOpen(char *name)
             return -1;
         }
     }
-    // semPost(pipeTable[fd].mutex);
 
     return fd;
 }
@@ -146,9 +131,6 @@ int pipeRead(int fd, char *buf, int count)
     int wIndex = pipeTable[fd].pipe.writeIndex;
     int i = 0;
 
-    // Wait until there is data available to read
-    semWait(pipeTable[fd].pipe.readSem);
-
     while (i < count && rIndex != wIndex)
     {
         buf[i] = pipeTable[fd].pipe.buffer[rIndex];
@@ -158,9 +140,6 @@ int pipeRead(int fd, char *buf, int count)
     }
 
     pipeTable[fd].pipe.readIndex = rIndex;
-
-    // Signal that read operation is complete
-    semPost(pipeTable[fd].pipe.writeSem);
 
     return i;
 }
@@ -180,9 +159,6 @@ int pipeWrite(int fd, const char *buf)
     int wIndex = pipeTable[fd].pipe.writeIndex;
     int i = 0;
 
-    // Wait until there is space available to write
-    semWait(pipeTable[fd].pipe.writeSem);
-
     while (i < count && ((wIndex + 1) % MAX_PIPE_BUFFER_SIZE) != rIndex)
     {
         pipeTable[fd].pipe.buffer[wIndex] = buf[i];
@@ -192,9 +168,6 @@ int pipeWrite(int fd, const char *buf)
     }
 
     pipeTable[fd].pipe.writeIndex = wIndex;
-
-    // Signal that write operation is complete
-    semPost(pipeTable[fd].pipe.readSem);
 
     return i;
 }

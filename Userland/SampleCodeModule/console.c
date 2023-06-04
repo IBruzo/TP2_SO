@@ -296,6 +296,7 @@ void commandCat(char *str)
 	waitPid(catpid);
 	return;
 }
+
 static void *wcpro(int argc, char *argv[])
 {
 	clearScreen();
@@ -612,6 +613,15 @@ void handlePipe()
 
 	// leftCommand = toUpper(leftCommand);
 	// rightCommand = toUpper(rightCommand);
+
+	int pipeFD = openPipe("superpipe");
+	int writeFD[] = {0, pipeFD};
+	int readFD[] = {pipeFD, 1};
+	int writerPID = createProcess("command1", writer, 0, NULL, writeFD);
+	waitPid(writerPID);
+	int readerPID = createProcess("command2", reader, 0, NULL, readFD);
+	waitPid(readerPID);
+	closePipe(pipeFD);
 }
 
 void handleRegularCommand()

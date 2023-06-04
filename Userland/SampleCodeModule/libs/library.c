@@ -789,3 +789,22 @@ void filter(char *str, char *buffer)
 
 	buffer[j] = '\0';
 }
+
+void *writer(int argc, char **argv)
+{
+	print("AAAAAAAAAAAYUDAME LOCOOOo!\n");
+	exit();
+	return NULL;
+}
+
+void *reader(int argc, char **argv)
+{
+	char c;
+	while ((c = getchar()) != 0)
+	{
+		print("%c", c); // escribe en consola
+	}
+
+	exit();
+	return NULL;
+}

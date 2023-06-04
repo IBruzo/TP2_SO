@@ -75,8 +75,12 @@ void refreshCursor();
 int createFGProcess(char *name, void *(*f)(int, char **), int argc, char **argv);
 int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv);
 
+// pipe functions
 int hasPipe(char *str);
+void *writer(int argc, char **argv);
+void *reader(int argc, char **argv);
 
+// new commands
 int wc(char *str);
 void filter(char *str, char *buffer);
 
