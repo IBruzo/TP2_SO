@@ -14,6 +14,7 @@
 #include "stack.h"
 #include "pipe.h"
 #include "waitStack.h"
+#include "semaphores.h"
 
 void clearBSS(void *bssAddress, uint64_t bssSize);
 void *getStackBase();
@@ -41,6 +42,7 @@ int main()
 	load_idt();
 	exceptionsBackupValues((uint64_t)sampleCodeModuleAddress, getSP());
 
+	initSems();
 	initPipes();
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 	initializeWaitStack(&waitQueue);

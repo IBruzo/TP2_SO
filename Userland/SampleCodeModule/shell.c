@@ -32,19 +32,17 @@ void *initialize_shell(int argc, char **argv)
 
 	/* --------------------------PIPE TEST---------------------------- */
 
-	// writer | reader
-	// int pipeFD = openPipe("superpipe");
-	// print("PIPE FD = %d\n", pipeFD);
-	// int writeFD[] = {0, pipeFD};
-	// int readFD[] = {pipeFD, 1};
-
-	// int writerPID = createProcess("writer", writer, 0, NULL, writeFD);
-	// waitPid(writerPID);
-	// int readerPID = createProcess("reader", reader, 0, NULL, readFD);
-	// waitPid(readerPID);
-	// print("Llegue joaquito");
-	// closePipe(pipeFD);
-	// print("closing pipe");
+	// // writer | reader
+	/* int pipeFD = openPipe("superpipe");
+	print("PIPE opened FD = %d\n", pipeFD);
+	int writeFD[] = {0, pipeFD};
+	int readFD[] = {pipeFD, 1};
+	int writerPID = createProcess("writer", writer, 0, NULL, writeFD);
+	waitPid(writerPID);
+	int readerPID = createProcess("reader", reader, 0, NULL, readFD);
+	waitPid(readerPID);
+	closePipe(pipeFD);
+	print("pipe closed"); */
 
 	/* ---------------------------------------------------------------- */
 
