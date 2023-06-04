@@ -17,7 +17,12 @@ int canWrite()
 {
 	return cursorX + fontsize * 8 + 16 < 1000;
 }
-
+int isalnum(int c)
+{
+	return (c >= 'A' && c <= 'Z') ||
+		   (c >= 'a' && c <= 'z') ||
+		   (c >= '0' && c <= '9');
+}
 unsigned char inthextoa(unsigned char a)
 {
 	if (a <= 9)
@@ -754,6 +759,13 @@ int wc(char *str)
 }
 
 char toLower(char c)
+{
+	if (c >= 'A' && c <= 'Z')
+		c = c + 32;
+	return c;
+}
+
+char tolower(char c)
 {
 	if (c >= 'A' && c <= 'Z')
 		c = c + 32;

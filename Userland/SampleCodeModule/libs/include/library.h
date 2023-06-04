@@ -29,6 +29,8 @@ void printHex(uint64_t);
 void appendchar(char character);
 void appendstring(char *string);
 void appendstringColor(char *string, int color);
+int isalnum(int c);
+char tolower(char c);
 
 // string
 void strcpy(char *destination, const char *origin);
@@ -76,6 +78,6 @@ int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 int hasPipe(char *str);
 
 int wc(char *str);
-void filter(char * str, char * buffer);
+void filter(char *str, char *buffer);
 
 #endif

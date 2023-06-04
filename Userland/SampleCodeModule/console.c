@@ -263,7 +263,7 @@ void testSemaphoresSync()
 void *catpro(int argc, char *argv[])
 {
 	clearScreen();
-	printColor("edit here-", 0x547891);
+	printColor("write here > ", 0x547891);
 	char c = 1;
 	char buff[100];
 	int lastch = 0;
@@ -296,18 +296,117 @@ void commandCat(char *str)
 	waitPid(catpid);
 	return;
 }
-
-void commandWc(char *str)
+static void *wcpro(int argc, char *argv[])
 {
-	printInt(wc(str));
+	clearScreen();
+	printColor("edit here>", 0x547891);
+	char c = 1;
+	char buff[100];
+	int lastch = 0;
+	int lineCount = 0;
+	int wordCount = 0;
+	int charCount = 0;
+	int inWord = 0;
+
+	while (c != (char)EOF)
+	{
+		c = getchar();
+		if (isalnum(c))
+		{
+			charCount++;
+		}
+
+		if (c == '\n')
+		{
+			wordCount++;
+
+			lineCount++;
+			newline();
+		}
+		else if (c == ' ')
+		{
+			if (inWord)
+			{
+				wordCount++;
+				inWord = 0;
+			}
+		}
+		else
+		{
+			if (!inWord)
+			{
+				inWord = 1;
+			}
+		}
+
+		if (c == '\n')
+		{
+			buff[lastch] = '\0';
+			printColor("%s\n", 0x547891, buff);
+			lastch = 0;
+			printColor(">", 0x547891);
+		}
+		else if (c != 0)
+		{
+			handleKey(c);
+			buff[lastch++] = c;
+		}
+	}
+
 	newline();
+	printColor("Lines: %d\n", 0x547891, lineCount);
+	printColor("Words: %d\n", 0x547891, wordCount);
+	printColor("Characters: %d\n", 0x547891, charCount);
+
+	exit();
+	return NULL;
+}
+
+static void *filterpro(int argc, char *argv[])
+{
+	clearScreen();
+	printColor("edit here>", 0x547891);
+	char c = 1;
+	char buff[100];
+	int lastch = 0;
+	while (c != (char)EOF)
+	{
+		c = getchar();
+		if (c == '\n')
+		{
+			newline();
+			buff[lastch] = '\0';
+			printColor("%s\n", 0x547891, buff);
+			lastch = 0;
+			printColor(">", 0x547891);
+		}
+		else if (c != 0)
+		{
+			// Check if c is a vowel (case-insensitive)
+			char lowerC = tolower(c);
+			handleKey(c);
+			if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u')
+			{
+				buff[lastch++] = c;
+			}
+		}
+	}
+	newline();
+	exit();
+	return NULL;
 }
 
 void commandFilter(char *str)
 {
-	char buf[512] = {0};
-	filter(str, buf);
-	print("%s\n", buf);
+	int filterpid = createFGProcess("filter", filterpro, 0, NULL);
+	waitPid(filterpid);
+	return;
+}
+
+void commandWc(char *str)
+{
+	int wcpid = createFGProcess("wc", wcpro, 0, NULL);
+	waitPid(wcpid);
 }
 
 void commandKill(char *str)
@@ -600,6 +699,12 @@ void handleRegularCommand()
 		case CAT:
 			commandCat(section);
 			break;
+		case WC:
+			commandWc(section);
+			break;
+		case FILTER:
+			commandFilter(section);
+			break;
 		default:
 			printColor("'%s'", ORANGY, command);
 			print(" : comando no encontrado.\n");
@@ -632,12 +737,7 @@ void handleRegularCommand()
 		case HELP:
 			handleHelp(section);
 			break;
-		case WC:
-			commandWc(section);
-			break;
-		case FILTER:
-			commandFilter(section);
-			break;
+
 		default:
 			printColor("'%s'", ORANGY, command);
 			print(" : comando no encontrado.\n");
