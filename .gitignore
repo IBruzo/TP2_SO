@@ -29,3 +29,10 @@ docker_build_command.sh
 
 #prettier
 .prettierrc
+
+#PVS KERNEL
+PVS-Studio.log
+report.tasks
+strace_out
+#PVS .config
+PVS-Studio.lic
