@@ -177,8 +177,6 @@ char *strdup(const char *str)
 
 int pipeClose(int fd)
 {
-    // debugging
-    printList(PCBTable);
 
     // printBuffer(fd);
 
@@ -186,11 +184,13 @@ int pipeClose(int fd)
     {
         return -1;
     }
-    print("\n\n\n");
+    // debugging
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     semWait(pipeTable[fd].mutex);
+    printList(PCBTable);
 
-    char *lalala = strdup(getSemName(pipeTable[fd].pipe.sem[0]) + 2);
-    print("\n --> ReadSem [%d] FD [%d] \n", pipeTable[fd].pipe.sem[0] + 2, fd);
+    char *lalala = strdup(getSemName(pipeTable[fd].pipe.sem[0]));
+    print("\n\n --> ReadSem [%d] FD [%d] \n", pipeTable[fd].pipe.sem[0], fd);
     print(" --> ReadSemName : [%s]\n", lalala);
 
     semClose(lalala);
@@ -200,8 +200,8 @@ int pipeClose(int fd)
     print(" --> WriteSemName [%s]\n", lala);
 
     semClose(lala);
+    print("\n--------->AAAAAAAAAAA<-------------\n");
 
-    // print("\n--------->AAAAAAAAAAA<-------------\n");
     pipeTable[fd].used = 0;
 
     semPost(pipeTable[fd].mutex);

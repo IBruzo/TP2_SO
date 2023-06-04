@@ -43,7 +43,7 @@ int semCreate(char *name, int initValue)
     if ((pos = findAvailableSpace()) != -1)
     {
         // Inicializamos la estructura
-        memcpy(semSpaces[pos].sem.name, name, strlen(name));
+        strcpy(semSpaces[pos].sem.name, name);
         semSpaces[pos].sem.value = initValue;
         semSpaces[pos].sem.lock = 0;
         semSpaces[pos].sem.first = NULL;
@@ -51,6 +51,8 @@ int semCreate(char *name, int initValue)
         semSpaces[pos].sem.size = 0;
         semSpaces[pos].sem.listSize = 0;
     }
+    print("Semaphore created");
+    print("Saved Name : [%s]", semSpaces[pos].sem.name);
     return pos;
 }
 
@@ -152,7 +154,7 @@ static int findSem(char *name)
 {
     for (int i = 0; i < MAX_SEM; i++)
     {
-        if (semSpaces[i].available == FALSE && strcmp(name, semSpaces[i].sem.name))
+        if (semSpaces[i].available == FALSE && strcmp(name, semSpaces[i].sem.name) == 0)
         {
             return i;
         }
