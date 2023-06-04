@@ -56,7 +56,8 @@ int semCreate(char *name, int initValue)
 
 int semOpen(char *name, int initValue)
 {
-    while (_xchg(&lockSem, 1) != 0);
+    while (_xchg(&lockSem, 1) != 0)
+        ;
     int semIndex = findSem(name);
     if (semIndex == -1)
     {
@@ -64,7 +65,7 @@ int semOpen(char *name, int initValue)
         if (semIndex == -1)
         {
             _xchg(&lockSem, 0);
-            return -1; 
+            return -1;
         }
     }
     semSpaces[semIndex].sem.size++;
@@ -79,7 +80,7 @@ int semClose(char *name)
     int semIndex = findSem(name);
     if (semIndex == -1)
     {
-        return -1; 
+        return -1;
     }
     if ((--semSpaces[semIndex].sem.size) <= 0)
         semSpaces[semIndex].available = TRUE;
@@ -93,7 +94,8 @@ int semWait(int semIndex)
         return -1;
     sem_t *sem = &semSpaces[semIndex].sem;
 
-    while (_xchg(&sem->lock, 1) != 0);
+    while (_xchg(&sem->lock, 1) != 0)
+        ;
     if (sem->value > 0)
     {
         sem->value--;
@@ -142,7 +144,7 @@ int semPost(int semIndex)
         }
     }
     _xchg(&sem->lock, 0);
-    unblock(pid)?:forceTick();
+    unblock(pid) ?: forceTick();
     return 0;
 }
 
@@ -160,7 +162,7 @@ static int findSem(char *name)
 
 int enqeueProcess(int pid, sem_t *sem)
 {
-    process_t *process = memAlloc(sizeof(process_t));
+    process_t *process = sys_mAlloc(sizeof(process_t));
     if (process == NULL)
     {
         return -1;

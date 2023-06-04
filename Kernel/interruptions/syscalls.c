@@ -45,18 +45,17 @@ char sys_getchar()
     if (currPCB->FD[0] == 0)
     {
         return getKey();
-
-        // input de un buffer
-        char buffer[1]; // alloc mem?
-        int bytesRead = pipeRead(currPCB->FD[0], buffer, 1);
-        if (bytesRead == -1)
-        {
-            /* Aca entraria un Background Process ya que no encuentra el FD = -1 */
-            return 0;
-        }
-        return buffer[0];
     }
-    return 0;
+
+    // input de un buffer
+    char buffer[1]; // alloc mem?
+    int bytesRead = pipeRead(currPCB->FD[0], buffer, 1);
+    if (bytesRead == -1)
+    {
+        /* Aca entraria un Background Process ya que no encuentra el FD = -1 */
+        return 0;
+    }
+    return buffer[0];
 }
 
 char sys_getLastKey()
