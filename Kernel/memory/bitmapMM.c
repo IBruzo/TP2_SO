@@ -40,14 +40,13 @@ void switchBit(uint8_t *ch, int bitPos)
     *ch ^= (1 << bitPos);
 }
 
-// funcion que switchea el valor del bit que se encuentra en position dentro del byte apuntado por byteDir
+// Switchea el valor del bit que se encuentra en position dentro del byte apuntado por byteDir
 void switchBits(int posArr, int bitPos, int size)
 {
-    // ejemplo switchBits(8, 5, 14); se quiere switchear los 15 bits comenzando del 8-5 al 10-4
-    unsigned char mask = 128 >> bitPos;          // la mascara se setea en 0000 0100
-    for (int i = bitPos; i < bitPos + size; i++) // i = 5 -> 19
+    unsigned char mask = 128 >> bitPos;
+    for (int i = bitPos; i < bitPos + size; i++)
     {
-        int arrStep = i / 8; //  0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2
+        int arrStep = i / 8;
         if (i % 8 == 0)
         {
             mask = 128;
@@ -58,21 +57,20 @@ void switchBits(int posArr, int bitPos, int size)
     return;
 }
 
-// funcion que retorna la direccion donde comienza el bloque con el tamanio requerido
+// Retorna la direccion donde comienza el bloque con el tamanio requerido
 int findSpace(int cantPag, int *posArr, int *bitPos)
 {
-    int freeSpace = 0; // variable que acumula la cantidad de memoria que se encontro hasta el momento
+
+    int freeSpace = 0; // Variable que acumula la cantidad de memoria que se encontro hasta el momento
     int bitMapPosition;
     char bitPosition;
     int startArrPos = 0;
     char startBitPos = 0;
     for (bitMapPosition = 0; bitMapPosition < BIT_MAP_SIZE; bitMapPosition++)
     {
-        unsigned char mask = 128; // 1000 0000
+        unsigned char mask = 128;
         for (bitPosition = 0; bitPosition < 8; bitPosition++)
         {
-            // bitMap[bitMapPosition] = 1100 0001
-            // bitPosition 1000 0000 -> 0100 0000 -> 0010 0000 -> 0001 0000 -> 0000 1000 -> 0000 0100 -> 0000 0010 -> 0000 0001
             if (freeSpace == 0)
             {
                 startArrPos = bitMapPosition;
@@ -104,13 +102,12 @@ void memFree(void *dir)
     {
         if (allocations[i].address == dir)
         {
-            uint64_t dirMap = (((uint64_t)dir) - (uint64_t)(memStart)) / PAG_SIZE; // base + 4k*(8*posArr + bitPoss) bitPos[ 0-7 ]
-            int posArr = dirMap / 8;                                               // se trunca
+            uint64_t dirMap = (((uint64_t)dir) - (uint64_t)(memStart)) / PAG_SIZE;
+            int posArr = dirMap / 8;
             int bitPos = dirMap % 8;
             int cantPag = (allocations[i].size + PAG_SIZE - 1) / PAG_SIZE;
             switchBits(posArr, bitPos, cantPag);
 
-            // Remove deallocated memory from allocations array
             for (int j = i; j < numAllocations; j++)
             {
                 allocations[j] = allocations[j + 1];
@@ -136,13 +133,13 @@ void *memAlloc(int sizeBytes)
         allocations[numAllocations].size = sizeBytes;
         numAllocations++;
         allocatedBytes += cantPag * PAG_SIZE;
-        // print("POS ARRAY [%d] BIT POS [%d]\n", posArr, bitPos);
         return address;
     }
     return 0;
 }
 
-void mem(char *buffer, int unit) // crea string de memoria total, ocupada y libre
+// Crea string de memoria total, ocupada y libre
+void mem(char *buffer, int unit)
 {
     int memSize = 8 * BIT_MAP_SIZE * PAG_SIZE;
     int total;

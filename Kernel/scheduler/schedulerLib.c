@@ -4,8 +4,9 @@
 
 int dlcSize = 0;
 
-/* --------------------------------------- PCB FUNCTIONS -------------------------- */
+/* --------------------------------------- PCB FUNCTIONS --------------------------------------- */
 
+// Construye el PCB
 void buildPCB(char *name, PCB *block, int PID, int PPID, uint64_t RSP, uint64_t RBP, char state, char priority, int *FDArr)
 {
     strncpy(block->name, name, 7);
@@ -27,6 +28,7 @@ void buildPCB(char *name, PCB *block, int PID, int PPID, uint64_t RSP, uint64_t 
     return;
 }
 
+// Construccion de procesos previos al accionar del Scheduler
 void buildStartUpProcess(uint64_t *stackStart, void (*f)())
 {
     // inicializo entradas de stack en 0
@@ -51,6 +53,7 @@ void idleProcess()
     }
 }
 
+// Inicializa el Stack Frame
 void initializeStackFrame(int argc, char **argv, void *(*fn)(int, char **), uint64_t pid)
 {
     PCB *currentProcess = get(PCBTable, pid);

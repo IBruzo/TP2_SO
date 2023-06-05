@@ -2,6 +2,9 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <exceptions.h>
 
+uint64_t continueExecutionIP;
+uint64_t continueExecutionSP;
+
 // Selecciona el tipo de exception que se lanzo y vuelve a la consola
 void exceptionDispatcher(int exception, uint64_t *stackFrame)
 {
@@ -47,24 +50,23 @@ static void error_sign(char *message, uint64_t *stackFrame)
 }
 
 // Restartea el Sample Code Module, deprecada
-static void restartSampleCodeModule(uint64_t *exceptionStackframe)
+void restartSampleCodeModule(uint64_t *exceptionStackframe)
 {
     exceptionStackframe[15] = continueExecutionIP;
     exceptionStackframe[15 + 3] = continueExecutionSP;
 }
 
-static void zero_division(uint64_t *stackFrame)
+void zero_division(uint64_t *stackFrame)
 {
     error_sign("division por cero", stackFrame);
     restartSampleCodeModule(stackFrame);
 }
 
-static void invalid_op_code(uint64_t *stackFrame)
+void invalid_op_code(uint64_t *stackFrame)
 {
     error_sign("codigo de operaciones invalido", stackFrame);
     restartSampleCodeModule(stackFrame);
 }
-
 void exceptionsBackupValues(uint64_t ipAdress, uint64_t stackAdress)
 {
     continueExecutionIP = ipAdress;

@@ -95,10 +95,7 @@ void list_print(list_t *list, int numElements)
   list_t *node;
   while ((node = dlcNext(printIterator)) != NULL && count < numElements)
   {
-    // Print the element from the node
-    // Assuming the list node contains some data you want to print
-    print("Element: %d  |", node->data); // Replace 'data' with the actual member of the node containing the data
-
+    print("Element: %d  |", node->data);
     count++;
   }
 

@@ -18,7 +18,7 @@ uint64_t schedule(uint64_t RSP)
     //  Se actualiza el PCB del Proceso Saliente
     PCB *aux = get(PCBTable, current->data);
     aux->RSP = RSP;
-    // Si todavia tiene vidasm le quito una y lo mando
+    // Si todavia tiene vidas le quito una y retorno su RSP
     if (aux->lives > 0 && aux->state == READY)
     {
         aux->lives--;
@@ -26,19 +26,16 @@ uint64_t schedule(uint64_t RSP)
     }
     // Se quedo sin vida se las reinicio pero elijo a otro proceso
     aux->lives = aux->priority;
-    // Si el proceso abandono por un bloqueo entonces no lo dejo en ready
+    // Si el proceso abandono por un bloqueo entonces no lo dejo en ready, y lo mismo un proceso recien terminado
     if (!flag && aux->state != EXITED)
     {
         aux->state = READY;
     }
     // Avanzamos el proceso entrante
     current = dlcNext(iterator);
-    // print("current PID : %d", current->data);
     // Si es el nodo centinela lo ignoramos
     if (current->data == 0)
         current = dlcNext(iterator);
-    // print("current PID2 : %d", current->data);
-
     // Se actualiza el PCB del Proceso Entrante y se retorna
     if (!dlcSize)
     {
@@ -49,7 +46,6 @@ uint64_t schedule(uint64_t RSP)
     else
     {
         // New Process
-
         PCB *aux2 = get(PCBTable, current->data);
         aux2->state = RUNNING;
         return aux2->RSP;
@@ -58,7 +54,6 @@ uint64_t schedule(uint64_t RSP)
 
 int block(int pid)
 {
-    // print("blocking %d -->", pid);
     PCB *blockedProcess = get(PCBTable, pid);
     if (blockedProcess->state == BLOCKED || blockedProcess->state == EXITED)
     {
@@ -89,8 +84,6 @@ int block(int pid)
 
 int unblock(int pid)
 {
-    // printRoute();
-    // print("unblocking %d  |-|", pid);
     PCB *blockedProcess = get(PCBTable, pid);
     if (blockedProcess->state == EXITED)
     {
@@ -107,9 +100,6 @@ int unblock(int pid)
         blockedProcess->lives = blockedProcess->priority;
         return 1;
     }
-    // printRoute();
-    // printList(PCBTable);
-    //  forceTick();
     return -1;
 }
 
@@ -129,20 +119,7 @@ list_t *getCurrentProcess()
     return current;
 }
 
-int countCurrentProcessAppearances()
-{
-    int count = 0;
-    Iterator *routeIt = dlcCreateIterator(&route);
-    list_t *processIt;
-    for (int i = 0; i < dlcSize + 1; i++)
-    {
-        processIt = dlcNext(routeIt);
-        if (processIt->data == getCurrentPid())
-            count++;
-    }
-    return count;
-}
-
+// Printea la Ruta de procesos que sigue el scheduler
 void printRoute()
 {
     Iterator *routeIt = dlcCreateIterator(&route);
@@ -152,62 +129,4 @@ void printRoute()
         processIt = dlcNext(routeIt);
         print("||  PID  [%d]  ||  ", processIt->data);
     }
-}
-
-/*
-    Imprime la lista de todos los procesos con sus propiedades:
-    nombre,
-    ID,
-    prioridad,
-    stack y base pointer,
-    foreground
-    y cualquier otra variable que consideren necesaria.
-*/
-
-static char *stateStr(int state)
-{
-
-    switch (state)
-    {
-    case BLOCKED:
-        return "BLOCKED";
-    case READY:
-        return "READY  ";
-    case RUNNING:
-        return "RUNNING";
-    default:
-        return "EXITED ";
-    }
-}
-
-void ps(char *buffer)
-{
-    /* print header */
-    char header[100];
-    sprintf(header, "Process    |  ID  | Prioridad |   RSP   |   RBP    |  Context  | State \n");
-    strcpy(buffer, header);
-    char line[100];
-    sprintf(line, "-------------------------------------------------------------------------\n");
-    strcat(buffer, line);
-
-    Node *pcb = begin(PCBTable);
-    while (pcb != NULL)
-    {
-        if (pcb->data->state != EXITED)
-        {
-            char *process = (char *)sys_mAlloc(sizeof(char) * 200);
-            if ((uint32_t)pcb->data->RBP == 0)
-            {
-                sprintf(process, "%s    |  %d   |     %d     | %x  | 0x%s |  %s       | %s \n", pcb->data->name, pcb->data->PID, pcb->data->priority, (uint32_t)pcb->data->RSP, "000000", (pcb->data->FD[0] == 0 && pcb->data->FD[1] == 1) ? "FG" : "BG", stateStr(pcb->data->state));
-            }
-            else
-            {
-                sprintf(process, "%s    |  %d   |     %d     | %x  | 0x%x |  %s       | %s \n", pcb->data->name, pcb->data->PID, pcb->data->priority, (uint32_t)pcb->data->RSP, (uint32_t)pcb->data->RBP, (pcb->data->FD[0] == 0 && pcb->data->FD[1] == 1) ? "FG" : "BG", stateStr(pcb->data->state));
-            }
-            strcat(buffer, process);
-            sys_mFree(process);
-        }
-        pcb = next(pcb);
-    }
-    return;
 }

@@ -8,7 +8,7 @@ static int cursorY = 4;
 
 List *PCBTable;
 
-/* --------------------------------------- PRINT FUNCTIONS -------------------------- */
+/* --------------------------------------- Memory Functions -------------------------- */
 
 void *memset(void *destination, int32_t c, uint64_t length)
 {
@@ -59,56 +59,7 @@ void *memcpy(void *destination, const void *source, uint64_t length)
 	return destination;
 }
 
-uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
-{
-	char *p = buffer;
-	char *p1, *p2;
-	uint32_t digits = 0;
-
-	// Calculate characters for each digit
-	do
-	{
-		uint32_t remainder = value % base;
-		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
-		digits++;
-	} while (value /= base);
-
-	// Terminate string in buffer.
-	*p = 0;
-
-	// Reverse string in buffer.
-	p1 = buffer;
-	p2 = p - 1;
-	while (p1 < p2)
-	{
-		char tmp = *p1;
-		*p1 = *p2;
-		*p2 = tmp;
-		p1++;
-		p2--;
-	}
-
-	return digits;
-}
-
-
-
-
-
-
-int strToInt(char *str)
-{
-	int i = 0;
-	int rta = 0;
-	while (str[i] != 0)
-	{
-		rta = rta * 10 + str[i] - '0';
-		i++;
-	}
-	return rta;
-}
-
-
+/* ------------------------------------ Display Functions ---------------------------------- */
 
 static void getStringToPrint(char str[], int strSize, char *foundation, va_list vl)
 {
@@ -201,139 +152,6 @@ void print(char *foundation, ...)
 	appendstringColor(str, FONTCOLOR);
 }
 
-char *snprintf2(char *foundation, ...)
-{
-	va_list args;
-	va_start(args, foundation);
-	static char str[4096];
-	int strSize = 4096;
-	getStringToPrint(str, strSize, foundation, args);
-	va_end(args);
-	return str;
-}
-
-int snprintf(char *buffer, size_t size, char *foundation, ...)
-{
-	va_list args;
-	va_start(args, foundation);
-	getStringToPrint(buffer, size, foundation, args);
-	va_end(args);
-	return size;
-}
-int sprintf(char *buffer, char *foundation, ...)
-{
-	int len = strlen(foundation);
-	va_list args;
-	va_start(args, foundation);
-	getStringToPrint(buffer, len, foundation, args);
-	va_end(args);
-	return len;
-}
-
-void strncpy(char *destination, const char *origin, int n)
-{
-	int i;
-	for (i = 0; i < n - 1 && origin[i] != '\0'; i++)
-	{
-		destination[i] = origin[i];
-	}
-	destination[i] = '\0';
-}
-
-void strcpy(char *destination, const char *origin)
-{
-	strncpy(destination, origin, strlen(origin) + 1);
-}
-char *strcpyR(char *destination, const char *source)
-{
-	char *dest = destination;
-	while (*source != '\0')
-	{
-		*dest = *source;
-		dest++;
-		source++;
-	}
-	*dest = '\0';
-	return destination;
-}
-
-void strncat(char *destination, const char *origin, int n)
-{
-	int i, j;
-	for (i = 0; destination[i] != '\0'; i++)
-		;
-	for (j = 0; origin[j] != '\0' && j < n; j++)
-		destination[i + j] = origin[j];
-	destination[i + j] = '\0';
-}
-void strcat(char *destination, const char *origin)
-{
-	strncat(destination, origin, strlen(origin));
-}
-/**
- * @brief pasa a ascii un numero en cualquier base
- * @param i numero a transformar
- * @param strout donde se guarda el string de asciis
- * @param base en que base esta el numero
- */
-char *itoa(int i, char *strout, int base)
-{
-	char *str = strout;
-	int digit, sign = 0;
-	if (i == 0)
-	{
-		*str++ = '0';
-		*str = '\0';
-		return strout;
-	}
-	if (i < 0)
-	{
-		sign = 1;
-		i *= -1;
-	}
-	while (i)
-	{
-		digit = i % base;
-		*str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
-		i = i / base;
-		str++;
-	}
-	if (sign)
-	{
-		*str++ = '-';
-	}
-	*str = '\0';
-	strrev(strout);
-	return strout;
-}
-int strlen(const char *str)
-{
-	int s;
-	for (s = 0; str[s] != 0; ++s)
-		;
-	return s;
-}
-
-// da vuelta el string ABC -> CBA
-char *strrev(char *str)
-{
-	int i;
-	int len = 0;
-	char c;
-	if (!str)
-		return 0;
-	while (str[len] != '\0')
-	{
-		len++;
-	}
-	for (i = 0; i < (len / 2); i++)
-	{
-		c = str[i];
-		str[i] = str[len - i - 1];
-		str[len - i - 1] = c;
-	}
-	return str;
-}
 void appendstringColor(char *string, int color)
 {
 	for (int i = 0; string[i] != 0; i++)
@@ -387,7 +205,169 @@ void newline()
 	cursorY += 16 * fontsize;
 }
 
-/* --------------------------------------- NATIVE KERNEL FUNCTIONS -------------------------- */
+/* ------------------------------- String & Int Manipulation Functions ------------------------- */
+
+uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
+{
+	char *p = buffer;
+	char *p1, *p2;
+	uint32_t digits = 0;
+
+	do
+	{
+		uint32_t remainder = value % base;
+		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+		digits++;
+	} while (value /= base);
+
+	*p = 0;
+
+	p1 = buffer;
+	p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1 = *p2;
+		*p2 = tmp;
+		p1++;
+		p2--;
+	}
+
+	return digits;
+}
+
+int strToInt(char *str)
+{
+	int i = 0;
+	int rta = 0;
+	while (str[i] != 0)
+	{
+		rta = rta * 10 + str[i] - '0';
+		i++;
+	}
+	return rta;
+}
+
+int snprintf(char *buffer, size_t size, char *foundation, ...)
+{
+	va_list args;
+	va_start(args, foundation);
+	getStringToPrint(buffer, size, foundation, args);
+	va_end(args);
+	return size;
+}
+
+int sprintf(char *buffer, char *foundation, ...)
+{
+	int len = strlen(foundation);
+	va_list args;
+	va_start(args, foundation);
+	getStringToPrint(buffer, len, foundation, args);
+	va_end(args);
+	return len;
+}
+
+void strncpy(char *destination, const char *origin, int n)
+{
+	int i;
+	for (i = 0; i < n - 1 && origin[i] != '\0'; i++)
+	{
+		destination[i] = origin[i];
+	}
+	destination[i] = '\0';
+}
+
+void strcpy(char *destination, const char *origin)
+{
+	strncpy(destination, origin, strlen(origin) + 1);
+}
+
+char *strcpyR(char *destination, const char *source)
+{
+	char *dest = destination;
+	while (*source != '\0')
+	{
+		*dest = *source;
+		dest++;
+		source++;
+	}
+	*dest = '\0';
+	return destination;
+}
+
+void strncat(char *destination, const char *origin, int n)
+{
+	int i, j;
+	for (i = 0; destination[i] != '\0'; i++)
+		;
+	for (j = 0; origin[j] != '\0' && j < n; j++)
+		destination[i + j] = origin[j];
+	destination[i + j] = '\0';
+}
+
+void strcat(char *destination, const char *origin)
+{
+	strncat(destination, origin, strlen(origin));
+}
+
+char *itoa(int i, char *strout, int base)
+{
+	char *str = strout;
+	int digit, sign = 0;
+	if (i == 0)
+	{
+		*str++ = '0';
+		*str = '\0';
+		return strout;
+	}
+	if (i < 0)
+	{
+		sign = 1;
+		i *= -1;
+	}
+	while (i)
+	{
+		digit = i % base;
+		*str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
+		i = i / base;
+		str++;
+	}
+	if (sign)
+	{
+		*str++ = '-';
+	}
+	*str = '\0';
+	strrev(strout);
+	return strout;
+}
+
+int strlen(const char *str)
+{
+	int s;
+	for (s = 0; str[s] != 0; ++s)
+		;
+	return s;
+}
+
+char *strrev(char *str)
+{
+	int i;
+	int len = 0;
+	char c;
+	if (!str)
+		return 0;
+	while (str[len] != '\0')
+	{
+		len++;
+	}
+	for (i = 0; i < (len / 2); i++)
+	{
+		c = str[i];
+		str[i] = str[len - i - 1];
+		str[len - i - 1] = c;
+	}
+	return str;
+}
 
 int strcmp(const char *str1, const char *str2)
 {
