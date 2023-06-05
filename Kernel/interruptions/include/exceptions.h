@@ -13,5 +13,13 @@
 #define MESSAGE_SHADOW 0x0a0a0a
 
 void exceptionsBackupValues(uint64_t ipAdress, uint64_t stackAdress);
+static void zero_division();
+static void invalid_op_code();
+static uint64_t continueExecutionIP, continueExecutionSP;
+
+
+
+
+void exceptionsBackupValues(uint64_t ipAdress, uint64_t stackAdress);
 
 #endif

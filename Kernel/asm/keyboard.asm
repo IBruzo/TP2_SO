@@ -1,6 +1,7 @@
 GLOBAL keyboardActive
 section .text
 
+; Manejo de los Scan Codes
 keyboardActive:
     push rbp
 	mov rbp, rsp

@@ -28,13 +28,13 @@ enum state
 
 int addPhylo(int pIndex);
 int removePhylo(int pIndex);
-//void endTable();
+void endTable();
 void * phyloProcess(int argc, char *argv[]);
 void printState();
-//void takeChopstick(int pIndex);
-//void update(int pIndex);
-//int left(int pIndex);
-//int right(int pIndex);
+void takeChopstick(int pIndex);
+void update(int pIndex);
+int left(int pIndex);
+int right(int pIndex);
 
 
 #endif

@@ -122,7 +122,8 @@ SECTION .text
 	iretq
 %endmacro
 
-; para syscalls, no se desea restaurar el RAX ya que el retorno de la syscall esta alli
+; Syscalls, no se desea restaurar el RAX ya que el retorno de la syscall esta alli
+; Este manejo fue actualizado en la version de Sistemas Operativos
 %macro sirqHandler 1
 	pushStateNoRAX
 
@@ -153,7 +154,8 @@ _sti:
 	sti
 	ret
 
-; Setea las Mascaras para que se permitan las interrupciones del Teclado y Timer Tick
+; Setea la Mascara de Master para que se permitan las interrupcionesde hardware
+; correspondientes al Teclado y el Timer Tick
 picMasterMask:
 	push rbp
     mov rbp, rsp
@@ -161,6 +163,7 @@ picMasterMask:
     out	21h,al
     pop rbp
     retn
+
 picSlaveMask:
 	push    rbp
     mov     rbp, rsp
@@ -169,7 +172,7 @@ picSlaveMask:
     pop     rbp
     retn
 
-; Timer Tick, se encarga del Context Switch
+; Timer Tick, se encarga del Context Switching
 _irq00Handler:
 	cli
 	pushState
@@ -189,31 +192,28 @@ _irq00Handler:
 	sti
 	iretq
 
-;Keyboard
+; Keyboard
 _irq01Handler:
 	irqHandlerMaster 1
 
-;Cascade PIC
+; Cascade PIC
 _irq02Handler:
 	irqHandlerMaster 2
 
-;Serial Port 2 and 4
+; Serial Port 2 and 4
 _irq03Handler:
 	irqHandlerMaster 3
 
-;Serial Port 1 and 3
+; Serial Port 1 and 3
 _irq04Handler:
 	irqHandlerMaster 4
 
-;USB
+; USB
 _irq05Handler:
 	irqHandlerMaster 5
 
-;syscalls no bloqueantes
+; Manejo de syscalls, se bifurca entre las bloqueantes y no
 _irq60Handler:
-	; necesito a bruhzo para verificar esta wea rara, y tal vez hacer un work around
-	;se pasan 7 parametros ya que existe una syscall que recibe 6 parametros, debido al
-	; corrimiento se tiene que pasar uno de esos parametros por stack
 	cli
 	cmp rdi, 0
 	jne .conti
@@ -272,8 +272,6 @@ haltcpu:
 	cli
 	hlt
 	ret
-
-
 
 SECTION .bss
 	regist resq 17

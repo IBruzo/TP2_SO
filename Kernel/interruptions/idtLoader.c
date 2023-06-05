@@ -20,24 +20,19 @@ DESCR_INT *idt = (DESCR_INT *)0; // IDT de 255 entradas
 
 static void setup_IDT_entry(int index, uint64_t offset);
 
-/**
- * @brief carga las interrupciones y excepciones en la tabla de idt
- * las interrupciones arrancan en el 20 con timertick
- *
- */
+// Carga las interrupciones y excepciones en la Tabla de IDT
 void load_idt()
 {
-
-  setup_IDT_entry(0x20, (uint64_t)&_irq00Handler);
-  setup_IDT_entry(0x00, (uint64_t)&_exception0Handler);
-  setup_IDT_entry(0x06, (uint64_t)&_exception6Handler);
-  setup_IDT_entry(0x21, (uint64_t)&_irq01Handler);
-  setup_IDT_entry(0x80, (uint64_t)&_irq60Handler); // syscalls
+  setup_IDT_entry(0x20, (uint64_t)&_irq00Handler);      // Timer Tick
+  setup_IDT_entry(0x00, (uint64_t)&_exception0Handler); // Div Cero
+  setup_IDT_entry(0x06, (uint64_t)&_exception6Handler); // Inv Op
+  setup_IDT_entry(0x21, (uint64_t)&_irq01Handler);      // Teclado
+  setup_IDT_entry(0x80, (uint64_t)&_irq60Handler);      // syscalls
 
   initialize();
 
-  // Solo interrupcion timer tick  y teclado habilitadas /fe
-  picMasterMask(0xFC); // fc para habilitar la de teclado
+  // Solo interrupcion timer tick  y teclado habilitadas 
+  picMasterMask(0xFC); 
   picSlaveMask(0xFF);
 }
 

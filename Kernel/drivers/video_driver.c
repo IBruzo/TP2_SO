@@ -3,11 +3,6 @@
 #include <video_driver.h>
 #include <fonts.h>
 
-#define ANCHO_PIX 1024
-#define ALTURA_PIX 768
-#define ANCHO_LETRA_PIX 8
-#define BACKROUND 0x002B36
-#define isMinusc(x) ((x) <= 'a' ? (((x) >= 'z') ? 1 : 0) : 0)
 // esta estructura es de omar-> https://wiki.osdev.org/User:Omarrx024/VESA_Tutorial
 typedef struct vbe_mode_info_structure
 {

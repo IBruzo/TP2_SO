@@ -32,8 +32,7 @@ cpuVendor:
 	pop rbp
 	ret
 
-;recibe el modo y cual quiere q este de minutos horas etc
-;devuelve en BCD el numero correspondiente a al hora minutos... etc
+; Lee la hora haciendo un comando sobre el RTC, devuelve en formato BCD
 getTime:
 	push rbp
 	mov rbp, rsp
@@ -50,6 +49,8 @@ getTime:
 	pop rbp
 	ret
 
+; Funcion utilizado con recurrencia, para retomar tareas de scheduling luego
+; de llegar a bloqueos o exits
 forceTick:
 	sti
 	int 20h
@@ -102,7 +103,8 @@ getSP:
 	mov rax, rsp
 	ret
 
-; Constructora de Stack Falso
+; Constructora de Stack Falso, se cambio a una version en C por recomendacion de los profesores
+; pero por respeto se mantuvo
 buildDummyStack:
 	;PARAMETROS DE BUILDDUMMYSTACK:
 	;RDI -> Stack Pointer/Fin del bloque
@@ -135,13 +137,14 @@ buildDummyStack:
 	push 0				;R14
 	push 0				;R15
 
-	int 20h				;Llamo a la interrupcion del timer
+	int 20h				;Fuerzo una interrupcion del timer
 
 	ret
 
+; Atomicidad para le manejo interno de los semaforos
 _xchg:
 	mov rax, rsi
-	xchg [rdi], eax 	;sus
+	xchg [rdi], eax 
 	ret
 
 section .bss

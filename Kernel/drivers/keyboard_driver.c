@@ -4,7 +4,7 @@
 
 static int language = SPANISH;
 
-// estan cargados los teclados en ingles y español
+// Se cargarom los teclados en ingles y español
 static char keyboards[2][MAX_SCANCODE][2] = {
     {{0, 0},
      {ESC, ESC},
@@ -127,8 +127,14 @@ static int shiftActivated = 0;
 static int capsActivated = 0;
 static int controlActivated = 0;
 
+// Buffer de escritura guardado en kernel
 static char keyBuffer[MAX_BUFFER];
 static int bufferCount = 0;
+
+void changeLanguage(int lan)
+{
+    language = lan;
+}
 
 void clearKeyBuffer()
 {
@@ -137,12 +143,6 @@ void clearKeyBuffer()
     bufferCount = 0;
 }
 
-void changeLanguage(int lan)
-{
-    language = lan;
-}
-
-// saca el primero que esta en el vector
 static char popBuffer()
 {
     if (bufferCount <= 0)
@@ -157,10 +157,8 @@ static char popBuffer()
     bufferCount--;
     return key;
 }
-/**
- *
- * @return devuelve el la primer tecla presionada
- */
+
+// Devuelve el la primer tecla presionada
 char getKey()
 {
     if (bufferCount <= 0)
@@ -171,9 +169,8 @@ char getKey()
     }
     return popBuffer();
 }
-/**
- * @return el ultimo caracter presionado
- */
+
+// Devuelve el ultimo caracter ingresado
 char getLastChar()
 {
     if (bufferCount <= 0)
@@ -196,13 +193,10 @@ static int isLetter(int scancode)
     return (ascii >= 'a' && ascii <= 'z');
 }
 
-/**
- * @brief guarda el caracter q se presiono en el buffer
- */
+// Almacena el caracter presionado en el Buffer
 void storeKey()
 {
     int scancode = inb(0x60);
-    //   printList(PCBTable);
     switch (scancode)
     {
     case CTRL_PRESSED:
@@ -243,24 +237,25 @@ void storeKey()
             {
                 keyBuffer[bufferCount++] = KILL_PROCESS;
                 PCB *curr = get(PCBTable, peek(&inputQueue));
+                // Se evita el asesinato de la shell
                 if (curr->PID == 4)
                 {
                     // print("Beneath an unsinking black sun... through the boundless gloom... our journey continues.\n");
                     return;
                 }
+                // Se asesina el proceso y se lo remueve del Input Stack
                 if (peek(&inputQueue) != -1)
                 {
-
                     sys_kill(peek(&inputQueue));
                     pop(&inputQueue);
-
                     forceTick();
                     return;
                 }
+                // Se asesina el proceso y se lo remueve del Wait Stack, son casos excluyentes
                 else if (peekWaitStack(&waitQueue).cpid != -1)
                 {
                     PCB *curr = get(PCBTable, peekWaitStack(&waitQueue).cpid);
-
+                    // El proceso puede estar en el Wait Stack debido a un sleep
                     if (strcmp(curr->name, "sleep") == 0)
                     {
                         Process pro = peekWaitStack(&waitQueue);
@@ -269,6 +264,7 @@ void storeKey()
                             sys_kill(pro.pid); // mata padre
                         forceTick();
                     }
+                    // Caso normal
                     else
                     {
                         sys_kill(curr->PID);

@@ -2,17 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <exceptions.h>
 
-void exceptionsBackupValues(uint64_t ipAdress, uint64_t stackAdress);
-static void zero_division();
-static void invalid_op_code();
-static uint64_t continueExecutionIP, continueExecutionSP;
-
-/**
- * @brief selecciona el tipo de exception que se lanzo y vuelve a la consola
- *
- * @param exception numero de la exception
- */
-
+// Selecciona el tipo de exception que se lanzo y vuelve a la consola
 void exceptionDispatcher(int exception, uint64_t *stackFrame)
 {
     switch (exception)
@@ -26,9 +16,9 @@ void exceptionDispatcher(int exception, uint64_t *stackFrame)
     }
 }
 
+// Lanza el cartel de excepcion, vestigio de Arquitectura de Computadoras, podria usarse un refactoring con las nuevas Funciones de Kernel
 static void error_sign(char *message, uint64_t *stackFrame)
 {
-    // dibujo contemporaneo de la exception
     char buffer[50];
     put_rectangle(40, 40, 935, 545, MESSAGE_SHADOW);
     put_rectangle(20, 20, 935, 545, MESSAGE_BACKROUND);
@@ -56,12 +46,13 @@ static void error_sign(char *message, uint64_t *stackFrame)
     }
 }
 
-// restart sample code module
+// Restartea el Sample Code Module, deprecada
 static void restartSampleCodeModule(uint64_t *exceptionStackframe)
 {
     exceptionStackframe[15] = continueExecutionIP;
     exceptionStackframe[15 + 3] = continueExecutionSP;
 }
+
 static void zero_division(uint64_t *stackFrame)
 {
     error_sign("division por cero", stackFrame);

@@ -9,7 +9,6 @@
 
 #define ESC 27
 #define MAX_SCANCODE 58
-
 #define ENGLISH 0
 #define SPANISH 1
 #define MAX_BUFFER 1000

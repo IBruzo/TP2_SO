@@ -45,9 +45,9 @@ void * phyloProcess(int argc, char *argv[])
         default:
             // Busca chopsticks ya que tiene hambre.
             makeshiftSleep(60);
-             takeChopstick(index);
+            takeChopstick(2);
             // Termino de comer, deja sus chopsticks.
-             putChopstick();
+//putChopstick();
 
             break;
         }
@@ -88,3 +88,22 @@ void printState()
     }
     print("\n");
 }
+
+void takeChopstick(int pIndex)
+{
+    
+}
+
+void update(int pIndex)
+{
+    
+}
+int left(int pIndex){
+    return 1;
+}
+
+int right(int pIndex){
+    return 1;
+}
+
+

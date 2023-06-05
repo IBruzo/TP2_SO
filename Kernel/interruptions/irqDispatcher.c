@@ -12,10 +12,7 @@ typedef uint64_t (*syscall)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 void (*fun_inter[256])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 uint64_t (*fun_sys[256])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 
-/**
- * @brief inicializa los vectores de funciones q se usaran para las interrupciones
- *
- */
+// Inicializa los vectores de funciones q se usaran para las interrupciones
 void initialize()
 {
     (fun_inter[0]) = int_20;
