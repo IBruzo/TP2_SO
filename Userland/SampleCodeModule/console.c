@@ -320,7 +320,7 @@ static void *filterpro(int argc, char *argv[])
 	while (c != (char)EOF)
 	{
 		c = getchar();
-		char lowerC = tolower(c);
+		char lowerC = toLower(c);
 		if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u')
 		{
 			print("%c", c);

@@ -30,7 +30,6 @@ void appendchar(char character);
 void appendstring(char *string);
 void appendstringColor(char *string, int color);
 int isalnum(int c);
-char tolower(char c);
 void filterSpaces(char *str);
 
 // string
@@ -59,6 +58,7 @@ char onlyHexChars(char *string);
 char isHexChar(char character);
 int strToInt(char *str);
 char *toUpper(char *string);
+char toLower(char c);
 int bcdToDec(int bcd);
 
 // consoleControl
