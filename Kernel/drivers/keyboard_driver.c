@@ -164,7 +164,7 @@ char getKey()
     if (bufferCount <= 0)
     {
         block(getCurrentPid());
-        push(&inputQueue, getCurrentPid());
+        push(&inputStack, getCurrentPid());
         return 0;
     }
     return popBuffer();
@@ -236,7 +236,7 @@ void storeKey()
             if (combinedChar == 'c' || combinedChar == 'C')
             {
                 keyBuffer[bufferCount++] = KILL_PROCESS;
-                PCB *curr = get(PCBTable, peek(&inputQueue));
+                PCB *curr = get(PCBTable, peek(&inputStack));
                 // Se evita el asesinato de la shell
                 if (curr->PID == 4)
                 {
@@ -244,10 +244,10 @@ void storeKey()
                     return;
                 }
                 // Se asesina el proceso y se lo remueve del Input Stack
-                if (peek(&inputQueue) != -1)
+                if (peek(&inputStack) != -1)
                 {
-                    sys_kill(peek(&inputQueue));
-                    pop(&inputQueue);
+                    sys_kill(peek(&inputStack));
+                    pop(&inputStack);
                     forceTick();
                     return;
                 }
@@ -308,8 +308,8 @@ void storeKey()
     }
     if (bufferCount > 0)
     {
-        unblock(peek(&inputQueue));
-        pop(&inputQueue);
+        unblock(peek(&inputStack));
+        pop(&inputStack);
     }
     return;
 }

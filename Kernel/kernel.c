@@ -47,7 +47,7 @@ int main()
 	initPipes();
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
 	initializeWaitStack(&waitQueue);
-	initStack(&inputQueue);
+	initStack(&inputStack);
 
 	newList(PCBTable);
 
