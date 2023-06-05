@@ -232,12 +232,12 @@ int sys_semClose(char *name)
 
 int sys_semWait(char *name)
 {
-    return semWait(getSemIndex(name));
+    return semWait(findSem(name));
 }
 
 int sys_semPost(char *name)
 {
-    return semPost(getSemIndex(name));
+    return semPost(findSem(name));
 }
 
 int sys_getPid()

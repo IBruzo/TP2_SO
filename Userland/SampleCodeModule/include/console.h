@@ -60,10 +60,13 @@ extern char *snapshot();
 #define UNBLOCK 1302167955
 #define PS 5862632
 #define LOOP 2089293535
+#define TEST_NO_SYNC 3264647453
+
 void handleCommand();
 void handleKey(char c);
 void storeRegisters();
 void clearScreen();
 void handlePipe();
 void handleRegularCommand();
+
 #endif

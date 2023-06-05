@@ -7,9 +7,6 @@
 #define MAX_NAME 15
 #define MAX_SEM 20
 
-#define TRUE 1
-#define FALSE 0
-
 typedef struct processNode
 {
     struct processNode *next;
@@ -35,6 +32,6 @@ int semClose(char *name);
 int semWait(int semIndex);
 int semPost(int semIndex);
 char *getSemName(int semIndex);
-int getSemIndex(char *name);
+int findSem(char *name);
 
 #endif

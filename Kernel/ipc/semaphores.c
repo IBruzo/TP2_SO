@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "semaphores.h"
 
 extern void forceTick();
@@ -13,26 +11,47 @@ typedef struct
 static space semSpaces[MAX_SEM];
 
 static int findAvailableSpace();
-static int lockSem;
-static int findSem(char *name);
+static int lockSem = 0;
 static int enqeueProcess(int pid, sem_t *sem);
 static int dequeueProcess(sem_t *sem);
 
+void printSemQueue(int semIndex)
+{
+    if (semIndex >= MAX_SEM)
+    {
+        print("Invalid semaphore index.\n");
+        return;
+    }
+
+    sem_t *sem = &semSpaces[semIndex].sem;
+    print("Semaphore: %s\n", sem->name);
+    print("Queue Size: %d\n", sem->listSize);
+
+    process_t *current = sem->first;
+    while (current != NULL)
+    {
+        print("PID: %d\n", current->pid);
+        current = current->next;
+    }
+}
+
 void initSems()
 {
-    for (int i = 0; i < MAX_SEM; i++)
+    int i;
+    for (i = 0; i < MAX_SEM; i++)
     {
-        semSpaces[i].available = TRUE;
+        semSpaces[i].available = 1;
     }
 }
 
 static int findAvailableSpace()
 {
-    for (int i = 0; i < MAX_SEM; i++)
+    int i;
+    for (i = 0; i < MAX_SEM; i++)
     {
-        if (semSpaces[i].available == TRUE)
+        if (semSpaces[i].available)
         {
-            semSpaces[i].available = FALSE;
+            semSpaces[i].available = 0;
             return i;
         }
     }
@@ -41,6 +60,7 @@ static int findAvailableSpace()
 
 int semCreate(char *name, int initValue)
 {
+    // print("semcreate ");
     int pos;
     if ((pos = findAvailableSpace()) != -1)
     {
@@ -85,7 +105,7 @@ int semClose(char *name)
         return -1;
     }
     if ((--semSpaces[semIndex].sem.size) <= 0)
-        semSpaces[semIndex].available = TRUE;
+        semSpaces[semIndex].available = 1;
     _xchg(&lockSem, 0);
     return 1;
 }
@@ -109,24 +129,36 @@ int semWait(int semIndex)
         int pid = getCurrentPid();
         if (enqeueProcess(pid, sem) == -1)
         {
+            printSemQueue(semIndex);
+
             _xchg(&sem->lock, 0);
             return -1;
         }
 
         _xchg(&sem->lock, 0);
 
-        if (sys_block(pid) == -1)
-        {
-            return -1;
-        }
         block(pid);
-        sem->value--;
+        int flag = 0;
+        do
+        {
+            while (_xchg(&sem->lock, 1) != 0)
+                ;
+            if (sem->value > 0)
+            {
+                sem->value--;
+                // print("%d\n", sem->value);
+                flag = 1;
+            }
+            _xchg(&sem->lock, 0);
+            forceTick();
+        } while (!flag);
     }
     return 0;
 }
 
 int semPost(int semIndex)
 {
+
     if (semIndex >= MAX_SEM)
     {
         return -1;
@@ -136,25 +168,31 @@ int semPost(int semIndex)
     while (_xchg(&sem->lock, 1) != 0)
         ;
     sem->value++;
+    /* print("post %d", sem->value); */
     int pid = 0;
     if (sem->listSize > 0)
     {
         if ((pid = dequeueProcess(sem)) == -1)
         {
+            printSemQueue(semIndex);
             _xchg(&sem->lock, 0);
             return -1;
         }
+        unblock(pid);
     }
     _xchg(&sem->lock, 0);
-    unblock(pid) ?: forceTick();
+    // desbloquear al proceso que esta en la cola y no a si mismo?
+    // forceTick();
+
     return 0;
 }
 
-static int findSem(char *name)
+int findSem(char *name)
 {
-    for (int i = 0; i < MAX_SEM; i++)
+    int i;
+    for (i = 0; i < MAX_SEM; i++)
     {
-        if (semSpaces[i].available == FALSE && strcmp(name, semSpaces[i].sem.name) == 0)
+        if (!semSpaces[i].available && strcmp(name, semSpaces[i].sem.name) == 0)
         {
             return i;
         }
@@ -164,7 +202,7 @@ static int findSem(char *name)
 
 int enqeueProcess(int pid, sem_t *sem)
 {
-    process_t *process = sys_mAlloc(sizeof(process_t));
+    process_t *process = memAlloc(sizeof(process_t));
     if (process == NULL)
     {
         return -1;
@@ -209,16 +247,4 @@ char *getSemName(int semIndex)
         return NULL;
     }
     return semSpaces[semIndex].sem.name;
-}
-
-int getSemIndex(char *name)
-{
-    for (int i = 0; i < MAX_SEM; i++)
-    {
-        if (semSpaces[i].available == FALSE && strcmp(name, semSpaces[i].sem.name) == 0)
-        {
-            return i;
-        }
-    }
-    return -1;
 }

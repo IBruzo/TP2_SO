@@ -60,6 +60,10 @@ int block(int pid)
 {
     // print("blocking %d -->", pid);
     PCB *blockedProcess = get(PCBTable, pid);
+    if (blockedProcess->state == BLOCKED || blockedProcess->state == EXITED)
+    {
+        return -1;
+    }
 
     int index = 0;
     Iterator *routeIt = dlcCreateIterator(&route);

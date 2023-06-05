@@ -523,6 +523,22 @@ void commandPrintProcesses()
 	print("%s", s);
 }
 
+void testSemaphoresSync()
+{
+	int argc = 3;
+	char *argv[] = {"10", "1", "0"};
+	test_sync(argc, argv);
+	return;
+}
+
+void testSemaphoresNoSync()
+{
+	int argc = 3;
+	char *argv[] = {"10", "1", "1"};
+	test_sync(argc, argv);
+	return;
+}
+
 // CARGA AL HISTORIAL DE COMANDOS
 static void loadHistory(const char *s)
 {
@@ -951,8 +967,10 @@ void handleRegularCommand()
 			testMemoryManager();
 			break;
 		case TEST_SYNC:
-			commandPID = createFGProcess("testSync", test_sync, 0, NULL);
-			waitPid(commandPID);
+			testSemaphoresSync();
+			break;
+		case TEST_NO_SYNC:
+			testSemaphoresNoSync();
 			break;
 		case TEST_WAIT:
 			commandPID = createFGProcess("dad", dad, 0, NULL);

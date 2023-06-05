@@ -1,76 +1,135 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include "system_calls.h"
 #include "tests.h"
 #include "library.h"
 
 #define SEM_ID "sem"
+#define TOTAL_PAIR_PROCESSES 2
 
-uint64_t global; // shared memory
+int64_t global; // shared memory
+char namBuf[][3] = {"R1", "R2", "R3", "R4"};
 
-void *processInc(int argc, char *argv[])
+void *slowInc(int64_t *p, int64_t inc)
+{
+  uint64_t aux = *p;
+  print("| %d + (%d) = ", aux, inc);
+  yield(); // This makes the race condition highly probable
+  aux += inc;
+  *p = aux;
+  print("%d |\n", *p);
+  return NULL;
+}
+
+void *my_process_inc(int argc, char *argv[])
 {
   uint64_t n;
-  uint64_t process;
+  int8_t inc;
+  int8_t use_sem;
 
-  if (argc != 2)
+  if (argc != 3)
     return NULL;
 
   if ((n = satoi(argv[0])) <= 0)
     return NULL;
-  if ((process = satoi(argv[1])) <= 0)
+  if ((inc = satoi(argv[1])) == 0)
+    return NULL;
+  if ((use_sem = satoi(argv[2])) < 0)
+    return NULL;
+
+  if (use_sem)
+    if (semOpen(SEM_ID, 1) == -1)
+    {
+      print("test_sync: ERROR opening semaphore\n");
+      return NULL;
+    }
+
+  uint64_t i;
+  for (i = 0; i < n; i++)
+  {
+    if (use_sem)
+      semWait(SEM_ID);
+    slowInc(&global, inc);
+    if (use_sem)
+      semPost(SEM_ID);
+  }
+
+  if (use_sem)
+    semClose(SEM_ID);
+  exit();
+
+  return NULL;
+}
+
+void *my_process_inc_no_sem(int argc, char *argv[])
+{
+  uint64_t n;
+  int8_t inc;
+  int8_t use_sem;
+
+  if (argc != 3)
+    return NULL;
+
+  if ((n = satoi(argv[0])) <= 0)
+    return NULL;
+  if ((inc = satoi(argv[1])) == 0)
+    return NULL;
+  if ((use_sem = satoi(argv[2])) < 0)
     return NULL;
 
   uint64_t i;
   for (i = 0; i < n; i++)
   {
-    semWait(SEM_ID);
-    printColor("wait ", 0xFF0000);
-
-    global++;
-    print("%d, %d ", global, process);
-
-    printColor("post ", 0x00FF00);
-    semPost(SEM_ID);
+    slowInc(&global, inc);
   }
-  print("\n");
 
-  print("Process %d finished\n", process);
   exit();
+
   return NULL;
 }
 
-void *test_sync(int argc, char **argv)
+void *test_sync(int argc, char *argv[])
 { //{n, use_sem, 0}
-  uint64_t pids[3];
+
+  uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
+
+  if (argc != 3)
+    return NULL;
+
+  char *argvDec[] = {argv[0], "-1", argv[1], NULL};
+  char *argvInc[] = {argv[0], "1", argv[1], NULL};
 
   global = 0;
-  semOpen(SEM_ID, 1);
-  print("opening semaphore\n");
-
   uint64_t i;
 
-  char *argv1[] = {"10", "1", NULL};
-  char *argv2[] = {"10", "2", NULL};
-  char *argv3[] = {"10", "3", NULL};
-
-  pids[0] = createFGProcess("R1", processInc, 2, argv1);
-  pids[1] = createFGProcess("R2", processInc, 2, argv2);
-  pids[2] = createFGProcess("R3", processInc, 2, argv3);
-
-  for (i = 0; i < 3; i++)
+  if (strcmp(argv[2], "0") == 0)
   {
-    uint64_t primerpid = pids[i];
-    waitPid(pids[i]);
-    // kill(pids[i]);
-    print("process %d brutally murdered\n", primerpid);
+    for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
+    {
+      pids[i] = createFGProcess(namBuf[i], my_process_inc, 3, argvDec);
+      pids[i + TOTAL_PAIR_PROCESSES] = createFGProcess(namBuf[i], my_process_inc, 3, argvInc);
+    }
+
+    for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
+    {
+      waitPid(pids[i]);
+      waitPid(pids[i + TOTAL_PAIR_PROCESSES]);
+    }
+  }
+  else
+  {
+    for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
+    {
+      pids[i] = createFGProcess(namBuf[i], my_process_inc_no_sem, 3, argvDec);
+      pids[i + TOTAL_PAIR_PROCESSES] = createFGProcess(namBuf[i], my_process_inc_no_sem, 3, argvInc);
+    }
+
+    for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
+    {
+      waitPid(pids[i]);
+      waitPid(pids[i + TOTAL_PAIR_PROCESSES]);
+    }
   }
 
-  semClose(SEM_ID);
-  print("closing semaphore\n");
-
-  sleep(5);
   print("Final value: %d\n", global);
   exit();
   return NULL;
