@@ -250,14 +250,29 @@ void storeKey()
                 }
                 if (peek(&inputQueue) != -1)
                 {
-                    //  printList(PCBTable);
-                    //  unblock(peek(&inputQueue));
-                    // PCB *curr = get(PCBTable, peek(&inputQueue));
 
                     sys_kill(peek(&inputQueue));
-                    pop(&inputQueue); // bruzo que clase de falopa es esto pasalo al sys_kill hash poponeta <-- dormiste capo
+                    pop(&inputQueue);
 
                     forceTick();
+                    return;
+                }
+                else if (peekWaitStack(&waitQueue).cpid != -1)
+                {
+                    PCB *curr = get(PCBTable, peekWaitStack(&waitQueue).cpid);
+
+                    if (strcmp(curr->name, "sleep") == 0)
+                    {
+                        Process pro = peekWaitStack(&waitQueue);
+                        sys_kill(pro.cpid); // mata hijo
+                        if (pro.pid != 4)
+                            sys_kill(pro.pid); // mata padre
+                        forceTick();
+                    }
+                    else
+                    {
+                        sys_kill(curr->PID);
+                    }
                     return;
                 }
                 else
@@ -273,6 +288,7 @@ void storeKey()
                         {
                             unblock(curr->PPID);
                             sys_kill(curr->PID);
+                            forceTick();
                             return;
                         }
 

@@ -116,30 +116,25 @@ static void *wakeUp(int argc, char *argv[])
 {
     int start = seconds_elapsed();
     int sec = strToInt(argv[0]);
-    int pid = strToInt(argv[1]);
     while (seconds_elapsed() - start < sec)
     {
     }
 
-    unblock(pid);
     sys_exit();
     return NULL;
 }
 
 void sys_sleep(int seconds)
 {
-    int fd[] = {1, 0};
+    int fd[] = {-1, -1};
 
-    char *argd[2];
+    char *argd[1];
     argd[0] = sys_mAlloc(sizeof(char));
-    argd[1] = sys_mAlloc(sizeof(char));
 
     sprintf(argd[0], "%d", seconds);
-    sprintf(argd[1], "%d", getCurrentPid());
-    int pid = sys_createProcess("im the one who knocks", wakeUp, 2, argd, fd);
+    int pid = sys_createProcess("sleep", wakeUp, 1, argd, fd);
     sys_waitPid(pid);
     sys_mFree(argd[0]);
-    sys_mFree(argd[1]);
     forceTick();
 }
 
@@ -213,7 +208,7 @@ int sys_createProcess(char *pname, void *(*f)(int, char **), int argc, char **ar
     dlcSize++;
     // Añado a el PCB
     PCB *newBlock = (PCB *)sys_mAlloc(sizeof(PCB));
-    buildPCB(pname, newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), READY, 1, fd);
+    buildPCB(pname, newBlock, processIDs++, getCurrentPid(), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *), (uint64_t)memStart + PAGE_SIZE + sizeof(PCB) - sizeof(char *) + 20 * 8, READY, 1, fd);
     insert(PCBTable, newBlock);
 
     initializeStackFrame(argc, argv, f, processIDs - 1);
@@ -308,6 +303,11 @@ void sys_yield()
 
 int sys_kill(int pid)
 {
+    if (pid == 0 || pid == 1)
+    {
+        return -1;
+    }
+
     PCB *killedProcess = get(PCBTable, pid);
 
     if (peekWaitStack(&waitQueue).cpid == killedProcess->PID && peekWaitStack(&waitQueue).pid == killedProcess->PPID)
@@ -316,20 +316,7 @@ int sys_kill(int pid)
         popWaitStack(&waitQueue);
     }
 
-    if (peekWaitStack(&waitQueue).pid != -1)
-    {
-        // print("unblocking [%d] \n",getCurrentPPid() );
-        popWaitStack(&waitQueue);
-    }
-
-    if (pid == 0 || pid == 1)
-    {
-        return -1;
-    }
-
     int index = 0; // found a killable process
-
-    // PCB *killedProcess = get(PCBTable, pid);
 
     if (killedProcess->state == BLOCKED)
     {
@@ -372,6 +359,13 @@ int sys_kill(int pid)
 
 void sys_exit()
 {
+    PCB *curr = get(PCBTable, getCurrentPid());
+    if (curr->state == EXITED || getCurrentPid() == 4)
+    {
+        forceTick();
+        return;
+    }
+
     // if ( currentProcess() == peek().CPID ) => unblock papi
 
     // printRoute();
@@ -403,6 +397,7 @@ int sys_block(int pid)
 {
     return block(pid);
 }
+
 int sys_unblock(int pid)
 {
     return unblock(pid);
@@ -456,6 +451,7 @@ void sys_ps(char *buffer)
 {
     ps(buffer);
 }
+
 void sys_mem(char *buffer, int unit)
 {
     mem(buffer, unit);

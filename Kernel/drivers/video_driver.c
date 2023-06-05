@@ -109,7 +109,7 @@ int put_letter(char letter, uint32_t x, uint32_t y, uint32_t tam, uint32_t color
 	{
 		return a + tam * ANCHO_LETRA_PIX;
 	}
-	if (letter == '\n')
+	if (letter == '\n' || letter == -1)
 	{
 		return 0;
 	}

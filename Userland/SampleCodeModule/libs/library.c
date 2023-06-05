@@ -13,16 +13,19 @@ int lastEnter()
 {
 	return cursorY + 16 * fontsize >= 780;
 }
+
 int canWrite()
 {
 	return cursorX + fontsize * 8 + 16 < 1000;
 }
+
 int isalnum(int c)
 {
 	return (c >= 'A' && c <= 'Z') ||
 		   (c >= 'a' && c <= 'z') ||
 		   (c >= '0' && c <= '9');
 }
+
 unsigned char inthextoa(unsigned char a)
 {
 	if (a <= 9)
@@ -41,6 +44,7 @@ unsigned char atointhex(unsigned char a)
 		returnChar = a % '0';
 	return returnChar;
 }
+
 int strToInt(char *str)
 {
 	int i = 0;
@@ -52,6 +56,7 @@ int strToInt(char *str)
 	}
 	return rta;
 }
+
 uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 {
 	char *p = buffer;
@@ -231,9 +236,10 @@ void updateCursor()
 
 void appendcharColor(char character, int color)
 {
-	if (character == '\n')
+	if (character == '\n' && getOutputFD(getPid()) != -1)
 	{
 		newline();
+		putcharSpecifics(character, cursorX, cursorY, fontsize, color);
 	}
 	// si es output a foreground se renderiza
 	if (getOutputFD(getPid()) != -1)
@@ -330,6 +336,7 @@ int strlen(const char *str)
 		;
 	return s;
 }
+
 static void wrapperprint(char *foundation, int color, va_list vl)
 {
 
@@ -423,11 +430,13 @@ void print(char *foundation, ...)
 	wrapperprint(foundation, FONTCOLOR, args);
 	va_end(args);
 }
+
 // copia el string de origian a destination
 void strcpy(char *destination, const char *origin)
 {
 	strncpy(destination, origin, strlen(origin));
 }
+
 void strncpy(char *destination, const char *origin, int n)
 {
 	int i;
@@ -435,6 +444,7 @@ void strncpy(char *destination, const char *origin, int n)
 		destination[i] = origin[i];
 	destination[i] = '\0';
 }
+
 // da vuelta el string ABC -> CBA
 char *strrev(char *str)
 {
@@ -536,6 +546,7 @@ void printf(char *foundation, void *parameters[])
 		}
 	}
 }
+
 // print para numeros en base 10
 void printInt(uint64_t integer)
 {
@@ -551,12 +562,14 @@ void printHex(uint64_t integer)
 	uintToBase(integer, buffer, 16);
 	appendstring(buffer);
 }
+
 // print que termina con un newline
 void println(char *string)
 {
 	appendstring(string);
 	newline();
 }
+
 // cambia de lugar el cursor
 void setCursor(int x, int y)
 {
@@ -827,4 +840,15 @@ void *reader(int argc, char **argv)
 
 	exit();
 	return NULL;
+}
+
+void makeshiftSleep(int duration)
+{
+	int startTick = gettick();
+	int currentTick;
+
+	do
+	{
+		currentTick = gettick();
+	} while (currentTick - startTick < duration);
 }

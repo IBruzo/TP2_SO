@@ -81,45 +81,43 @@ void waitForKey(char key)
 	restartCursor();
 }
 
-void commandHelp()
+void *commandHelp(int argc, char **argv)
 {
 	clearScreen();
-	restartCursor();
 	printColor("BIENVENIDO AL MENU HELP", 0xE9AD0C, 0);
-	newline();
-	appendstring("EL SISTEMA CUENTA CON LOS SIGUIENTES COMANDOS: <User commands>");
-	newline();
-	appendstring("- HELP");
-	newline();
-	appendstring("- TRON");
-	newline();
-	appendstring("- INFOREG");
-	newline();
-	appendstring("- MEMACCESS ( MEM ADDRESS )");
-	newline();
-	printColor("- INVOP", RED, 0);
-	newline();
-	printColor("- DIVCERO", RED, 0);
-	newline();
-	appendstring("- BEEP");
-	newline();
-	appendstring("- TIME");
-	newline();
-	appendstring("- SIZE(+ o -)");
-	newline();
-	printColor("- ANTHEM", TERMINAL_BLUE, 0);
-	newline();
-	printColor("- CLEAR", TERMINAL_BLUE, 0);
-	newline();
-	printColor("- PIANO", TERMINAL_BLUE, 0);
-	newline();
-	printColor("- LANGUAGE=(EN o ES) ", TERMINAL_BLUE, 0);
-	newline();
-	printColor("Para mas informacion, ingrese HELP <command>.\n", 0xE9AD0C, 0);
-	appendstring("Presione ");
-	printColor("'ESC'", 0xE9AD0C, 0);
-	print(" para volver a la consola.\n", 0);
-	waitForKey(ESC);
+	print("\nEL SISTEMA CUENTA CON LOS SIGUIENTES COMANDOS: <User commands>");
+	print("\n------------------- ARQUI ---------------------");
+	print("\n- HELP                       /* imprime help                    */");
+	print("\n- TRON                       /* jugar tron                      */");
+	print("\n- INFOREG                    /* imprime inforeg                 */");
+	print("\n- MEMACCESS <0xMEMACCESS>    /* accede a la memoria             */");
+	print("\n- BEEP                       /* ruidito                         */");
+	print("\n- TIME                       /* hora                            */");
+	print("\n- SIZE<+/->                  /* incrementa decrementa           */");
+	printColor("\n- ANTHEM                     /* himno sovietico                 */", TERMINAL_BLUE, 0);
+	printColor("\n- CLEAR                      /* clear                           */", TERMINAL_BLUE, 0);
+	printColor("\n- PIANO                      /* piano                           */", TERMINAL_BLUE, 0);
+	printColor("\n- LANGUAGE=<EN/ES>           /* cambia teclado                  */", TERMINAL_BLUE, 0);
+	printColor("\n- INVOP                      /* invop                           */", RED, 0);
+	printColor("\n- DIVCERO                    /* divcero                         */", RED, 0);
+	print("\n------------------- SO ------------------------");
+	print("\n- MEM                        /* imprime el estado de la memoria */");
+	print("\n- PS                         /* imprime los procesos            */");
+	print("\n- LOOP                       /* loopea infinitamente            */");
+	print("\n- KILL <PID>                 /* mata el proceso con el pid dado */");
+	print("\n- NICE <PID> <PRIORITY>      /* cambia la prioridad del proceso */");
+	print("\n- BLOCK <PID>                /* bloquea el proceso              */");
+	print("\n- CAT                        /* cat                             */");
+	print("\n- WC                         /* wc                              */");
+	print("\n- FILTER                     /* filtra vocales                  */");
+	print("\n- PHYLO                      /* dilema de los filosofos         */");
+	print("\n------------------- TESTS ---------------------");
+	print("\n- TEST_MM                    /* test de memoria                 */");
+	print("\n- TEST_PROC                  /* test de procesos                */");
+	print("\n- TEST_PRIO                  /* test de round robin             */");
+	print("\n- TEST_SYNC                  /* test de sincronizacion          */");
+	exit();
+	return NULL;
 }
 
 void commandClear()
@@ -134,6 +132,7 @@ void commandSnapshot()
 	getRegisters();
 	waitForKey(ESC);
 }
+
 void commandTime()
 {
 	printCurrentTime();
@@ -224,6 +223,7 @@ void commandAnthem()
 	beep(523, 375 / 50);
 	beep(587, 1125 / 50);
 }
+
 void commandInvOp()
 {
 	clearScreen();
@@ -242,46 +242,30 @@ const unsigned long hash(char *str)
 	}
 	return hash;
 }
+
 void printExitHelp()
 {
 	appendstring("Presione ");
 	printColor("'ESC'", 0xE9AD0C, 0);
 	print(" para volver a la consola.\n", 0);
 }
-void testMemoryManager()
-{
-	char *argv[] = {"134217728"};
-	test_mm(1, argv);
-	return;
-}
-void testSemaphoresSync()
-{
-	test_sync();
-	return;
-}
 
-void *catpro(int argc, char *argv[])
+static void *catpro(int argc, char *argv[])
 {
 	char c = 1;
-	char buff[100];
-	int lastch = 0;
+
 	while (c != (char)EOF)
 	{
 		c = getchar();
 		if (c == '\n')
 		{
 			print("\n");
-			buff[lastch++] = '\n';
 		}
 		else if (c != 0)
 		{
 			print("%c", c);
-			buff[lastch++] = c;
 		}
 	}
-	newline();
-	buff[lastch] = '\0';
-	printColor("%s\n", 0x547891, buff); // <- printing buffer
 
 	newline();
 	exit();
@@ -301,8 +285,7 @@ static void *wcpro(int argc, char *argv[])
 {
 
 	char c = 1;
-	char buff[100];
-	int lastch = 0;
+
 	int lineCount = 0;
 	int wordCount = 0;
 	int charCount = 0;
@@ -319,17 +302,20 @@ static void *wcpro(int argc, char *argv[])
 		if (c == '\n')
 		{
 			wordCount++;
-
-			lineCount++;
 			newline();
 		}
 		else if (c == ' ')
 		{
+			handleKey(c);
 			if (inWord)
 			{
 				wordCount++;
 				inWord = 0;
 			}
+		}
+		else if (c != 0)
+		{
+			handleKey(c);
 		}
 		else
 		{
@@ -338,25 +324,10 @@ static void *wcpro(int argc, char *argv[])
 				inWord = 1;
 			}
 		}
-
-		if (c == '\n')
-		{
-			buff[lastch] = '\0';
-			printColor("%s\n", 0x547891, buff);
-			lastch = 0;
-		}
-		else if (c != 0)
-		{
-			handleKey(c);
-			buff[lastch++] = c;
-		}
 	}
-
-	newline();
 	printColor("Lines: %d\n", 0x547891, lineCount + 1);
 	printColor("Words: %d\n", 0x547891, wordCount + 1);
 	printColor("Characters: %d\n", 0x547891, charCount);
-
 	exit();
 	return NULL;
 }
@@ -373,30 +344,15 @@ static void *filterpro(int argc, char *argv[])
 {
 
 	char c = 1;
-	char buff[100];
-	int lastch = 0;
 	while (c != (char)EOF)
 	{
 		c = getchar();
-		if (c == '\n')
+		char lowerC = tolower(c);
+		if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u')
 		{
-			print("\n");
-			buff[lastch++] = '\n';
-		}
-		else if (c != 0)
-		{
-			// Check if c is a vowel (case-insensitive)
-			char lowerC = tolower(c);
 			print("%c", c);
-			if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u')
-			{
-				buff[lastch++] = c;
-			}
 		}
 	}
-	newline();
-	buff[lastch] = '\0';
-	printColor("%s\n", 0x547891, buff); // <- printing buffer
 
 	newline();
 	exit();
@@ -410,50 +366,6 @@ void commandFilter(char *str)
 	int filterpid = createFGProcess("filter", filterpro, 0, NULL);
 	waitPid(filterpid);
 	return;
-}
-
-void handleBGProcess()
-{
-	char leftCommand[128] = {0};
-	char leftSection[128] = {0};
-
-	splitString(consoleBuffer, leftCommand, '&');
-	strcpy(leftCommand, consoleBuffer);
-	splitString(leftCommand, leftSection, ' ');
-	print("received [%s]", leftCommand);
-}
-
-void handlePipe()
-{
-	char leftCommand[128] = {0};
-	char rightCommand[128] = {0};
-	char leftSection[128] = {0};
-	char rightSection[128] = {0};
-
-	splitString(consoleBuffer, rightCommand, '|');
-
-	strcpy(leftCommand, consoleBuffer);
-
-	splitString(leftCommand, leftSection, ' ');
-
-	while (rightCommand[0] == ' ')
-	{
-		strcpy(rightCommand, rightCommand + 1);
-	}
-	splitString(rightCommand, rightSection, ' ');
-
-	toUpper(leftCommand);
-	toUpper(rightCommand);
-
-	int pipeFD = openPipe("superpipe");
-	int writeFD[] = {0, pipeFD};
-	int readFD[] = {pipeFD, 1};
-	int writerPID = createProcess("command1", catpro, 0, NULL, writeFD);
-	waitPid(writerPID);
-	print("\n------------------------\n");
-	int readerPID = createProcess("command2", filterpro, 0, NULL, readFD);
-	waitPid(readerPID);
-	closePipe(pipeFD);
 }
 
 void commandKill(char *str)
@@ -492,6 +404,7 @@ void commandKill(char *str)
 		}
 	}
 }
+
 void commandNice(char *pid, char *priority)
 {
 	int pidInt = strToInt(pid);
@@ -539,6 +452,7 @@ void commandBlock(char *pid)
 		print("Se bloqueo el proceso con pid %d\n", pidInt);
 	}
 }
+
 void commandUnblock(char *pid)
 {
 	int pidInt = strToInt(pid);
@@ -560,8 +474,8 @@ void commandUnblock(char *pid)
 
 void *timmy(int argc, char **argv)
 {
-	print("-Tommy: Dad, Ill take a nap in my last 5 seconds of life\n");
-	sleep(5);
+	print("-Tommy: Dad, Ill take a nap in my last seconds of life\n");
+	makeshiftSleep(60);
 	print("*peacefully dies in his sleep*\n");
 	exit();
 	return NULL;
@@ -569,350 +483,44 @@ void *timmy(int argc, char **argv)
 
 static void *dad(int argc, char **argv)
 {
-	sleep(1);
+	makeshiftSleep(20);
 	print("\n-Dad: Please Timmy! Please Dont Die On Me!\n");
-	sleep(1);
+	makeshiftSleep(20);
 	int timmyPID = createFGProcess("timmy", timmy, 0, NULL);
-	print("(( Timmy PID [%d] ))\n", timmyPID);
 	waitPid(timmyPID); // estoy esperando a la llegada de este pid
-	sleep(1);
+	makeshiftSleep(20);
 	print("-Dad: F in the chat\n");
 	exit();
 	return NULL;
 }
 
-void commandLoop()
+void *commandLoop(int argc, char **argv)
 {
 	int currentPid = getPid();
 	while (1)
 	{
 		print("cuchau PID: %d\n", currentPid);
-		sleep(1);
+
+		// Sleep for 1 second (assuming gettick() returns time in milliseconds)
+		makeshiftSleep(30);
 	}
+	exit();
+	return NULL;
 }
+
 void commandPrintMemState(int unit)
 {
 	char s[1000];
 	mem(s, unit);
 	print("%s", s);
 }
+
 void commandPrintProcesses()
 {
 	char s[1000];
 	ps(s);
 	// int n = strlen(s);
 	print("%s", s);
-}
-
-static void testWait()
-{
-	createFGProcess("dad", dad, 0, NULL);
-	handleKey(ENTER);
-}
-static void testPrio()
-{
-	print("TESTING PRIORITY\n");
-	test_prio();
-	print("TEST ENDED\n");
-}
-
-static void testProcesses()
-{
-	print("TESTING PROCESSES\n");
-	char *argv[] = {"10"};
-	test_processes(1, argv);
-	print("TEST ENDED\n");
-}
-// CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
-void handleCommand()
-{
-	if (hasPipe(consoleBuffer))
-	{
-		handlePipe();
-		return;
-	}
-	if (hasAmpersand(consoleBuffer))
-	{
-		handleBGProcess();
-		return;
-	}
-	else
-	{
-		handleRegularCommand();
-		return;
-	}
-}
-
-void handleRegularCommand()
-{
-	char section[128] = {0};
-	char *command = toUpper(consoleBuffer);
-	splitString(command, section, ' ');
-	int hashedCommand = hash(command);
-	// int hashedSection = hash(section);
-	if (section[0] == 0)
-	{
-		switch (hashedCommand)
-		{
-		case HELP:
-			commandHelp();
-			break;
-		case TRON:
-			commandTron();
-			break;
-		case CLEAR:
-			commandClear();
-			break;
-		case BEEP:
-			commandBeep();
-			break;
-		case ANTHEM:
-			commandAnthem();
-			break;
-		case INFOREG:
-			commandSnapshot();
-			break;
-		case TIME:
-			commandTime();
-			break;
-		case INVOP:
-			commandInvOp();
-			break;
-		case DIVCERO:
-			commandDivCero();
-			break;
-		case PIANO:
-			commandPiano();
-			break;
-		case UPSIZE:
-			clearScreen();
-			changeFontSize(1);
-			break;
-		case DOWNSIZE:
-			clearScreen();
-			changeFontSize(-1);
-			break;
-		case LANG_ES:
-			changelanguage(1);
-			break;
-		case LANG_EN:
-			changelanguage(0);
-			break;
-		case MEM:
-			commandPrintMemState(0);
-			break;
-		case MEMB:
-			commandPrintMemState(1);
-			break;
-		case PS:
-			commandPrintProcesses();
-			break;
-		case LOOP:
-			commandLoop();
-			break;
-		case TEST_MM:
-			testMemoryManager();
-			break;
-		case TEST_SYNC:
-			testSemaphoresSync();
-			break;
-		case TEST_WAIT:
-			testWait();
-			break;
-		case TEST_PRIO:
-			testPrio();
-			break;
-		case TEST_PROC:
-			testProcesses();
-			break;
-		case CAT:
-			commandCat(section);
-			break;
-		case WC:
-			commandWc(section);
-			break;
-		case FILTER:
-			commandFilter(section);
-			break;
-		default:
-			printColor("'%s'", ORANGY, command);
-			print(" : comando no encontrado.\n");
-			break;
-		}
-	}
-	else // composed commands
-	{
-		switch (hashedCommand)
-		{
-		case KILL:
-			commandKill(section);
-			break;
-		case NICE:
-		{
-			char priority[64] = {0};
-			splitString(section, priority, ' ');
-			commandNice(section, priority);
-			break;
-		}
-		case BLOCK:
-			commandBlock(section);
-			break;
-		case UNBLOCK:
-			commandUnblock(section);
-			break;
-		case MEMACCESS:
-			commandMemAccess(section);
-			break;
-		case HELP:
-			handleHelp(section);
-			break;
-
-		default:
-			printColor("'%s'", ORANGY, command);
-			print(" : comando no encontrado.\n");
-			break;
-		}
-	}
-}
-
-void handleHelp(char *helping)
-{
-	int hashedHelp = hash(helping);
-	clearScreen();
-	restartCursor();
-	switch (hashedHelp)
-	{
-	case HELP:
-	{
-		appendstring("En serio?\n\n");
-		printColor("HELP: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Ayuda.\n");
-		appendstring("De no ser seguido por nada, lista los comandos disponibles.\n");
-		appendstring("De ser seguido por un comando, da informacion sobre el mismo.\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case TRON:
-	{
-		printColor("TRON: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Juego de dos jugadores, al mejor de 5.\n");
-		appendstring("Pierde quien choque contra si mismo,\nel otro jugador, o los bordes.\n");
-		appendstring("El jugador 1 se mueve con las flechas.\n");
-		appendstring("El jugador 2 se mueve con las teclas W,A,S y D.\n");
-		appendstring("Sorpresa al final :)\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case BEEP:
-	{
-		printColor("BEEP: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Emite un beeeeep\n\n");
-		beep(440, 1);
-		printExitHelp();
-		waitForKey(ESC);
-	}
-	break;
-	case ANTHEM:
-	{
-		printColor("ANTHEM: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("El himno de mi corazon, \npero no el de los abuelos de la nada.\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case INFOREG:
-	{
-		printColor("INFOREG: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Imprime en pantalla el valor de los registros\nal momento de ejecucion.\n");
-		appendstring("Para realizar una toma de estado, presione ':' .\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case TIME:
-	{
-		printColor("TIME: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("De encontrarse en una isla desierta \nsin medios para saber la hora,\nuse este comando\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case INVOP:
-	{
-		printColor("INVOP: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Envia un codigo de operacion invalido.\n");
-		appendstring("Que puede salir mal?\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case DIVCERO:
-	{
-		printColor("DIVCERO: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Divide por cero.\n");
-		appendstring("Totalmente inocuo.\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case PIANO:
-	{
-		printColor("PIANO: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Componga su proxima obra maestra.\n");
-		appendstring("Piano de eleccion de: \nPablo Lescano, Paul McCartney y Wolfgang Amadeus Mozart.\n");
-		appendstring("Blancas: ASDFGHJ\n");
-		appendstring("Negras: WETYUOP\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case MEMACCESS:
-	{
-		printColor("MEMACCESS (MEM ADRESS): <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Imprime por pantalla los 32 bits posteriores\na la direccion de memoria especificada.\n");
-		appendstring("Debe ser ingresada la zona de memoria a acceder luego del comando separado por una espacio.\n");
-		appendstring("Modo de uso: <memaccess [direccion]>\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case CLEAR:
-	{
-		printColor("CLEAR: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Limpia la pantalla.\n");
-		appendstring("AUSPICIADO POR MR MUSCULO\n");
-		appendstring("ANIQUILA LOS GERMENES, SUFRIMIENTO MAXIMO\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case LANGUAGE:
-	{
-		printColor("LANGUAGE: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Cambia el teclado.\n");
-		appendstring("Seguido por '=es' -> espa~ol\n");
-		appendstring("Seguido por '=en' -> ingles\n");
-		appendstring("Modo de uso <language=es> o <language=en> \n");
-		appendstring("Ruso y Klingon disponibles proximamente.\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	case SIZE:
-	{
-		printColor("SIZE: <User Commands>\n\n", 0x0F66151, 0);
-		appendstring("Agrande o achique el tama~o del texto en pantalla \nsiguiendo el comando con un + o un -,\nrespectivamente.\n");
-		appendstring("Modo de uso: <size+>\n\n");
-		printExitHelp();
-		waitForKey(ESC);
-		break;
-	}
-	default:
-
-		break;
-	}
 }
 
 // CARGA AL HISTORIAL DE COMANDOS
@@ -972,6 +580,7 @@ static void inLineReset()
 	lastChar = 0;
 	clearconsoleBuffer();
 }
+
 void printHistory()
 {
 	for (int i = 0; i < historyDim; i++)
@@ -979,6 +588,7 @@ void printHistory()
 		printColor("%s\n", FONTCOLOR, historyBuffer[i]);
 	}
 }
+
 // FUNCION QUE EJECUTA UP OR DOWN
 void upArrow(int arrowUp)
 {
@@ -1131,5 +741,292 @@ void handleKey(char c)
 
 		break;
 	}
+	}
+}
+
+void handleBGProcess()
+{
+	char leftCommand[128] = {0};
+	char leftSection[128] = {0};
+
+	splitString(consoleBuffer, leftCommand, '&');
+	strcpy(leftCommand, consoleBuffer);
+	splitString(leftCommand, leftSection, ' ');
+
+	toUpper(leftCommand);
+
+	if (strcmp(leftCommand, "LOOP") == 0)
+	{
+		createBGProcess("loop", commandLoop, 0, NULL);
+	}
+	else if (strcmp(leftCommand, "HELP") == 0)
+	{
+		createBGProcess("help", commandHelp, 0, NULL);
+	}
+	else if (strcmp(leftCommand, "CAT") == 0)
+	{
+		createBGProcess("cat", catpro, 0, NULL);
+	}
+	else if (strcmp(leftCommand, "FILTER") == 0)
+	{
+		createBGProcess("filter", filterpro, 0, NULL);
+	}
+	else if (strcmp(leftCommand, "WC") == 0)
+	{
+		createBGProcess("wordcount", wcpro, 0, NULL);
+	}
+}
+
+void handlePipe()
+{
+	char leftCommand[128] = {0};
+	char rightCommand[128] = {0};
+	char leftSection[128] = {0};
+	char rightSection[128] = {0};
+
+	splitString(consoleBuffer, rightCommand, '|');
+
+	strcpy(leftCommand, consoleBuffer);
+
+	splitString(leftCommand, leftSection, ' ');
+
+	while (rightCommand[0] == ' ')
+	{
+		strcpy(rightCommand, rightCommand + 1);
+	}
+	splitString(rightCommand, rightSection, ' ');
+
+	toUpper(leftCommand);
+	toUpper(rightCommand);
+
+	int pipeFD = openPipe("superpipe");
+	int writeFD[] = {0, pipeFD};
+	int readFD[] = {pipeFD, 1};
+
+	int writerPID = -1;
+	int readerPID = -1;
+
+	if (strcmp(leftCommand, "HELP") == 0)
+	{
+		writerPID = createProcess("command1", commandHelp, 0, NULL, writeFD);
+		waitPid(writerPID);
+	}
+	else if (strcmp(leftCommand, "CAT") == 0)
+	{
+		writerPID = createProcess("command1", catpro, 0, NULL, writeFD);
+		waitPid(writerPID);
+	}
+	else if (strcmp(leftCommand, "FILTER") == 0)
+	{
+		writerPID = createProcess("command1", filterpro, 0, NULL, writeFD);
+		waitPid(writerPID);
+	}
+	else if (strcmp(leftCommand, "WC") == 0)
+	{
+		writerPID = createProcess("command1", wcpro, 0, NULL, writeFD);
+		waitPid(writerPID);
+	}
+
+	print("------------------------\n");
+
+	if (strcmp(rightCommand, "HELP") == 0)
+	{
+		readerPID = createProcess("command2", commandHelp, 0, NULL, readFD);
+		waitPid(readerPID);
+	}
+	else if (strcmp(rightCommand, "CAT") == 0)
+	{
+		readerPID = createProcess("command2", catpro, 0, NULL, readFD);
+		waitPid(readerPID);
+	}
+	else if (strcmp(rightCommand, "FILTER") == 0)
+	{
+		readerPID = createProcess("command2", filterpro, 0, NULL, readFD);
+		waitPid(readerPID);
+	}
+	else if (strcmp(rightCommand, "WC") == 0)
+	{
+		readerPID = createProcess("command2", wcpro, 0, NULL, readFD);
+		waitPid(readerPID);
+	}
+
+	closePipe(pipeFD);
+}
+
+void testMemoryManager()
+{
+	char *argv[] = {"134217728"};
+	test_mm(1, argv);
+	return;
+}
+
+static void testPrio()
+{
+	print("TESTING PRIORITY\n");
+	test_prio();
+	print("TEST ENDED\n");
+}
+
+static void *testProc(int argc, char **argv)
+{
+	print("TESTING PROCESSES\n");
+	char *testargv[] = {"10"};
+	test_processes(1, testargv);
+	print("TEST ENDED\n");
+	exit();
+	return NULL;
+}
+
+void handleRegularCommand()
+{
+	char section[128] = {0};
+	char *command = toUpper(consoleBuffer);
+	splitString(command, section, ' ');
+	int hashedCommand = hash(command);
+	int commandPID;
+	// int hashedSection = hash(section);
+	if (section[0] == 0)
+	{
+		switch (hashedCommand)
+		{
+		case HELP:
+			commandPID = createFGProcess("help", commandHelp, 0, NULL);
+			waitPid(commandPID);
+			break;
+		case TRON:
+			commandTron();
+			break;
+		case CLEAR:
+			commandClear();
+			break;
+		case BEEP:
+			commandBeep();
+			break;
+		case ANTHEM:
+			commandAnthem();
+			break;
+		case INFOREG:
+			commandSnapshot();
+			break;
+		case TIME:
+			commandTime();
+			break;
+		case INVOP:
+			commandInvOp();
+			break;
+		case DIVCERO:
+			commandDivCero();
+			break;
+		case PIANO:
+			commandPiano();
+			break;
+		case UPSIZE:
+			clearScreen();
+			changeFontSize(1);
+			break;
+		case DOWNSIZE:
+			clearScreen();
+			changeFontSize(-1);
+			break;
+		case LANG_ES:
+			changelanguage(1);
+			break;
+		case LANG_EN:
+			changelanguage(0);
+			break;
+		case MEM:
+			commandPrintMemState(0);
+			break;
+		case MEMB:
+			commandPrintMemState(1);
+			break;
+		case PS:
+			commandPrintProcesses();
+			break;
+		case LOOP:
+			commandPID = createFGProcess("loop", commandLoop, 0, NULL);
+			waitPid(commandPID);
+			break;
+		case TEST_MM:
+			testMemoryManager();
+			break;
+		case TEST_SYNC:
+			commandPID = createFGProcess("testSync", test_sync, 0, NULL);
+			waitPid(commandPID);
+			break;
+		case TEST_WAIT:
+			commandPID = createFGProcess("dad", dad, 0, NULL);
+			waitPid(commandPID);
+			break;
+		case TEST_PRIO:
+			testPrio();
+			break;
+		case TEST_PROC:
+			createFGProcess("testProcess", testProc, 0, NULL);
+			; // poponeta
+			break;
+		case CAT:
+			commandCat(section);
+			break;
+		case WC:
+			commandWc(section);
+			break;
+		case FILTER:
+			commandFilter(section);
+			break;
+		default:
+			printColor("'%s'", ORANGY, command);
+			print(" : comando no encontrado.\n");
+			break;
+		}
+	}
+	else // composed commands
+	{
+		switch (hashedCommand)
+		{
+		case KILL:
+			commandKill(section);
+			break;
+		case NICE:
+		{
+			char priority[64] = {0};
+			splitString(section, priority, ' ');
+			commandNice(section, priority);
+			break;
+		}
+		case BLOCK:
+			commandBlock(section);
+			break;
+		case UNBLOCK:
+			commandUnblock(section);
+			break;
+		case MEMACCESS:
+			commandMemAccess(section);
+			break;
+		default:
+			printColor("'%s ...'", ORANGY, command);
+			print(" : comando no encontrado.\n");
+			break;
+		}
+	}
+}
+
+// CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
+void handleCommand()
+{
+	if (hasPipe(consoleBuffer))
+	{
+		handlePipe();
+		return;
+	}
+	if (hasAmpersand(consoleBuffer))
+	{
+		handleBGProcess();
+		return;
+	}
+	else
+	{
+		handleRegularCommand();
+		return;
 	}
 }

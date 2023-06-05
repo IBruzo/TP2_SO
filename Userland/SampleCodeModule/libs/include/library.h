@@ -71,6 +71,7 @@ void drawCursor(int color);
 void updateCursor();
 void restartCursor();
 void refreshCursor();
+void makeshiftSleep(int duration);
 
 // process creation wrappers
 int createFGProcess(char *name, void *(*f)(int, char **), int argc, char **argv);
