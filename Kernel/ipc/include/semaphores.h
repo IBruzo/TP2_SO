@@ -7,23 +7,6 @@
 #define MAX_NAME 15
 #define MAX_SEM 20
 
-typedef struct processNode
-{
-    struct processNode *next;
-    int pid;
-} process_t;
-
-typedef struct
-{
-    char name[MAX_NAME];
-    process_t *first;
-    process_t *last;
-    int lock;
-    int value;
-    int size;
-    int listSize;
-} sem_t;
-
 extern int _xchg(int *lock, int value);
 void initSems();
 int semCreate(char *name, int initValue);

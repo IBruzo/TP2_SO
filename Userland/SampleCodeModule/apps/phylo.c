@@ -5,29 +5,29 @@ static int seated;
 uint64_t semphy;
 
 #define ROJO 0xFF0000
-void * phyloProcess(int argc, char *argv[])
+void *phyloProcess(int argc, char *argv[])
 {
     printColor("phylosofers sit to eat\n", 0x00FFFF);
-   /* if ((sem = _semOpen(SEM_PHYL, 1)) == -1)
-    {
-        printColor("Error opening main semaphore in phylo.\n",ROJO);
-        return;
-    }
-    seated = 0;
-    for (int i = 0; i < INIT_PHYL; i++)
-    {
-        if (addPhylo(i) == -1)
-        {
-            printColor("Error adding initial philosophers.\n", ROJO);
-        }
-    }
-    print("Press 'a' to add or 'r' to remove a philosopher. Press 'q' to exit.\n");
-    */
-    char c=1;
+    /* if ((sem = _semOpen(SEM_PHYL, 1)) == -1)
+     {
+         printColor("Error opening main semaphore in phylo.\n",ROJO);
+         return;
+     }
+     seated = 0;
+     for (int i = 0; i < INIT_PHYL; i++)
+     {
+         if (addPhylo(i) == -1)
+         {
+             printColor("Error adding initial philosophers.\n", ROJO);
+         }
+     }
+     print("Press 'a' to add or 'r' to remove a philosopher. Press 'q' to exit.\n");
+     */
+    char c = 1;
     while (c != 'q')
     {
-        c=getchar();
-        c=tolower(c);
+        c = getchar();
+        c = tolower(c);
         switch (c)
         {
         case 'a':
@@ -58,7 +58,7 @@ void * phyloProcess(int argc, char *argv[])
     return NULL;
 }
 
- int addPhylo(int pIndex)
+int addPhylo(int pIndex)
 {
     if (pIndex >= MAX_PHYL || pIndex < 0)
     {
@@ -66,7 +66,7 @@ void * phyloProcess(int argc, char *argv[])
     }
     return 1;
 }
- int removePhylo(int pIndex)
+int removePhylo(int pIndex)
 {
     if (pIndex >= MAX_PHYL || pIndex <= MIN_PHYL)
         return -1;
@@ -77,14 +77,13 @@ void * phyloProcess(int argc, char *argv[])
 void endTable()
 {
     return;
-
 }
 
 void printState()
 {
     for (int i = 0; i < seated; i++)
     {
-       (phylos[i].state == EATING) ? print(" E ") : print(" . ");
+        (phylos[i].state == EATING) ? print(" E ") : print(" . ");
     }
     print("\n");
 }
