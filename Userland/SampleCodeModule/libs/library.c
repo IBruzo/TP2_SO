@@ -9,16 +9,19 @@ static int cursorY = 4;
 
 #define IN_BOUNDS ((cursorX + fontsize * 8) / 1024) * 16 * fontsize < 736 // no termino de entender porque con 768 se pasa, REVISAR
 
+// Retorna si es el ultimo enter
 int lastEnter()
 {
 	return cursorY + 16 * fontsize >= 780;
 }
 
+// Retorna si puede escribir
 int canWrite()
 {
 	return cursorX + fontsize * 8 + 16 < 1000;
 }
 
+// Retorna si es alpha numerico
 int isalnum(int c)
 {
 	return (c >= 'A' && c <= 'Z') ||
@@ -26,6 +29,7 @@ int isalnum(int c)
 		   (c >= '0' && c <= '9');
 }
 
+// inthex to ascii
 unsigned char inthextoa(unsigned char a)
 {
 	if (a <= 9)
@@ -35,6 +39,7 @@ unsigned char inthextoa(unsigned char a)
 	return a;
 }
 
+// ascii to inthex
 unsigned char atointhex(unsigned char a)
 {
 	unsigned char returnChar = 0; // 0000 0000
@@ -45,6 +50,7 @@ unsigned char atointhex(unsigned char a)
 	return returnChar;
 }
 
+// Convierte un string a int
 int strToInt(char *str)
 {
 	int i = 0;
@@ -57,6 +63,7 @@ int strToInt(char *str)
 	return rta;
 }
 
+// Convierte un int a string
 uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 {
 	char *p = buffer;
@@ -89,6 +96,7 @@ uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
 	return digits;
 }
 
+// Convierte un hex a un char
 unsigned char hexToChar(unsigned char a, unsigned char b)
 {
 	unsigned char returnChar = atointhex(a);
@@ -96,12 +104,14 @@ unsigned char hexToChar(unsigned char a, unsigned char b)
 	return returnChar + atointhex(b);
 }
 
+// Memcopy
 void memCopy(char *pointer1, char *pointer2, int chars)
 {
 	for (int i = 0; i < chars; i++)
 		pointer1[i] = pointer2[i];
 }
 
+// Convierte un hex string a int
 uint64_t hexstringToInt(char *s)
 {
 	if (s[0] == '0' && s[1] == 'x')
@@ -114,6 +124,7 @@ uint64_t hexstringToInt(char *s)
 	return result;
 }
 
+// Calcula base elevado a exp
 int pow(int base, unsigned int exp)
 {
 	int rta = 1;
@@ -122,6 +133,7 @@ int pow(int base, unsigned int exp)
 	return rta;
 }
 
+// Retorna si es un char hex valido
 char isHexChar(char c)
 {
 	if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'))
@@ -131,6 +143,7 @@ char isHexChar(char c)
 	return 0;
 }
 
+// Retorna si el string es solo hex
 char onlyHexChars(char *string)
 {
 	for (int i = 0; string[i] != 0; i++)
@@ -139,6 +152,7 @@ char onlyHexChars(char *string)
 	return 1;
 }
 
+// Divide un string en dos en base al splitter
 void splitString(char *original, char *firstSplit, char splitter)
 {
 	int i = 0, j = 0, k = 0;
@@ -164,6 +178,7 @@ void splitString(char *original, char *firstSplit, char splitter)
 	return;
 }
 
+// Cuenta la cantidad de digitos de un numero
 int countDigits(int number)
 {
 	int digits, limit;
@@ -177,6 +192,7 @@ int countDigits(int number)
 	return digits;
 }
 
+// Carga en el buffer el numero
 void numLoader(int number, char *buffer, int digits)
 {
 	for (digits--; number != 0; number /= 10, digits--)
@@ -185,6 +201,7 @@ void numLoader(int number, char *buffer, int digits)
 	}
 }
 
+// Convierte un int a string
 void intToString(int number, char *buffer, int digits)
 {
 	if (number < 0)
@@ -202,6 +219,7 @@ void intToString(int number, char *buffer, int digits)
 	return;
 }
 
+// Convierte un float a string
 void floatToString(float number, char *buffer, int digits)
 {
 	intToString(number, buffer, digits);
@@ -221,6 +239,7 @@ void floatToString(float number, char *buffer, int digits)
 	return;
 }
 
+// Actualiza la posicion del cursor
 void updateCursor()
 {
 	if (cursorX + fontsize * 8 >= 1000)
@@ -234,6 +253,7 @@ void updateCursor()
 	}
 }
 
+// Concatena a la posicion actual un caracter con color dado
 void appendcharColor(char character, int color)
 {
 	if (character == '\n' && getOutputFD(getPid()) != -1)
@@ -256,11 +276,13 @@ void appendcharColor(char character, int color)
 	}
 }
 
+// Concatena a la posicion actual un caracter
 void appendchar(char character)
 {
 	appendcharColor(character, FONTCOLOR);
 }
 
+// Concatena a la posicion actual un string con color dado
 void appendstringColor(char *string, int color)
 {
 	for (int i = 0; string[i] != 0; i++)
@@ -269,11 +291,13 @@ void appendstringColor(char *string, int color)
 	}
 }
 
+// Concatena a la posicion actual un string
 void appendstring(char *string)
 {
 	appendstringColor(string, FONTCOLOR);
 }
 
+// mueve el cursor como si fuera un \n
 void newline()
 {
 	drawCursor(CURRENT_CURSOR_COLOR);
@@ -281,6 +305,7 @@ void newline()
 	cursorY += 16 * fontsize;
 }
 
+// Backspace del cursor
 void backspace()
 {
 	if (cursorX != 0)
@@ -299,16 +324,19 @@ void backspace()
 	}
 }
 
+// putchar
 void putchar(char c)
 {
 	appendchar(c);
 }
 
+// Imprime char con parametros especificos
 void putcharSpecifics(char character, int x, int y, int size, int color)
 {
 	write(character, x, y, size, color);
 }
 
+// Imprime string con parametros especificos
 void putstringSpecifics(char *string, int x, int y, int size, int color)
 {
 	int accum;
@@ -319,6 +347,7 @@ void putstringSpecifics(char *string, int x, int y, int size, int color)
 	}
 }
 
+// Compara dos strings y retorna la diferencia
 int strcmp(const char *s1, const char *s2)
 {
 	while (*s1 && (*s1 == *s2))
@@ -328,6 +357,7 @@ int strcmp(const char *s1, const char *s2)
 	return *(const unsigned char *)s1 - *(const unsigned char *)s2;
 }
 
+// Retorna el largo de un string
 int strlen(const char *str)
 {
 	int s;
@@ -336,6 +366,7 @@ int strlen(const char *str)
 	return s;
 }
 
+// Imprime un string
 static void wrapperprint(char *foundation, int color, va_list vl)
 {
 
@@ -414,6 +445,7 @@ static void wrapperprint(char *foundation, int color, va_list vl)
 	appendstringColor(buff, color);
 }
 
+// Imprime un string con color
 void printColor(char *foundation, int color, ...)
 {
 	va_list args;
@@ -422,6 +454,7 @@ void printColor(char *foundation, int color, ...)
 	va_end(args);
 }
 
+// Imprime un string con color por defecto (vendria a ser un printf para nosotros)
 void print(char *foundation, ...)
 {
 	va_list args;
@@ -430,12 +463,13 @@ void print(char *foundation, ...)
 	va_end(args);
 }
 
-// copia el string de origian a destination
+// Copia el string origin en destination
 void strcpy(char *destination, const char *origin)
 {
 	strncpy(destination, origin, strlen(origin));
 }
 
+// Copia el string origin en destination hasta n caracteres
 void strncpy(char *destination, const char *origin, int n)
 {
 	int i;
@@ -464,12 +498,8 @@ char *strrev(char *str)
 	}
 	return str;
 }
-/**
- * @brief pasa a ascii un numero en cualquier base
- * @param i numero a transformar
- * @param strout donde se guarda el string de asciis
- * @param base en que base esta el numero
- */
+
+// Convierte a ascii un numero en cualquier base
 char *itoa(int i, char *strout, int base)
 {
 	char *str = strout;
@@ -501,7 +531,13 @@ char *itoa(int i, char *strout, int base)
 	return strout;
 }
 
-// joaco es la bestia asesina
+// Convierte BCD en decimal
+int bcdToDec(int bcd)
+{
+	return ((bcd / 16) * 10 + (bcd % 16));
+}
+
+// printf que no se recomienta usar
 void printf(char *foundation, void *parameters[])
 {
 	int j = 0; // posicion en los parametros
@@ -546,7 +582,7 @@ void printf(char *foundation, void *parameters[])
 	}
 }
 
-// print para numeros en base 10
+// Print para numeros en base 10
 void printInt(uint64_t integer)
 {
 	char buffer[20] = {0};
@@ -554,7 +590,7 @@ void printInt(uint64_t integer)
 	appendstring(buffer);
 }
 
-// print para hexadecimales
+// Print para hexadecimales
 void printHex(uint64_t integer)
 {
 	char buffer[20] = {0};
@@ -562,7 +598,7 @@ void printHex(uint64_t integer)
 	appendstring(buffer);
 }
 
-// print que termina con un newline
+// Print que termina con un newline
 void println(char *string)
 {
 	appendstring(string);
@@ -576,19 +612,21 @@ void setCursor(int x, int y)
 	cursorY = y;
 }
 
-// CURSOR TERMINAL
+// Cursor de la termial
 void drawCursor(int color)
 {
 	putSquare(cursorX, cursorY, fontsize * 8, color);
 	putSquare(cursorX, cursorY + fontsize * 8, fontsize * 8, color);
 }
 
+// Resetea el cursor a su posicion inicial
 void restartCursor()
 {
 	cursorX = 4;
 	cursorY = 4;
 }
 
+// cambia el tamaño de la fuente
 void changeFontSize(int increment)
 {
 	if (fontsize + increment > 5)
@@ -596,9 +634,8 @@ void changeFontSize(int increment)
 	if ((fontsize + increment) > 0)
 		fontsize += increment;
 }
-/**
- * @brief comapra dos strings para ver si son iguales
- */
+
+// Comparacion de strings, retorna 1 si son iguales 0 si no
 char streql(const char *stringA, const char *stringB)
 {
 	int i = 0;
@@ -612,12 +649,22 @@ char streql(const char *stringA, const char *stringB)
 		return 0;
 	return 1;
 }
-/**
- * @param str este es el string que formatea usando % para usar variables
- * @param variadics direcciones a variables a ser cargadas
- * @brief sirve para leer de stdin y cargar variables desde ahi
- *
- */
+
+// Convierte string en mayusculas
+char *toUpper(char *string)
+{
+	int i = 0;
+	while (string[i] != 0)
+	{
+		if (string[i] >= 'a' && string[i] <= 'z')
+			string[i] = string[i] - 32;
+
+		i++;
+	}
+	return string;
+}
+
+// scanf que no se recomienda usar
 int scan(char *str, ...)
 {
 	va_list vl;
@@ -747,18 +794,21 @@ int scan(char *str, ...)
 	return ret;
 }
 
+// crea un proceso en foreground
 int createFGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 {
 	int FGFD[] = {0, 1};
 	return createProcess(name, f, argc, argv, FGFD);
 }
 
+// crea un proceso en background
 int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 {
 	int BGFD[] = {-1, -1};
 	return createProcess(name, f, argc, argv, BGFD);
 }
 
+// Retorna si contiene un ampersand
 int hasAmpersand(char *str)
 {
 	while (*str)
@@ -772,6 +822,7 @@ int hasAmpersand(char *str)
 	return 0;
 }
 
+// Retorna si contiene un pipe
 int hasPipe(char *str)
 {
 	while (*str != '\0')
@@ -785,11 +836,13 @@ int hasPipe(char *str)
 	return 0;
 }
 
+// funcion WC pero de libreria
 int wc(char *str)
 {
 	return (strlen(str) * fontsize * 8) / 1024 + 1;
 }
 
+// funcion que convierte un char a minuscula
 char toLower(char c)
 {
 	if (c >= 'A' && c <= 'Z')
@@ -797,15 +850,7 @@ char toLower(char c)
 	return c;
 }
 
-char tolower(char c)
-{
-	if (c >= 'A' && c <= 'Z')
-	{
-		c = c + 32;
-	}
-	return c;
-}
-
+// funcion que filtra las vocales de un string
 void filter(char *str, char *buffer)
 {
 	int len = strlen(str);
@@ -824,25 +869,7 @@ void filter(char *str, char *buffer)
 	buffer[j] = '\0';
 }
 
-void *writer(int argc, char **argv)
-{
-	print("\nAAAAAAAAAAAYUDAME LOCOOOo!\n");
-	exit();
-	return NULL;
-}
-
-void *reader(int argc, char **argv)
-{
-	char c;
-	while ((c = getchar()) != 0)
-	{
-		print("%c", c); // escribe en consola
-	}
-
-	exit();
-	return NULL;
-}
-
+// sleep de la libreria
 void makeshiftSleep(int duration)
 {
 	int startTick = gettick();
@@ -854,6 +881,7 @@ void makeshiftSleep(int duration)
 	} while (currentTick - startTick < duration);
 }
 
+// funcion que filtra los espacios de un string
 void filterSpaces(char *str)
 {
 	if (str == NULL)

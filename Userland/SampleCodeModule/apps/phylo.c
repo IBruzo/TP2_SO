@@ -27,7 +27,7 @@ void *phyloProcess(int argc, char *argv[])
     while (c != 'q')
     {
         c = getchar();
-        c = tolower(c);
+        c = toLower(c);
         switch (c)
         {
         case 'a':
@@ -47,7 +47,7 @@ void *phyloProcess(int argc, char *argv[])
             makeshiftSleep(60);
             takeChopstick(2);
             // Termino de comer, deja sus chopsticks.
-//putChopstick();
+            // putChopstick();
 
             break;
         }
@@ -90,19 +90,17 @@ void printState()
 
 void takeChopstick(int pIndex)
 {
-    
 }
 
 void update(int pIndex)
 {
-    
 }
-int left(int pIndex){
+int left(int pIndex)
+{
     return 1;
 }
 
-int right(int pIndex){
+int right(int pIndex)
+{
     return 1;
 }
-
-
