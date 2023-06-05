@@ -106,7 +106,7 @@ int put_letter(char letter, uint32_t x, uint32_t y, uint32_t tam, uint32_t color
 	}
 	if (letter == '\n' || letter == -1)
 	{
-		return 0;
+		return;
 	}
 
 	// extended ascii table ñ y Ñ en el vector de fonts

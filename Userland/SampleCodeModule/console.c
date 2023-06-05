@@ -546,13 +546,11 @@ void testSemaphoresNoSync()
 // Carga al historial el comando s
 static void loadHistory(const char *s)
 {
-	int len = strlen(s);
 	if (historyDim > 0 && strcmp(historyBuffer[(historyDim - 1) % MAX_COMMANDS], s) == 0)
 	{
 		return;
 	}
-	strncpy(historyBuffer[historyDim % MAX_COMMANDS], s, MAX_COMMAND_LENGTH - 1);
-	historyBuffer[historyDim % MAX_COMMANDS][len] = '\0';
+	strcpy(historyBuffer[historyDim % MAX_COMMANDS], s);
 	historyDim++;
 	historyIndex = historyDim;
 }
@@ -565,6 +563,10 @@ static char *upHistory()
 		if (historyIndex == historyDim)
 		{
 			return historyBuffer[--historyIndex % MAX_COMMANDS];
+		}
+		if (historyIndex <= 1)
+		{
+			return historyBuffer[historyIndex++ % MAX_COMMANDS];
 		}
 		historyIndex--;
 		return historyBuffer[historyIndex % MAX_COMMANDS];
@@ -697,7 +699,6 @@ void handleKey(char c)
 		printColor("> $ ", TERMINAL_BLUE, 0);
 		break;
 	}
-
 	case '\t':
 	{
 		appendstring("    ");
