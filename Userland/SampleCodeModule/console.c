@@ -77,7 +77,7 @@ void printCurrentTime()
 // Comando help que imprime todos los comandos disponibles
 void *commandHelp(int argc, char **argv)
 {
-	clearScreen();
+
 	printColor("BIENVENIDO AL MENU HELP", 0xE9AD0C, 0);
 	print("\nEL SISTEMA CUENTA CON LOS SIGUIENTES COMANDOS: <User commands>");
 	print("\n------------------- ARQUI ---------------------");
@@ -112,6 +112,8 @@ void *commandHelp(int argc, char **argv)
 	print("\n- TEST_SYNC                  /* test de sincronizacion          */");
 	print("\n- TEST_NO_SYNC               /* test de no sincronizado         */");
 	print("\n");
+
+	print("%c", EOF); // shhhh
 	exit();
 	return NULL;
 }
@@ -244,7 +246,7 @@ void printExitHelp()
 }
 
 // Función cat que imprime lo que se escribe por stdin
-static void *catpro(int argc, char *argv[])
+static void *catPro(int argc, char *argv[])
 {
 	char c = 1;
 	while (c != (char)EOF)
@@ -264,13 +266,13 @@ void commandCat(char *str)
 {
 	print("\n");
 	printColor("> ", 0x547891);
-	int catpid = createFGProcess("cat", catpro, 0, NULL);
+	int catpid = createFGProcess("cat", catPro, 0, NULL);
 	waitPid(catpid);
 	return;
 }
 
 // Funcion wc que cuenta lineas de stdin
-static void *wcpro(int argc, char *argv[])
+static void *wcPro(int argc, char *argv[])
 {
 	int lineCount = 0;
 	char c = 1;
@@ -287,17 +289,13 @@ static void *wcpro(int argc, char *argv[])
 		{
 			isNewline = 0;
 		}
-		if (isalnum(c) || '\n' == c || ' ' == c)
-		{
-			print("%c", c);
-		}
 	}
 	if (!isNewline)
 	{
 		lineCount++;
 	}
-
 	print("\nLines: %d\n", lineCount);
+	print("%c", c);
 
 	exit();
 	return NULL;
@@ -308,12 +306,12 @@ void commandWc(char *str)
 {
 	print("\n");
 	printColor("> ", 0x547891);
-	int wcpid = createFGProcess("wc", wcpro, 0, NULL);
+	int wcpid = createFGProcess("wc", wcPro, 0, NULL);
 	waitPid(wcpid);
 }
 
 // Funcion filter que imprime lo que se escribe por stdin sin vocales
-static void *filterpro(int argc, char *argv[])
+static void *filterPro(int argc, char *argv[])
 {
 
 	char c = 1;
@@ -325,6 +323,10 @@ static void *filterpro(int argc, char *argv[])
 		{
 			print("%c", c);
 		}
+		else
+		{
+			print("%c", ' ');
+		}
 	}
 	exit();
 	return NULL;
@@ -335,7 +337,7 @@ void commandFilter(char *str)
 {
 	print("\n");
 	printColor("> ", 0x547891);
-	int filterpid = createFGProcess("filter", filterpro, 0, NULL);
+	int filterpid = createFGProcess("filter", filterPro, 0, NULL);
 	waitPid(filterpid);
 	return;
 }
@@ -503,13 +505,24 @@ void commandPrintMemState(int unit)
 	print("%s", s);
 }
 
-// Comando que imprime los procesos
-void commandPrintProcesses()
+void *psPro(int argc, char **argv)
 {
 	char s[1000];
 	ps(s);
-	// int n = strlen(s);
 	print("%s", s);
+
+	print("%c", EOF);
+	exit();
+	return NULL;
+}
+
+// Comando que imprime los procesos
+void commandPrintProcesses()
+{
+	print("\n");
+	int catpid = createFGProcess("ps", psPro, 0, NULL);
+	waitPid(catpid);
+	return;
 }
 
 // Comando de testeos de semaforos
@@ -761,10 +774,30 @@ void handleBGProcess()
 	splitString(consoleBuffer, leftCommand, '&');
 	strcpy(leftCommand, consoleBuffer);
 	splitString(leftCommand, leftSection, ' ');
-
 	toUpper(leftCommand);
+	int hashedCommand = hash(leftCommand);
 
-	if (strcmp(leftCommand, "LOOP") == 0)
+	switch (hashedCommand)
+	{
+	case LOOP:
+		createBGProcess("loop", commandLoop, 0, NULL);
+		break;
+	case HELP:
+		createBGProcess("help", commandHelp, 0, NULL);
+		break;
+	case CAT:
+		createBGProcess("cat", catPro, 0, NULL);
+		break;
+	case FILTER:
+		createBGProcess("filter", filterPro, 0, NULL);
+		break;
+	case WC:
+		createBGProcess("wordcount", wcPro, 0, NULL);
+		break;
+	default:
+		break;
+	}
+	/* if (strcmp(leftCommand, "LOOP") == 0)
 	{
 		createBGProcess("loop", commandLoop, 0, NULL);
 	}
@@ -774,16 +807,16 @@ void handleBGProcess()
 	}
 	else if (strcmp(leftCommand, "CAT") == 0)
 	{
-		createBGProcess("cat", catpro, 0, NULL);
+		createBGProcess("cat", catPro, 0, NULL);
 	}
 	else if (strcmp(leftCommand, "FILTER") == 0)
 	{
-		createBGProcess("filter", filterpro, 0, NULL);
+		createBGProcess("filter", filterPro, 0, NULL);
 	}
 	else if (strcmp(leftCommand, "WC") == 0)
 	{
-		createBGProcess("wordcount", wcpro, 0, NULL);
-	}
+		createBGProcess("wordcount", wcPro, 0, NULL);
+	} */
 }
 
 // Funcion que maneja los pipes
@@ -819,19 +852,22 @@ void handlePipe()
 	case HELP:
 		writerPID = createProcess("helpc", commandHelp, 0, NULL, writeFD);
 		waitPid(writerPID);
-
 		break;
 	case CAT:
-		writerPID = createProcess("catc", catpro, 0, NULL, writeFD);
+		writerPID = createProcess("catc", catPro, 0, NULL, writeFD);
 		waitPid(writerPID);
 
 		break;
 	case FILTER:
-		writerPID = createProcess("filterc", filterpro, 0, NULL, writeFD);
+		writerPID = createProcess("filterc", filterPro, 0, NULL, writeFD);
 		waitPid(writerPID);
 		break;
 	case WC:
-		writerPID = createProcess("wcc", wcpro, 0, NULL, writeFD);
+		writerPID = createProcess("wcc", wcPro, 0, NULL, writeFD);
+		waitPid(writerPID);
+		break;
+	case PS:
+		writerPID = createProcess("ps", psPro, 0, NULL, writeFD);
 		waitPid(writerPID);
 		break;
 	default:
@@ -840,7 +876,6 @@ void handlePipe()
 		return;
 		break;
 	}
-
 	print("\n------------------------\n");
 
 	switch (hash(rightCommand))
@@ -850,22 +885,24 @@ void handlePipe()
 		waitPid(readerPID);
 		break;
 	case CAT:
-		readerPID = createProcess("catc", catpro, 0, NULL, readFD);
+		readerPID = createProcess("catc", catPro, 0, NULL, readFD);
 		waitPid(readerPID);
 		break;
 	case FILTER:
-		readerPID = createProcess("filterc", filterpro, 0, NULL, readFD);
+		readerPID = createProcess("filterc", filterPro, 0, NULL, readFD);
 		waitPid(readerPID);
-
 		break;
 	case WC:
-		readerPID = createProcess("wcc", wcpro, 0, NULL, readFD);
+		readerPID = createProcess("wcc", wcPro, 0, NULL, readFD);
+		waitPid(readerPID);
+		break;
+	case PS:
+		readerPID = createProcess("ps", psPro, 0, NULL, readFD);
 		waitPid(readerPID);
 		break;
 	default:
 		print("%s : command not found.\n", rightCommand);
 		closePipe(pipeFD);
-
 		break;
 	}
 }

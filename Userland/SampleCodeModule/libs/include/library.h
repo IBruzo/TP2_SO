@@ -60,6 +60,7 @@ int strToInt(char *str);
 char *toUpper(char *string);
 char toLower(char c);
 int bcdToDec(int bcd);
+char *itos(int num);
 
 // consoleControl
 int canWrite();

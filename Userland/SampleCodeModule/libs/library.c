@@ -219,6 +219,51 @@ void intToString(int number, char *buffer, int digits)
 	return;
 }
 
+// Retorna el string de un int (aloca memoria, no olvidar liberar)
+char *itos(int num)
+{
+	int temp = num;
+	int length = 0;
+
+	// Handle the case of zero separately
+	if (temp == 0)
+	{
+		length = 1;
+	}
+	else
+	{
+		// Determine the length of the string representation
+		while (temp != 0)
+		{
+			length++;
+			temp /= 10;
+		}
+	}
+
+	// Allocate memory for the string
+	char *str = (char *)mAlloc((length + 1) * sizeof(char));
+
+	// Convert the integer to a string
+	int i = length - 1;
+	if (num == 0)
+	{
+		str[i] = '0';
+	}
+	else
+	{
+		while (num != 0)
+		{
+			str[i] = '0' + (num % 10);
+			num /= 10;
+			i--;
+		}
+	}
+
+	str[length] = '\0'; // Add the null terminator
+
+	return str;
+}
+
 // Convierte un float a string
 void floatToString(float number, char *buffer, int digits)
 {
