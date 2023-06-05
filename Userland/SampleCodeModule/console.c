@@ -324,7 +324,7 @@ static void *filterpro(int argc, char *argv[])
 	{
 		c = getchar();
 		char lowerC = tolower(c);
-		if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u' || c == EOF)
+		if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u')
 		{
 			print("%c", c);
 		}
@@ -482,8 +482,9 @@ void *commandLoop(int argc, char **argv)
 	return NULL;
 }
 
-void commandPhylo(){
-	int pidPhylo=createFGProcess("phylo",phyloProcess,0,NULL);
+void commandPhylo()
+{
+	int pidPhylo = createFGProcess("phylo", phyloProcess, 0, NULL);
 	waitPid(pidPhylo);
 	return;
 }
