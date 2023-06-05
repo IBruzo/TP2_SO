@@ -500,6 +500,11 @@ char *itoa(int i, char *strout, int base)
 	strrev(strout);
 	return strout;
 }
+// Convierte BCD en decimal
+int bcdToDec(int bcd)
+{
+	return ((bcd / 16) * 10 + (bcd % 16));
+}
 
 // joaco es la bestia asesina
 void printf(char *foundation, void *parameters[])
@@ -612,6 +617,21 @@ char streql(const char *stringA, const char *stringB)
 		return 0;
 	return 1;
 }
+
+// pasa a mayusculas
+char *toUpper(char *string)
+{
+	int i = 0;
+	while (string[i] != 0)
+	{
+		if (string[i] >= 'a' && string[i] <= 'z')
+			string[i] = string[i] - 32;
+
+		i++;
+	}
+	return string;
+}
+
 /**
  * @param str este es el string que formatea usando % para usar variables
  * @param variadics direcciones a variables a ser cargadas

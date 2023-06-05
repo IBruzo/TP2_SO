@@ -3,37 +3,58 @@
 #include <console.h>
 #include "tests.h"
 
-#define MAX_PID 5000
-void handleHelp(char *helping);
+extern void INVALID_OP_CODE();						 // Excepcion de codigo invalido
+static char consoleBuffer[MAX_CONSOLE_BUFFER] = {0}; // buffer de la consola
+static int lastChar = 0;							 // ultima posicion del buffer
 
-extern void INVALID_OP_CODE();
-static char consoleBuffer[MAX_CONSOLE_BUFFER] = {0};
-static int lastChar = 0;
+char historyBuffer[MAX_COMMANDS][MAX_COMMAND_LENGTH]; // historial del buffer
+unsigned int historyIndex = 0;						  // indice del historial
+unsigned int historyDim = 0;						  // dimension del historial
 
-char historyBuffer[MAX_COMMANDS][MAX_COMMAND_LENGTH];
-unsigned int historyIndex = 0;
-unsigned int historyDim = 0;
-
-// pasa a mayusculas
-char *toUpper(char *string)
+// funcion de hashe de nuestro comandos https://stackoverflow.com/questions/4014827/how-can-i-compare-strings-in-c-using-a-switch-statement
+const unsigned long hash(char *str)
 {
-	int i = 0;
-	while (string[i] != 0)
+	unsigned int hash = 5381;
+	int c;
+
+	while ((c = *str++))
 	{
-		if (string[i] >= 'a' && string[i] <= 'z')
-			string[i] = string[i] - 32;
-
-		i++;
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 	}
-	return string;
+	return hash;
 }
 
-// funcion que convierte un bcd en decimal
-static int bcdToDec(int bcd)
+// Limpia el buffer de la consola
+void clearconsoleBuffer()
 {
-	return ((bcd / 16) * 10 + (bcd % 16));
+	for (int i = 0; i < lastChar; i++)
+		consoleBuffer[i] = 0;
+	lastChar = 0;
 }
 
+// Limpia la consola y resetea el cursor
+void clearScreen()
+{
+	putSquare(0, 0, 1024, BACKGROUND_COLOR);
+	restartCursor();
+}
+
+// Espera que el usuario presione la tecla key
+void waitForKey(char key)
+{
+	while (1)
+	{
+		if (getchar() == key)
+		{
+			break;
+		}
+	}
+	// and restart
+	clearScreen();
+	restartCursor();
+}
+
+// Imprime el tiempo actual
 void printCurrentTime()
 {
 	int aux = bcdToDec(getTime(0x04));
@@ -53,34 +74,7 @@ void printCurrentTime()
 	putchar('\n');
 }
 
-void clearconsoleBuffer()
-{
-	for (int i = 0; i < lastChar; i++)
-		consoleBuffer[i] = 0;
-	lastChar = 0;
-}
-
-void clearScreen()
-{
-	putSquare(0, 0, 1024, BACKGROUND_COLOR);
-	restartCursor();
-}
-
-// pequeña funcion que espera a que se presione una tecla para salir
-void waitForKey(char key)
-{
-	while (1)
-	{
-		if (getchar() == key)
-		{
-			break;
-		}
-	}
-	// and restart
-	clearScreen();
-	restartCursor();
-}
-
+// Comando help que imprime todos los comandos disponibles
 void *commandHelp(int argc, char **argv)
 {
 	clearScreen();
@@ -116,29 +110,33 @@ void *commandHelp(int argc, char **argv)
 	print("\n- TEST_PROC                  /* test de procesos                */");
 	print("\n- TEST_PRIO                  /* test de round robin             */");
 	print("\n- TEST_SYNC                  /* test de sincronizacion          */");
+	print("\n- TEST_NO_SYNC               /* test de no sincronizado         */");
 	print("\n");
 	exit();
 	return NULL;
 }
 
+// Comando clear que limpia la pantalla
 void commandClear()
 {
 	clearScreen();
-	restartCursor();
 }
 
-void commandSnapshot()
+// Comando que imprime los registros
+void commandInforeg()
 {
 	clearScreen();
 	getRegisters();
 	waitForKey(ESC);
 }
 
+// Comando que imprime el tiempo
 void commandTime()
 {
 	printCurrentTime();
 }
 
+// Comando que ejecuta el juego tron
 void commandTron()
 {
 	playTron();
@@ -146,6 +144,7 @@ void commandTron()
 	clearScreen();
 }
 
+// Comando que ejecuta la aplicacion de piano
 void commandPiano()
 {
 	print("Usted se encuentra frente a un teclado especial.\n\n", 0);
@@ -155,11 +154,13 @@ void commandPiano()
 	commandClear();
 }
 
+// Comando que hace ruidito
 void commandBeep()
 {
 	beep(1000, 10);
 }
 
+// Comando que imprime los 32 bytes siguientes a la direccion de memoria dada
 void commandMemAccess(char *memdirHexa)
 {
 	if (strlen(memdirHexa) > 16 || !onlyHexChars(memdirHexa))
@@ -188,6 +189,7 @@ void commandMemAccess(char *memdirHexa)
 	}
 }
 
+// Comando que ejecuta excepcion de division por cero
 void commandDivCero()
 {
 	clearScreen();
@@ -198,6 +200,7 @@ void commandDivCero()
 		break;
 }
 
+// Comando que ejecuta himno de la URSS (nos llamamos SOviet es un chiste plz no kill)
 void commandAnthem()
 {
 	beep(392, 375 / 50);
@@ -225,25 +228,14 @@ void commandAnthem()
 	beep(587, 1125 / 50);
 }
 
+// Comando que ejecuta la excepcion Invop
 void commandInvOp()
 {
 	clearScreen();
 	INVALID_OP_CODE();
 }
 
-// https://stackoverflow.com/questions/4014827/how-can-i-compare-strings-in-c-using-a-switch-statement
-const unsigned long hash(char *str)
-{
-	unsigned int hash = 5381;
-	int c;
-
-	while ((c = *str++))
-	{
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-	}
-	return hash;
-}
-
+// Imprime que hacer para salir de la aplicacion
 void printExitHelp()
 {
 	appendstring("Presione ");
@@ -251,6 +243,7 @@ void printExitHelp()
 	print(" para volver a la consola.\n", 0);
 }
 
+// Función cat que imprime lo que se escribe por stdin
 static void *catpro(int argc, char *argv[])
 {
 	char c = 1;
@@ -266,6 +259,7 @@ static void *catpro(int argc, char *argv[])
 	return NULL;
 }
 
+// Comando que ejecuta cat
 void commandCat(char *str)
 {
 	print("\n");
@@ -274,8 +268,8 @@ void commandCat(char *str)
 	waitPid(catpid);
 	return;
 }
-int modoHarcodeo = 0;
 
+// Funcion wc que cuenta lineas de stdin
 static void *wcpro(int argc, char *argv[])
 {
 	int lineCount = 0;
@@ -308,6 +302,8 @@ static void *wcpro(int argc, char *argv[])
 	exit();
 	return NULL;
 }
+
+// Comando que ejecuta wc
 void commandWc(char *str)
 {
 	print("\n");
@@ -316,6 +312,7 @@ void commandWc(char *str)
 	waitPid(wcpid);
 }
 
+// Funcion filter que imprime lo que se escribe por stdin sin vocales
 static void *filterpro(int argc, char *argv[])
 {
 
@@ -333,6 +330,7 @@ static void *filterpro(int argc, char *argv[])
 	return NULL;
 }
 
+// Comando que ejecuta filter
 void commandFilter(char *str)
 {
 	print("\n");
@@ -342,6 +340,7 @@ void commandFilter(char *str)
 	return;
 }
 
+// Comando para matar un proceso con pid en string
 void commandKill(char *str)
 {
 	/* if (streql(str, "ALL"))
@@ -379,6 +378,7 @@ void commandKill(char *str)
 	}
 }
 
+// Comando para cambiar la prioridad de un proceso con pid en string y prioridad en string
 void commandNice(char *pid, char *priority)
 {
 	int pidInt = strToInt(pid);
@@ -408,6 +408,7 @@ void commandNice(char *pid, char *priority)
 	}
 }
 
+// Comando que bloquea un proceso con pid en string
 void commandBlock(char *pid)
 {
 	int pidInt = strToInt(pid);
@@ -427,6 +428,7 @@ void commandBlock(char *pid)
 	}
 }
 
+// comando que desbloquea un proceso con pid en string
 void commandUnblock(char *pid)
 {
 	int pidInt = strToInt(pid);
@@ -446,6 +448,7 @@ void commandUnblock(char *pid)
 	}
 }
 
+// Funcion para el testeo de wait
 void *timmy(int argc, char **argv)
 {
 	print("-Tommy: Dad, Ill take a nap in my last seconds of life\n");
@@ -455,6 +458,7 @@ void *timmy(int argc, char **argv)
 	return NULL;
 }
 
+// Funcion para el testeo de wait
 static void *dad(int argc, char **argv)
 {
 	makeshiftSleep(20);
@@ -468,6 +472,7 @@ static void *dad(int argc, char **argv)
 	return NULL;
 }
 
+// Funcion que imprime infinitamente el pid del proceso
 void *commandLoop(int argc, char **argv)
 {
 	int currentPid = getPid();
@@ -482,6 +487,7 @@ void *commandLoop(int argc, char **argv)
 	return NULL;
 }
 
+// Comando que ejecuta la aplicacion del dilema de los filosofos
 void commandPhylo()
 {
 	int pidPhylo = createFGProcess("phylo", phyloProcess, 0, NULL);
@@ -489,6 +495,7 @@ void commandPhylo()
 	return;
 }
 
+// Comando que imprime el estado de la memoria
 void commandPrintMemState(int unit)
 {
 	char s[1000];
@@ -496,6 +503,7 @@ void commandPrintMemState(int unit)
 	print("%s", s);
 }
 
+// Comando que imprime los procesos
 void commandPrintProcesses()
 {
 	char s[1000];
@@ -504,6 +512,7 @@ void commandPrintProcesses()
 	print("%s", s);
 }
 
+// Comando de testeos de semaforos
 void testSemaphoresSync()
 {
 	int argc = 3;
@@ -512,6 +521,7 @@ void testSemaphoresSync()
 	return;
 }
 
+// Comando de testeos de semaforos sin sincronizacion
 void testSemaphoresNoSync()
 {
 	int argc = 3;
@@ -520,7 +530,7 @@ void testSemaphoresNoSync()
 	return;
 }
 
-// CARGA AL HISTORIAL DE COMANDOS
+// Carga al historial el comando s
 static void loadHistory(const char *s)
 {
 	int len = strlen(s);
@@ -534,7 +544,7 @@ static void loadHistory(const char *s)
 	historyIndex = historyDim;
 }
 
-// SUBE EN EL HISTORIAL A MAS VIEJOS
+// Sube en el historial a mas antiguos
 static char *upHistory()
 {
 	if (historyIndex > 0)
@@ -550,7 +560,7 @@ static char *upHistory()
 	return "";
 }
 
-// BAJA EN EL HISTORIAL A MAS RECIENTES
+// Baja en el historial a mas nuevos
 static char *downHistory()
 {
 	if (historyIndex < historyDim)
@@ -567,7 +577,7 @@ static char *downHistory()
 	return "";
 }
 
-// RESETEA LA LINEA
+// Resetea la linea de comando
 static void inLineReset()
 {
 	for (int i = 0; i < lastChar; i++)
@@ -578,6 +588,7 @@ static void inLineReset()
 	clearconsoleBuffer();
 }
 
+// imprime el historial
 void printHistory()
 {
 	for (int i = 0; i < historyDim; i++)
@@ -586,7 +597,7 @@ void printHistory()
 	}
 }
 
-// FUNCION QUE EJECUTA UP OR DOWN
+// Funcion que ejecuta up o down de las felchas
 void upArrow(int arrowUp)
 {
 	inLineReset();
@@ -611,7 +622,7 @@ void upArrow(int arrowUp)
 	lastChar = strlen(consoleBuffer);
 }
 
-// RESETEA EL HISTORIAL
+// Funcion resetea historial
 void clearHistoryBuffer()
 {
 	for (int i = 0; i < MAX_COMMANDS; i++)
@@ -624,7 +635,7 @@ void clearHistoryBuffer()
 	historyDim = historyIndex = 0;
 }
 
-// SE FIJA QUE TECLA HA SIDO ACCINOADA Y QUE HACER AL RESPECTO...
+// Funcion que maneja las teclas
 void handleKey(char c)
 {
 	switch (c)
@@ -741,6 +752,7 @@ void handleKey(char c)
 	}
 }
 
+// Funciont que maneja los procesos en background
 void handleBGProcess()
 {
 	char leftCommand[128] = {0};
@@ -774,6 +786,7 @@ void handleBGProcess()
 	}
 }
 
+// Funcion que maneja los pipes
 void handlePipe()
 {
 	char leftCommand[128] = {0};
@@ -857,6 +870,7 @@ void handlePipe()
 	}
 }
 
+// Testea el memory manager
 void testMemoryManager()
 {
 	char *argv[] = {"134217728"};
@@ -864,6 +878,7 @@ void testMemoryManager()
 	return;
 }
 
+// Testea el scheduler
 static void testPrio()
 {
 	print("TESTING PRIORITY\n");
@@ -871,6 +886,7 @@ static void testPrio()
 	print("TEST ENDED\n");
 }
 
+// Testea los procesos
 static void *testProc(int argc, char **argv)
 {
 	print("TESTING PROCESSES\n");
@@ -881,6 +897,7 @@ static void *testProc(int argc, char **argv)
 	return NULL;
 }
 
+// Maneja los comandos regulares
 void handleRegularCommand()
 {
 	char section[128] = {0};
@@ -910,7 +927,7 @@ void handleRegularCommand()
 			commandAnthem();
 			break;
 		case INFOREG:
-			commandSnapshot();
+			commandInforeg();
 			break;
 		case TIME:
 			commandTime();
@@ -1020,7 +1037,7 @@ void handleRegularCommand()
 	}
 }
 
-// CHEQUEAR CUAL ES EL COMANDO Y QUE EL COMANDO EXISTA CON LOS HASHCODES
+// Maneja los comandos
 void handleCommand()
 {
 	if (hasPipe(consoleBuffer))

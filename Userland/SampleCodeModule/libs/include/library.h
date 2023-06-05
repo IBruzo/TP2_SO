@@ -58,6 +58,8 @@ int pow(int base, unsigned int exp);
 char onlyHexChars(char *string);
 char isHexChar(char character);
 int strToInt(char *str);
+char *toUpper(char *string);
+int bcdToDec(int bcd);
 
 // consoleControl
 int canWrite();
