@@ -264,7 +264,6 @@ static void *catPro(int argc, char *argv[])
 // Comando que ejecuta cat
 void commandCat(char *str)
 {
-	print("\n");
 	printColor("> ", 0x547891);
 	int catpid = createFGProcess("cat", catPro, 0, NULL);
 	waitPid(catpid);
@@ -304,7 +303,6 @@ static void *wcPro(int argc, char *argv[])
 // Comando que ejecuta wc
 void commandWc(char *str)
 {
-	print("\n");
 	printColor("> ", 0x547891);
 	int wcpid = createFGProcess("wc", wcPro, 0, NULL);
 	waitPid(wcpid);
@@ -335,7 +333,6 @@ static void *filterPro(int argc, char *argv[])
 // Comando que ejecuta filter
 void commandFilter(char *str)
 {
-	print("\n");
 	printColor("> ", 0x547891);
 	int filterpid = createFGProcess("filter", filterPro, 0, NULL);
 	waitPid(filterpid);
