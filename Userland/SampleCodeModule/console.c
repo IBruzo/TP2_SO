@@ -254,88 +254,63 @@ void printExitHelp()
 static void *catpro(int argc, char *argv[])
 {
 	char c = 1;
-
 	while (c != (char)EOF)
 	{
 		c = getchar();
-		if (c == '\n')
-		{
-			print("\n");
-		}
-		else if (c != 0)
+		if (isalnum(c) || '\n' == c || ' ' == c || c == EOF)
 		{
 			print("%c", c);
 		}
 	}
-
-	newline();
 	exit();
 	return NULL;
 }
 
 void commandCat(char *str)
 {
-	clearScreen();
+	print("\n");
 	printColor("> ", 0x547891);
 	int catpid = createFGProcess("cat", catpro, 0, NULL);
 	waitPid(catpid);
 	return;
 }
+int modoHarcodeo = 0;
 
 static void *wcpro(int argc, char *argv[])
 {
-
-	char c = 1;
-
 	int lineCount = 0;
-	int wordCount = 0;
-	int charCount = 0;
-	int inWord = 0;
-
+	char c = 1;
+	int isNewline = 0;
 	while (c != (char)EOF)
 	{
 		c = getchar();
-		if (isalnum(c))
-		{
-			charCount++;
-		}
-
 		if (c == '\n')
 		{
-			wordCount++;
-			newline();
-		}
-		else if (c == ' ')
-		{
-			handleKey(c);
-			if (inWord)
-			{
-				wordCount++;
-				inWord = 0;
-			}
-		}
-		else if (c != 0)
-		{
-			handleKey(c);
+			isNewline = 1;
+			lineCount++;
 		}
 		else
 		{
-			if (!inWord)
-			{
-				inWord = 1;
-			}
+			isNewline = 0;
+		}
+		if (isalnum(c) || '\n' == c || ' ' == c)
+		{
+			print("%c", c);
 		}
 	}
-	printColor("Lines: %d\n", 0x547891, lineCount + 1);
-	printColor("Words: %d\n", 0x547891, wordCount + 1);
-	printColor("Characters: %d\n", 0x547891, charCount);
+	if (!isNewline)
+	{
+		lineCount++;
+	}
+
+	print("\nLines: %d\n", lineCount);
+
 	exit();
 	return NULL;
 }
-
 void commandWc(char *str)
 {
-	clearScreen();
+	print("\n");
 	printColor("> ", 0x547891);
 	int wcpid = createFGProcess("wc", wcpro, 0, NULL);
 	waitPid(wcpid);
@@ -349,20 +324,18 @@ static void *filterpro(int argc, char *argv[])
 	{
 		c = getchar();
 		char lowerC = tolower(c);
-		if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u')
+		if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u' || c == EOF)
 		{
 			print("%c", c);
 		}
 	}
-
-	newline();
 	exit();
 	return NULL;
 }
 
 void commandFilter(char *str)
 {
-	clearScreen();
+	print("\n");
 	printColor("> ", 0x547891);
 	int filterpid = createFGProcess("filter", filterpro, 0, NULL);
 	waitPid(filterpid);
@@ -790,13 +763,11 @@ void handlePipe()
 	strcpy(leftCommand, consoleBuffer);
 
 	splitString(leftCommand, leftSection, ' ');
-
 	while (rightCommand[0] == ' ')
 	{
 		strcpy(rightCommand, rightCommand + 1);
 	}
 	splitString(rightCommand, rightSection, ' ');
-
 	toUpper(leftCommand);
 	toUpper(rightCommand);
 
@@ -807,51 +778,60 @@ void handlePipe()
 	int writerPID = -1;
 	int readerPID = -1;
 
-	if (strcmp(leftCommand, "HELP") == 0)
+	switch (hash(leftCommand))
 	{
-		writerPID = createProcess("command1", commandHelp, 0, NULL, writeFD);
+	case HELP:
+		writerPID = createProcess("helpc", commandHelp, 0, NULL, writeFD);
 		waitPid(writerPID);
-	}
-	else if (strcmp(leftCommand, "CAT") == 0)
-	{
-		writerPID = createProcess("command1", catpro, 0, NULL, writeFD);
+
+		break;
+	case CAT:
+		writerPID = createProcess("catc", catpro, 0, NULL, writeFD);
 		waitPid(writerPID);
-	}
-	else if (strcmp(leftCommand, "FILTER") == 0)
-	{
-		writerPID = createProcess("command1", filterpro, 0, NULL, writeFD);
+
+		break;
+	case FILTER:
+		writerPID = createProcess("filterc", filterpro, 0, NULL, writeFD);
 		waitPid(writerPID);
-	}
-	else if (strcmp(leftCommand, "WC") == 0)
-	{
-		writerPID = createProcess("command1", wcpro, 0, NULL, writeFD);
+		break;
+	case WC:
+		writerPID = createProcess("wcc", wcpro, 0, NULL, writeFD);
 		waitPid(writerPID);
+		break;
+	default:
+		print("%s : command not found.\n", leftCommand);
+		closePipe(pipeFD);
+		return;
+		break;
 	}
 
-	print("------------------------\n");
+	print("\n------------------------\n");
 
-	if (strcmp(rightCommand, "HELP") == 0)
+	switch (hash(rightCommand))
 	{
-		readerPID = createProcess("command2", commandHelp, 0, NULL, readFD);
+	case HELP:
+		readerPID = createProcess("helpc", commandHelp, 0, NULL, readFD);
 		waitPid(readerPID);
-	}
-	else if (strcmp(rightCommand, "CAT") == 0)
-	{
-		readerPID = createProcess("command2", catpro, 0, NULL, readFD);
+		break;
+	case CAT:
+		readerPID = createProcess("catc", catpro, 0, NULL, readFD);
 		waitPid(readerPID);
-	}
-	else if (strcmp(rightCommand, "FILTER") == 0)
-	{
-		readerPID = createProcess("command2", filterpro, 0, NULL, readFD);
+		break;
+	case FILTER:
+		readerPID = createProcess("filterc", filterpro, 0, NULL, readFD);
 		waitPid(readerPID);
-	}
-	else if (strcmp(rightCommand, "WC") == 0)
-	{
-		readerPID = createProcess("command2", wcpro, 0, NULL, readFD);
-		waitPid(readerPID);
-	}
 
-	closePipe(pipeFD);
+		break;
+	case WC:
+		readerPID = createProcess("wcc", wcpro, 0, NULL, readFD);
+		waitPid(readerPID);
+		break;
+	default:
+		print("%s : command not found.\n", rightCommand);
+		closePipe(pipeFD);
+
+		break;
+	}
 }
 
 void testMemoryManager()

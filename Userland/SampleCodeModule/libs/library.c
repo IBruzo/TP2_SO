@@ -239,7 +239,6 @@ void appendcharColor(char character, int color)
 	if (character == '\n' && getOutputFD(getPid()) != -1)
 	{
 		newline();
-		putcharSpecifics(character, cursorX, cursorY, fontsize, color);
 	}
 	// si es output a foreground se renderiza
 	if (getOutputFD(getPid()) != -1)
@@ -801,7 +800,9 @@ char toLower(char c)
 char tolower(char c)
 {
 	if (c >= 'A' && c <= 'Z')
+	{
 		c = c + 32;
+	}
 	return c;
 }
 
@@ -851,4 +852,27 @@ void makeshiftSleep(int duration)
 	{
 		currentTick = gettick();
 	} while (currentTick - startTick < duration);
+}
+
+void filterSpaces(char *str)
+{
+	if (str == NULL)
+	{
+		return;
+	}
+
+	char *p = str;
+	char *q = str;
+
+	while (*q != '\0')
+	{
+		if (*q == ' ')
+		{
+			*p = *q;
+			p++;
+		}
+		q++;
+	}
+
+	*p = '\0';
 }

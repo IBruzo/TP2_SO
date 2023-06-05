@@ -31,6 +31,7 @@ void appendstring(char *string);
 void appendstringColor(char *string, int color);
 int isalnum(int c);
 char tolower(char c);
+void filterSpaces(char *str);
 
 // string
 void strcpy(char *destination, const char *origin);
