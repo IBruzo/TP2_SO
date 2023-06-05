@@ -328,10 +328,10 @@ int sys_kill(int pid)
     PCB *killedProcess = get(PCBTable, pid);
 
     // Caso donde se asesina/exitea un proceso que estaba en la cima del Wait Stack, se desbloquea el padre y se asesina al hijo
-    if (peekWaitStack(&waitQueue).cpid == killedProcess->PID && peekWaitStack(&waitQueue).pid == killedProcess->PPID)
+    if (peekWaitStack(&waitStack).cpid == killedProcess->PID && peekWaitStack(&waitStack).pid == killedProcess->PPID)
     {
         unblock(killedProcess->PPID);
-        popWaitStack(&waitQueue);
+        popWaitStack(&waitStack);
     }
 
     int index = 0; // found a killable process
@@ -397,7 +397,7 @@ void sys_waitPid(int pid)
         return;
     }
     int PPid = getCurrentPid();
-    pushWaitStack(&waitQueue, getCurrentPid(), pid);
+    pushWaitStack(&waitStack, getCurrentPid(), pid);
     block(PPid);
     forceTick();
 }

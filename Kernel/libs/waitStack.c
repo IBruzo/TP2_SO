@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "waitStack.h"
 
-WaitStack waitQueue;
+WaitStack waitStack;
 
 void initializeWaitStack(WaitStack *stack)
 {

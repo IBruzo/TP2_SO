@@ -252,13 +252,13 @@ void storeKey()
                     return;
                 }
                 // Se asesina el proceso y se lo remueve del Wait Stack, son casos excluyentes
-                else if (peekWaitStack(&waitQueue).cpid != -1)
+                else if (peekWaitStack(&waitStack).cpid != -1)
                 {
-                    PCB *curr = get(PCBTable, peekWaitStack(&waitQueue).cpid);
+                    PCB *curr = get(PCBTable, peekWaitStack(&waitStack).cpid);
                     // El proceso puede estar en el Wait Stack debido a un sleep
                     if (strcmp(curr->name, "sleep") == 0)
                     {
-                        Process pro = peekWaitStack(&waitQueue);
+                        Process pro = peekWaitStack(&waitStack);
                         sys_kill(pro.cpid); // mata hijo
                         if (pro.pid != 4)
                             sys_kill(pro.pid); // mata padre
