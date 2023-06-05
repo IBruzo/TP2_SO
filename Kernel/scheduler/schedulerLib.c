@@ -9,6 +9,13 @@ int dlcSize = 0;
 void buildPCB(char *name, PCB *block, int PID, int PPID, uint64_t RSP, uint64_t RBP, char state, char priority, int *FDArr)
 {
     strncpy(block->name, name, 7);
+    if (strlen(name) < 7)
+    {
+        for (int i = 0; i < 7 - strlen(name) - 1; i++)
+        {
+            strcat(block->name, " ");
+        }
+    }
     block->PID = PID;
     block->PPID = PPID;
     block->RSP = RSP;

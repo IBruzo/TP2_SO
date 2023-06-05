@@ -116,6 +116,7 @@ void *commandHelp(int argc, char **argv)
 	print("\n- TEST_PROC                  /* test de procesos                */");
 	print("\n- TEST_PRIO                  /* test de round robin             */");
 	print("\n- TEST_SYNC                  /* test de sincronizacion          */");
+	print("\n");
 	exit();
 	return NULL;
 }

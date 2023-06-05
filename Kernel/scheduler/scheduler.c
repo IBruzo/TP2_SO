@@ -180,10 +180,10 @@ void ps(char *buffer)
 {
     /* print header */
     char header[100];
-    sprintf(header, "Process | ID  | Prioridad |   Stack   |   Base   |  Context  | State \n");
+    sprintf(header, "Process    |  ID  | Prioridad |   RSP   |   RBP    |  Context  | State \n");
     strcpy(buffer, header);
     char line[100];
-    sprintf(line, "--------------------------------------------------------\n");
+    sprintf(line, "-------------------------------------------------------------------------\n");
     strcat(buffer, line);
 
     Node *pcb = begin(PCBTable);
@@ -192,7 +192,14 @@ void ps(char *buffer)
         if (pcb->data->state != EXITED)
         {
             char *process = (char *)sys_mAlloc(sizeof(char) * 200);
-            sprintf(process, "%s    |  %d  |     %d    |%x     |%x    |  %s  |%s \n", pcb->data->name, pcb->data->PID, pcb->data->priority, (uint32_t)pcb->data->RSP, (uint32_t)pcb->data->RBP, (pcb->data->FD[0] == 0 && pcb->data->FD[1] == 1) ? "FG" : "BG", stateStr(pcb->data->state));
+            if ((uint32_t)pcb->data->RBP == 0)
+            {
+                sprintf(process, "%s    |  %d   |     %d     | %x  | 0x%s |  %s       | %s \n", pcb->data->name, pcb->data->PID, pcb->data->priority, (uint32_t)pcb->data->RSP, "000000", (pcb->data->FD[0] == 0 && pcb->data->FD[1] == 1) ? "FG" : "BG", stateStr(pcb->data->state));
+            }
+            else
+            {
+                sprintf(process, "%s    |  %d   |     %d     | %x  | 0x%x |  %s       | %s \n", pcb->data->name, pcb->data->PID, pcb->data->priority, (uint32_t)pcb->data->RSP, (uint32_t)pcb->data->RBP, (pcb->data->FD[0] == 0 && pcb->data->FD[1] == 1) ? "FG" : "BG", stateStr(pcb->data->state));
+            }
             strcat(buffer, process);
             sys_mFree(process);
         }
