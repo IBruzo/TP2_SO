@@ -482,6 +482,12 @@ void *commandLoop(int argc, char **argv)
 	return NULL;
 }
 
+void commandPhylo(){
+	int pidPhylo=createFGProcess("phylo",phyloProcess,0,NULL);
+	waitPid(pidPhylo);
+	return;
+}
+
 void commandPrintMemState(int unit)
 {
 	char s[1000];
@@ -972,6 +978,9 @@ void handleRegularCommand()
 			break;
 		case FILTER:
 			commandFilter(section);
+			break;
+		case PHYLO:
+			commandPhylo();
 			break;
 		default:
 			printColor("'%s'", ORANGY, command);

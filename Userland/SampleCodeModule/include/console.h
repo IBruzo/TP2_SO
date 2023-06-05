@@ -6,6 +6,7 @@
 #include <tron.h>
 #include <keyboardPiano.h>
 #include <tests.h>
+#include "phylo.h"
 
 extern char *snapshot();
 
@@ -61,6 +62,8 @@ extern char *snapshot();
 #define PS 5862632
 #define LOOP 2089293535
 #define TEST_NO_SYNC 3264647453
+
+#define PHYLO 231712881
 
 void handleCommand();
 void handleKey(char c);
