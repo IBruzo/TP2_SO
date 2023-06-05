@@ -241,7 +241,13 @@ void storeKey()
             char combinedChar = keyboards[language][scancode][index];
             if (combinedChar == 'c' || combinedChar == 'C')
             {
-
+                keyBuffer[bufferCount++] = KILL_PROCESS;
+                PCB *curr = get(PCBTable, peek(&inputQueue));
+                if (curr->PID == 4)
+                {
+                    // print("Beneath an unsinking black sun... through the boundless gloom... our journey continues.\n");
+                    return;
+                }
                 if (peek(&inputQueue) != -1)
                 {
                     //  printList(PCBTable);
@@ -274,7 +280,7 @@ void storeKey()
                     }
                 }
             }
-            if (combinedChar == 'd' || combinedChar == 'D')
+            else if (combinedChar == 'd' || combinedChar == 'D')
             {
                 keyBuffer[bufferCount++] = EOF;
             }
@@ -290,7 +296,6 @@ void storeKey()
     }
     if (bufferCount > 0)
     {
-
         unblock(peek(&inputQueue));
         pop(&inputQueue);
     }

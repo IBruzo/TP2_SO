@@ -262,8 +262,6 @@ void testSemaphoresSync()
 
 void *catpro(int argc, char *argv[])
 {
-	clearScreen();
-	printColor("write here > ", 0x547891);
 	char c = 1;
 	char buff[100];
 	int lastch = 0;
@@ -272,18 +270,19 @@ void *catpro(int argc, char *argv[])
 		c = getchar();
 		if (c == '\n')
 		{
-			newline();
-			buff[lastch] = '\0';
-			printColor("%s\n", 0x547891, buff);
-			lastch = 0;
-			printColor("-", 0x547891);
+			print("\n");
+			buff[lastch++] = '\n';
 		}
 		else if (c != 0)
 		{
-			handleKey(c);
+			print("%c", c);
 			buff[lastch++] = c;
 		}
 	}
+	newline();
+	buff[lastch] = '\0';
+	printColor("%s\n", 0x547891, buff); // <- printing buffer
+
 	newline();
 	exit();
 	return NULL;
@@ -291,7 +290,8 @@ void *catpro(int argc, char *argv[])
 
 void commandCat(char *str)
 {
-
+	clearScreen();
+	printColor("> ", 0x547891);
 	int catpid = createFGProcess("cat", catpro, 0, NULL);
 	waitPid(catpid);
 	return;
@@ -299,8 +299,7 @@ void commandCat(char *str)
 
 static void *wcpro(int argc, char *argv[])
 {
-	clearScreen();
-	printColor("edit here>", 0x547891);
+
 	char c = 1;
 	char buff[100];
 	int lastch = 0;
@@ -345,7 +344,6 @@ static void *wcpro(int argc, char *argv[])
 			buff[lastch] = '\0';
 			printColor("%s\n", 0x547891, buff);
 			lastch = 0;
-			printColor(">", 0x547891);
 		}
 		else if (c != 0)
 		{
@@ -355,18 +353,25 @@ static void *wcpro(int argc, char *argv[])
 	}
 
 	newline();
-	printColor("Lines: %d\n", 0x547891, lineCount);
-	printColor("Words: %d\n", 0x547891, wordCount);
+	printColor("Lines: %d\n", 0x547891, lineCount + 1);
+	printColor("Words: %d\n", 0x547891, wordCount + 1);
 	printColor("Characters: %d\n", 0x547891, charCount);
 
 	exit();
 	return NULL;
 }
 
-static void *filterpro(int argc, char *argv[])
+void commandWc(char *str)
 {
 	clearScreen();
-	printColor("edit here>", 0x547891);
+	printColor("> ", 0x547891);
+	int wcpid = createFGProcess("wc", wcpro, 0, NULL);
+	waitPid(wcpid);
+}
+
+static void *filterpro(int argc, char *argv[])
+{
+
 	char c = 1;
 	char buff[100];
 	int lastch = 0;
@@ -375,17 +380,14 @@ static void *filterpro(int argc, char *argv[])
 		c = getchar();
 		if (c == '\n')
 		{
-			newline();
-			buff[lastch] = '\0';
-			printColor("%s\n", 0x547891, buff);
-			lastch = 0;
-			printColor(">", 0x547891);
+			print("\n");
+			buff[lastch++] = '\n';
 		}
 		else if (c != 0)
 		{
 			// Check if c is a vowel (case-insensitive)
 			char lowerC = tolower(c);
-			handleKey(c);
+			print("%c", c);
 			if (lowerC != 'a' && lowerC != 'e' && lowerC != 'i' && lowerC != 'o' && lowerC != 'u')
 			{
 				buff[lastch++] = c;
@@ -393,21 +395,65 @@ static void *filterpro(int argc, char *argv[])
 		}
 	}
 	newline();
+	buff[lastch] = '\0';
+	printColor("%s\n", 0x547891, buff); // <- printing buffer
+
+	newline();
 	exit();
 	return NULL;
 }
 
 void commandFilter(char *str)
 {
+	clearScreen();
+	printColor("> ", 0x547891);
 	int filterpid = createFGProcess("filter", filterpro, 0, NULL);
 	waitPid(filterpid);
 	return;
 }
 
-void commandWc(char *str)
+void handleBGProcess()
 {
-	int wcpid = createFGProcess("wc", wcpro, 0, NULL);
-	waitPid(wcpid);
+	char leftCommand[128] = {0};
+	char leftSection[128] = {0};
+
+	splitString(consoleBuffer, leftCommand, '&');
+	strcpy(leftCommand, consoleBuffer);
+	splitString(leftCommand, leftSection, ' ');
+	print("received [%s]", leftCommand);
+}
+
+void handlePipe()
+{
+	char leftCommand[128] = {0};
+	char rightCommand[128] = {0};
+	char leftSection[128] = {0};
+	char rightSection[128] = {0};
+
+	splitString(consoleBuffer, rightCommand, '|');
+
+	strcpy(leftCommand, consoleBuffer);
+
+	splitString(leftCommand, leftSection, ' ');
+
+	while (rightCommand[0] == ' ')
+	{
+		strcpy(rightCommand, rightCommand + 1);
+	}
+	splitString(rightCommand, rightSection, ' ');
+
+	toUpper(leftCommand);
+	toUpper(rightCommand);
+
+	int pipeFD = openPipe("superpipe");
+	int writeFD[] = {0, pipeFD};
+	int readFD[] = {pipeFD, 1};
+	int writerPID = createProcess("command1", catpro, 0, NULL, writeFD);
+	waitPid(writerPID);
+	print("\n------------------------\n");
+	int readerPID = createProcess("command2", filterpro, 0, NULL, readFD);
+	waitPid(readerPID);
+	closePipe(pipeFD);
 }
 
 void commandKill(char *str)
@@ -585,43 +631,16 @@ void handleCommand()
 		handlePipe();
 		return;
 	}
+	if (hasAmpersand(consoleBuffer))
+	{
+		handleBGProcess();
+		return;
+	}
 	else
 	{
 		handleRegularCommand();
 		return;
 	}
-}
-
-void handlePipe()
-{
-	char leftCommand[128] = {0};
-	char rightCommand[128] = {0};
-	char leftSection[128] = {0};
-	char rightSection[128] = {0};
-
-	splitString(consoleBuffer, rightCommand, '|');
-
-	strcpy(leftCommand, consoleBuffer);
-
-	splitString(leftCommand, leftSection, ' ');
-
-	while (rightCommand[0] == ' ')
-	{
-		strcpy(rightCommand, rightCommand + 1);
-	}
-	splitString(rightCommand, rightSection, ' ');
-
-	// leftCommand = toUpper(leftCommand);
-	// rightCommand = toUpper(rightCommand);
-
-	int pipeFD = openPipe("superpipe");
-	int writeFD[] = {0, pipeFD};
-	int readFD[] = {pipeFD, 1};
-	int writerPID = createProcess("command1", writer, 0, NULL, writeFD);
-	waitPid(writerPID);
-	int readerPID = createProcess("command2", reader, 0, NULL, readFD);
-	waitPid(readerPID);
-	closePipe(pipeFD);
 }
 
 void handleRegularCommand()
@@ -1047,6 +1066,7 @@ void handleKey(char c)
 		printColor("> $ ", TERMINAL_BLUE, 0);
 		break;
 	}
+
 	case '\t':
 	{
 		appendstring("    ");
@@ -1075,12 +1095,22 @@ void handleKey(char c)
 	}
 	case EOF:
 	{
-		appendstringColor("EOF", 0xFF0303);
-		for (int i = 0; i < 3; i++)
+		appendstringColor("^D", 0xFF0303);
+		for (int i = 0; i < 2; i++)
 		{
-			consoleBuffer[lastChar + i] = -1;
+			consoleBuffer[lastChar + i] = ' ';
 		}
-		lastChar += 3;
+		lastChar += 2;
+		break;
+	}
+	case KILL_PROCESS:
+	{
+		appendstringColor("^C", 0xFF0303);
+		for (int i = 0; i < 2; i++)
+		{
+			consoleBuffer[lastChar + i] = ' ';
+		}
+		lastChar += 2;
 		break;
 	}
 	default:

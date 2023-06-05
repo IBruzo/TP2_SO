@@ -68,6 +68,7 @@ void newline();
 void backspace();
 void changeFontSize(int newSize);
 void drawCursor(int color);
+void updateCursor();
 void restartCursor();
 void refreshCursor();
 
@@ -77,6 +78,7 @@ int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 
 // pipe functions
 int hasPipe(char *str);
+int hasAmpersand(char *str);
 void *writer(int argc, char **argv);
 void *reader(int argc, char **argv);
 

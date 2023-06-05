@@ -3,7 +3,7 @@
 #include <library.h>
 #define CURSOR_TICKS 9
 
-static int fontsize = 2;
+static int fontsize = 1;
 static int cursorX = 4; // por que estaba la hora
 static int cursorY = 4;
 
@@ -216,7 +216,7 @@ void floatToString(float number, char *buffer, int digits)
 	return;
 }
 
-static void updateCursor()
+void updateCursor()
 {
 	if (cursorX + fontsize * 8 >= 1000)
 	{
@@ -234,16 +234,17 @@ void appendcharColor(char character, int color)
 	if (character == '\n')
 	{
 		newline();
-		return;
 	}
 	// si es output a foreground se renderiza
-	if (getOutputFD(getPid()) == 1)
+	if (getOutputFD(getPid()) != -1)
+	{
 		drawCursor(CURRENT_CURSOR_COLOR);
+	}
 
 	putcharSpecifics(character, cursorX, cursorY, fontsize, color);
 
 	// si es output a foreground se actualiza
-	if (getOutputFD(getPid()) == 1)
+	if (getOutputFD(getPid()) != -1)
 	{
 		updateCursor();
 		drawCursor(FONTCOLOR);
@@ -464,6 +465,12 @@ char *itoa(int i, char *strout, int base)
 {
 	char *str = strout;
 	int digit, sign = 0;
+	if (i == 0)
+	{
+		*str++ = '0';
+		*str = '\0';
+		return strout;
+	}
 	if (i < 0)
 	{
 		sign = 1;
@@ -740,6 +747,19 @@ int createBGProcess(char *name, void *(*f)(int, char **), int argc, char **argv)
 	return createProcess(name, f, argc, argv, BGFD);
 }
 
+int hasAmpersand(char *str)
+{
+	while (*str)
+	{
+		if (*str == '&')
+		{
+			return 1;
+		}
+		str++;
+	}
+	return 0;
+}
+
 int hasPipe(char *str)
 {
 	while (*str != '\0')
@@ -792,7 +812,7 @@ void filter(char *str, char *buffer)
 
 void *writer(int argc, char **argv)
 {
-	print("AAAAAAAAAAAYUDAME LOCOOOo!\n");
+	print("\nAAAAAAAAAAAYUDAME LOCOOOo!\n");
 	exit();
 	return NULL;
 }

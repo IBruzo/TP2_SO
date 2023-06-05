@@ -30,6 +30,7 @@
 #define CTRL_PRESSED 0x1D
 #define CTRL_RELEASED 0x9D
 #define EOF -1
+#define KILL_PROCESS -2
 
 extern unsigned char getkeyScancode();
 extern int keyboardActive();

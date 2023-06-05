@@ -109,6 +109,11 @@ int put_letter(char letter, uint32_t x, uint32_t y, uint32_t tam, uint32_t color
 	{
 		return a + tam * ANCHO_LETRA_PIX;
 	}
+	if (letter == '\n')
+	{
+		return 0;
+	}
+
 	// extended ascii table ñ y Ñ en el vector de fonts
 
 	for (int i = 0; i < 32; i++)
@@ -118,7 +123,7 @@ int put_letter(char letter, uint32_t x, uint32_t y, uint32_t tam, uint32_t color
 			y += tam;
 			a = x;
 		}
-		char mask = 0x01;
+		unsigned char mask = 0x01;
 		for (int j = 0; j < 8; j++)
 		{
 			((uint8_t)font[i + (start * 32)] & (uint8_t)mask) >> j ? put_square(a, y, tam, color) : 0;
