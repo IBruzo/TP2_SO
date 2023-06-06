@@ -30,9 +30,9 @@ void mem(char *buffer, int unit)
   char memStateString[150];
   int read;
 
-  int kibiConvert = 1024 * 1024;
   if (unit == 0)
   { // mb
+    int kibiConvert = 1024 * 1024;
     total = (int)memSize / kibiConvert;
     allocated = allocatedBytes / kibiConvert;
     free = (total - allocated);

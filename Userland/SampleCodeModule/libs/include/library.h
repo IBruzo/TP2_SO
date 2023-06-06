@@ -87,10 +87,6 @@ int hasAmpersand(char *str);
 void *writer(int argc, char **argv);
 void *reader(int argc, char **argv);
 
-// new commands
-int wc(char *str);
-void filter(char *str, char *buffer);
-
 int sprintf(char *buffer, size_t size, char *foundation, ...);
 
 #endif

@@ -123,10 +123,9 @@ list_t *getCurrentProcess()
 void printRoute()
 {
     Iterator *routeIt = dlcCreateIterator(&route);
-    list_t *processIt;
     for (int i = 0; i < dlcSize + 1; i++)
     {
-        processIt = dlcNext(routeIt);
+        list_t *processIt = dlcNext(routeIt);
         print("||  PID  [%d]  ||  ", processIt->data);
     }
 }

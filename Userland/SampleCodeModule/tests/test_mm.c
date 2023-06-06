@@ -19,8 +19,7 @@ uint64_t test_mm(uint64_t argc, char *argv[])
 {
 
   mm_rq mm_rqs[MAX_BLOCKS];
-  uint8_t rq;
-  uint32_t total;
+
   uint64_t max_memory;
 
   if (argc != 1)
@@ -31,6 +30,8 @@ uint64_t test_mm(uint64_t argc, char *argv[])
 
   while (1)
   {
+    uint8_t rq;
+    uint32_t total;
     rq = 0;
     total = 0;
     // Request as many blocks as we can

@@ -297,11 +297,14 @@ char *strcpyR(char *destination, const char *source)
 
 void strncat(char *destination, const char *origin, int n)
 {
-	int i, j;
+	int i;
 	for (i = 0; destination[i] != '\0'; i++)
 		;
-	for (j = 0; origin[j] != '\0' && j < n; j++)
+	int j;
+	for (j = 0; j < n && origin[j] != '\0'; j++)
+	{
 		destination[i + j] = origin[j];
+	}
 	destination[i + j] = '\0';
 }
 
@@ -313,7 +316,7 @@ void strcat(char *destination, const char *origin)
 char *itoa(int i, char *strout, int base)
 {
 	char *str = strout;
-	int digit, sign = 0;
+	int sign = 0;
 	if (i == 0)
 	{
 		*str++ = '0';
@@ -327,7 +330,7 @@ char *itoa(int i, char *strout, int base)
 	}
 	while (i)
 	{
-		digit = i % base;
+		int digit = i % base;
 		*str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
 		i = i / base;
 		str++;
@@ -351,18 +354,16 @@ int strlen(const char *str)
 
 char *strrev(char *str)
 {
-	int i;
 	int len = 0;
-	char c;
 	if (!str)
 		return 0;
 	while (str[len] != '\0')
 	{
 		len++;
 	}
-	for (i = 0; i < (len / 2); i++)
+	for (int i = 0; i < (len / 2); i++)
 	{
-		c = str[i];
+		char c = str[i];
 		str[i] = str[len - i - 1];
 		str[len - i - 1] = c;
 	}

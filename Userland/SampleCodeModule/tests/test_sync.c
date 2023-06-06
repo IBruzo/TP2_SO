@@ -67,7 +67,6 @@ void *my_process_inc_no_sem(int argc, char *argv[])
 {
   uint64_t n;
   int8_t inc;
-  int8_t use_sem;
 
   if (argc != 3)
     return NULL;
@@ -76,7 +75,7 @@ void *my_process_inc_no_sem(int argc, char *argv[])
     return NULL;
   if ((inc = satoi(argv[1])) == 0)
     return NULL;
-  if ((use_sem = satoi(argv[2])) < 0)
+  if ((satoi(argv[2])) < 0)
     return NULL;
 
   uint64_t i;
@@ -91,7 +90,7 @@ void *my_process_inc_no_sem(int argc, char *argv[])
 }
 
 void *test_sync(int argc, char *argv[])
-{ //{n, use_sem, 0}
+{
 
   uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
 

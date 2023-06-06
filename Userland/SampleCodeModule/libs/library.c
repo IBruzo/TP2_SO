@@ -392,10 +392,9 @@ void putcharSpecifics(char character, int x, int y, int size, int color)
 // Imprime string con parametros especificos
 void putstringSpecifics(char *string, int x, int y, int size, int color)
 {
-	int accum;
 	for (int i = 0; string[i] != 0; i++)
 	{
-		accum = i * size * 8;
+		int accum = i * size * 8;
 		putcharSpecifics(string[i], x + accum, y, size, color);
 	}
 }
@@ -526,7 +525,7 @@ void strcpy(char *destination, const char *origin)
 void strncpy(char *destination, const char *origin, int n)
 {
 	int i;
-	for (i = 0; origin[i] != '\0' && i < n; i++)
+	for (i = 0; i < n && origin[i] != '\0'; i++)
 		destination[i] = origin[i];
 	destination[i] = '\0';
 }
@@ -536,7 +535,6 @@ char *strrev(char *str)
 {
 	int i;
 	int len = 0;
-	char c;
 	if (!str)
 		return 0;
 	while (str[len] != '\0')
@@ -545,6 +543,7 @@ char *strrev(char *str)
 	}
 	for (i = 0; i < (len / 2); i++)
 	{
+		char c;
 		c = str[i];
 		str[i] = str[len - i - 1];
 		str[len - i - 1] = c;
@@ -556,7 +555,7 @@ char *strrev(char *str)
 char *itoa(int i, char *strout, int base)
 {
 	char *str = strout;
-	int digit, sign = 0;
+	int sign = 0;
 	if (i == 0)
 	{
 		*str++ = '0';
@@ -570,6 +569,7 @@ char *itoa(int i, char *strout, int base)
 	}
 	while (i)
 	{
+		int digit;
 		digit = i % base;
 		*str = (digit > 9) ? ('A' + digit - 10) : '0' + digit;
 		i = i / base;
@@ -889,37 +889,12 @@ int hasPipe(char *str)
 	return 0;
 }
 
-// funcion WC pero de libreria
-int wc(char *str)
-{
-	return (strlen(str) * fontsize * 8) / 1024 + 1;
-}
-
 // funcion que convierte un char a minuscula
 char toLower(char c)
 {
 	if (c >= 'A' && c <= 'Z')
 		c = c + 32;
 	return c;
-}
-
-// funcion que filtra las vocales de un string
-void filter(char *str, char *buffer)
-{
-	int len = strlen(str);
-	int j = 0;
-
-	for (int i = 0; i < len; i++)
-	{
-		if (toLower(str[i]) != 'a' && toLower(str[i]) != 'e' &&
-			toLower(str[i]) != 'i' && toLower(str[i]) != 'o' &&
-			toLower(str[i]) != 'u')
-		{
-			buffer[j++] = str[i];
-		}
-	}
-
-	buffer[j] = '\0';
 }
 
 // sleep de la libreria

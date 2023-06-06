@@ -43,16 +43,10 @@ void switchBit(uint8_t *ch, int bitPos)
 // Switchea el valor del bit que se encuentra en position dentro del byte apuntado por byteDir
 void switchBits(int posArr, int bitPos, int size)
 {
-    unsigned char mask = 128 >> bitPos;
     for (int i = bitPos; i < bitPos + size; i++)
     {
         int arrStep = i / 8;
-        if (i % 8 == 0)
-        {
-            mask = 128;
-        }
         switchBit(&bitMap[posArr + arrStep], 7 - i % 8);
-        mask = mask >> 1;
     }
     return;
 }

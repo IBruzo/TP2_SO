@@ -154,9 +154,9 @@ int semPost(int semIndex)
 
     sem->value++;
 
-    int pid = 0;
     if (sem->queueSize > 0)
     {
+        int pid = 0;
         if ((pid = dequeueProcess(sem)) == -1)
         {
             printSemQueue(semIndex);

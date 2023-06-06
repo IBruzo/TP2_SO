@@ -12,8 +12,6 @@ typedef struct pipe
     size_t bufferSize;
     size_t readIndex;
     size_t writeIndex;
-    int readSem;  // Semaphore for read synchronization
-    int writeSem; // Semaphore for write synchronization
 } pipe_t;
 
 typedef struct
@@ -23,7 +21,6 @@ typedef struct
     size_t nameSize;
     uint64_t hashName;
     int used;
-    int mutex;
 } pipeEntry_t;
 
 pipeEntry_t pipeTable[MAX_PIPES];
@@ -55,6 +52,16 @@ int createPipe(char *name)
     {
         if (pipeTable[i].used == 0)
         {
+
+            char readEndName[MAX_PIPE_NAME_SIZE];
+            strcpy(readEndName, name);
+            strcat(readEndName, "R");
+            pipeTable[i].pipe.sem[0] = semCreate(readEndName, 1);
+
+            char writeEndName[MAX_PIPE_NAME_SIZE];
+            strcpy(writeEndName, name);
+            strcat(writeEndName, "W");
+            pipeTable[i].pipe.sem[1] = semCreate(readEndName, 1);
 
             pipeTable[i].pipe.pipePID = i;
             pipeTable[i].pipe.readIndex = 0;
@@ -90,8 +97,7 @@ int pipeOpen(char *name)
         fd = createPipe(name); // creo el pipe
 
         if (fd == -1)
-        { // si no se pudo crear
-            // semPost(pipeTable[fd].mutex);
+        {
             return -1;
         }
     }
@@ -107,6 +113,11 @@ int pipeClose(int fd)
         return -1;
     }
 
+    // Cierro los semaforos de lectura y escritura
+    semClose(getSemName(pipeTable[fd].pipe.sem[0]));
+    semClose(getSemName(pipeTable[fd].pipe.sem[1]));
+
+    // Libero el lugar en la tabla de pipes
     pipeTable[fd].used = 0;
 
     return 0;
@@ -126,6 +137,7 @@ int pipeRead(int fd, char *buf, int count)
     {
         return -1;
     }
+    semWait(pipeTable[fd].pipe.sem[0]);
 
     int rIndex = pipeTable[fd].pipe.readIndex;
     int wIndex = pipeTable[fd].pipe.writeIndex;
@@ -140,6 +152,7 @@ int pipeRead(int fd, char *buf, int count)
     }
 
     pipeTable[fd].pipe.readIndex = rIndex;
+    semPost(pipeTable[fd].pipe.sem[0]);
 
     return i;
 }
@@ -154,6 +167,8 @@ int pipeWrite(int fd, const char *buf)
     {
         return -1;
     }
+    semWait(pipeTable[fd].pipe.sem[1]);
+
     int count = strlen(buf);
     int rIndex = pipeTable[fd].pipe.readIndex;
     int wIndex = pipeTable[fd].pipe.writeIndex;
@@ -168,6 +183,7 @@ int pipeWrite(int fd, const char *buf)
     }
 
     pipeTable[fd].pipe.writeIndex = wIndex;
+    semPost(pipeTable[fd].pipe.sem[1]);
 
     return i;
 }

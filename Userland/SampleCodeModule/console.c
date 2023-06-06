@@ -939,10 +939,10 @@ void handleRegularCommand()
 	char *command = toUpper(consoleBuffer);
 	splitString(command, section, ' ');
 	int hashedCommand = hash(command);
-	int commandPID;
 	// int hashedSection = hash(section);
 	if (section[0] == 0)
 	{
+		int commandPID;
 		switch (hashedCommand)
 		{
 		case HELP:
