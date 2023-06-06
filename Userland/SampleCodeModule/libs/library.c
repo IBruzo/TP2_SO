@@ -957,3 +957,91 @@ void filterSpaces(char *str)
 
 	*p = '\0';
 }
+
+static void getStringToPrint(char str[], int strSize, char *foundation, va_list vl)
+{
+
+	int i = 0, j = 0;
+	// el buffer final y el buffer temporal para las conversiones numericas
+	char buff[4096] = {0}, tmp[1000];
+	// buffer para el string
+	char *str_arg;
+
+	// mientras haya caracteres y argumentos
+	while (foundation && foundation[i])
+	{
+		// caso especial de que encuentre un porcentaje que representa la insercion de una variable
+		if (foundation[i] == '%')
+		{
+			i++;
+			switch (foundation[i])
+			{
+			// caso char
+			case 'c':
+			{
+				// se toma el argumento que se presume de tipo char y se lo castea para guardarlo
+				buff[j] = (char)va_arg(vl, int);
+				j++;
+				break;
+			}
+			// caso integer
+			case 'd':
+			{
+				// se toma un int, se lo pasa a decimal y luego a string guardandose en tmp
+				itoa(va_arg(vl, int), tmp, 10);
+				// se copia tmp al buffer
+				strcpy(&buff[j], tmp);
+				// se aumenta la posicion del string final
+				j += strlen(tmp);
+				break;
+			}
+			// caso hexa
+			case 'x':
+			{
+				// identico al previo pero con base 16
+				itoa(va_arg(vl, int), tmp, 16);
+				strcpy(&buff[j], tmp);
+				j += strlen(tmp);
+				break;
+			}
+			// caso octal
+			case 'o':
+			{
+				// identico al anterior pero con base 8
+				itoa(va_arg(vl, int), tmp, 8);
+				strcpy(&buff[j], tmp);
+				j += strlen(tmp);
+				break;
+			}
+			// caso string
+			case 's':
+			{
+				// no se necesita conversion entonces se guarda directo
+				str_arg = va_arg(vl, char *);
+				strcpy(&buff[j], str_arg);
+				j += strlen(str_arg);
+				break;
+			}
+			}
+			// caso donde no hay un porcentaje y se continua el string como si nada
+		}
+		else
+		{
+			buff[j] = foundation[i];
+			j++;
+		}
+		i++;
+	}
+
+	strcpy(str, buff);
+	str[j] = 0;
+}
+
+int sprintf(char *buffer, size_t size, char *foundation, ...)
+{
+	va_list args;
+	va_start(args, foundation);
+	getStringToPrint(buffer, size, foundation, args);
+	va_end(args);
+	return size;
+}

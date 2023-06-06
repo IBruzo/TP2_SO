@@ -91,4 +91,6 @@ void *reader(int argc, char **argv);
 int wc(char *str);
 void filter(char *str, char *buffer);
 
+int sprintf(char *buffer, size_t size, char *foundation, ...);
+
 #endif
