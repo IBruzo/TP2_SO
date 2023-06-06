@@ -298,13 +298,15 @@ void updateCursor()
 	}
 }
 
+// Mueve la posicion x del cursor hacia atras
+static void backspaceSpecial()
+{
+	cursorX = (1024 + 4) - 1024 * fontsize;
+}
 // Concatena a la posicion actual un caracter con color dado
 void appendcharColor(char character, int color)
 {
-	if (character == '\n' && getOutputFD(getPid()) != -1)
-	{
-		newline();
-	}
+
 	// si es output a foreground se renderiza
 	if (getOutputFD(getPid()) != -1)
 	{
@@ -312,7 +314,13 @@ void appendcharColor(char character, int color)
 	}
 
 	putcharSpecifics(character, cursorX, cursorY, fontsize, color);
-
+	if ((character == -1 || character == '\n') && getOutputFD(getPid()) != -1)
+	{
+		newline();
+		backspaceSpecial();
+		drawCursor(FONTCOLOR);
+		return;
+	}
 	// si es output a foreground se actualiza
 	if (getOutputFD(getPid()) != -1)
 	{
