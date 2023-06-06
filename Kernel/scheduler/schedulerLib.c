@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "schedulerLib.h"
 
+/* Libreria de Scheduling */
+
 int dlcSize = 0;
 
 /* --------------------------------------- PCB FUNCTIONS --------------------------------------- */

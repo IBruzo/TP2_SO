@@ -4,6 +4,8 @@
 #include <dlcList.h>
 #include "lib.h"
 
+/* Lista circular doblemente enlazada */
+
 list_t route;
 
 void list_init(list_t *list)

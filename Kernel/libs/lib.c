@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "lib.h"
 
+/* Libreria de Kernel */
+
 static int fontsize = 1;
 static int cursorX = 4;
 static int cursorY = 4;

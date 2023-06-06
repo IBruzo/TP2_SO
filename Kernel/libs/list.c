@@ -5,6 +5,8 @@
 #include <assert.h>
 #include "memoryManager.h"
 
+/* Lista */
+
 void newList(List *list)
 {
     list->head = NULL;

@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "scheduler.h"
 
+/* Scheduler con Round Robin */
+
 list_t *current;
 Iterator *iterator;
 int flag = 1;

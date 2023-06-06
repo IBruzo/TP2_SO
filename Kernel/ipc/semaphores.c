@@ -10,8 +10,8 @@ typedef struct
     int lock;
     int value;
     int size;
-    int front; // Index of the first element in the queue
-    int rear;  // Index of the last element in the queue
+    int front; // Index del primer elemento en la cola
+    int rear;  // Index del ultimo elemento en la cola
     int queueSize;
     int pidQueue[MAX_SIZE];
 } sem_t;
@@ -39,7 +39,7 @@ int semCreate(char *name, int initValue)
     int pos;
     if ((pos = findAvailableSpace()) != -1)
     {
-        // Initialize the semaphore structure
+        // Inicializamos la estructura del semaforo
         strcpy(semTable[pos].sem.name, name);
         semTable[pos].sem.value = initValue;
         semTable[pos].sem.lock = 0;
@@ -211,7 +211,7 @@ static int findAvailableSpace()
             return i;
         }
     }
-    return -1; // No more space to create semaphores.
+    return -1;
 }
 
 int findSem(char *name)
@@ -231,7 +231,7 @@ int enqueueProcess(int pid, sem_t *sem)
 {
     if (sem->queueSize >= MAX_SIZE)
     {
-        return -1; // Queue is full
+        return -1;
     }
 
     sem->rear = (sem->rear + 1) % MAX_SIZE;
@@ -245,7 +245,7 @@ int dequeueProcess(sem_t *sem)
 {
     if (sem->queueSize == 0)
     {
-        return -1; // Queue is empty
+        return -1;
     }
 
     int pid = sem->pidQueue[sem->front];

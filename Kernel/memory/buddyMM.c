@@ -1,8 +1,9 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #ifndef BITMAP_MM
-
 #include "memoryManager.h"
+
+/* Buddy Memory Manager */
 
 #define HEADER_SIZE 8
 #define MIN_ALLOC_LOG2 12 // 4kibibyte
