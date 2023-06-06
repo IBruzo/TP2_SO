@@ -1,44 +1,50 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "phylo.h"
 
 static int philosophersCount = 0;
 static int state[MAX_PHYL] = {0};
 static int phyloPid[MAX_PHYL] = {0};
 static char processBuffer[3] = {0};
-static char * semNames[MAX_PHYL]= {"s0", "s1","s2","s3","s4","s5","s6","s7","s8","s9"};
+static char *semNames[MAX_PHYL] = {"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9"};
 
 int queue[MAX_PHYL];
 int queueSize = 0;
 
-#define LEFT (i + philosophersCount - 1) % philosophersCount
-#define RIGHT (i + 1) % philosophersCount
+#define LEFT_PHYLO (i + philosophersCount - 1) % philosophersCount
+#define RIGHT_PHYLO (i + 1) % philosophersCount
 
-void think(){
+void think()
+{
     makeshiftSleep(15);
 }
 
-void eat(){
+void eat()
+{
     makeshiftSleep(15);
 }
 
-void * phylo(int argc, char * argv[]){
+void *phylo(int argc, char *argv[])
+{
 
-    semOpen("mutex",1);
-    while(1){
-        think(); //think
+    semOpen("mutex", 1);
+    while (1)
+    {
+        think(); // think
         takeForks(argc);
-        eat(); //eat
+        eat(); // eat
         putForks(argc);
-        printState();    
+        printState();
     }
-    
+
     exit();
     return NULL;
 }
 
-
 void *phyloProcess(int argc, char *argv[])
 {
- char c = 1;
+    char c = 1;
     print("WELCOME TO THE DINING PHILOSOPHERS\n");
     print("press a--> to add a philosophers\n");
     print("press r--> to remove a philosophers\n");
@@ -56,12 +62,12 @@ void *phyloProcess(int argc, char *argv[])
 
     resetState();
     semOpen("mutex", 1);
-    semOpen("countMutex",1);    
-    
+    semOpen("countMutex", 1);
 
-    for (int i = 0; i < INIT_PHYL; i++){
+    for (int i = 0; i < INIT_PHYL; i++)
+    {
         addPhylo();
-       queue[i] = -1; 
+        queue[i] = -1;
     }
 
     while (c != 'q')
@@ -74,7 +80,9 @@ void *phyloProcess(int argc, char *argv[])
             if (addPhylo() == -1)
             {
                 printColor("Error adding phylosopher.\n", ROJO);
-            }else{
+            }
+            else
+            {
                 printColor("New phylosopher added.\n", AMARILLO);
             }
             break;
@@ -82,7 +90,9 @@ void *phyloProcess(int argc, char *argv[])
             if (removePhylo() == -1)
             {
                 printColor("Error removing philosopher.\n", ROJO);
-            }else{
+            }
+            else
+            {
                 printColor("philosophers removed.\n", AMARILLO);
             }
             break;
@@ -102,16 +112,17 @@ void *phyloProcess(int argc, char *argv[])
     return NULL;
 }
 
-//crea proceso
+// crea proceso
 int addPhylo()
 {
     semWait("countMutex");
-    if(philosophersCount >= MAX_PHYL){
+    if (philosophersCount >= MAX_PHYL)
+    {
         semPost("countMutex");
         return -1;
     }
-  
-    phyloPid[philosophersCount] = createFGProcess(processBuffer,phylo,philosophersCount,NULL);
+
+    phyloPid[philosophersCount] = createFGProcess(processBuffer, phylo, philosophersCount, NULL);
 
     semOpen(semNames[philosophersCount], 1);
     philosophersCount++;
@@ -120,54 +131,62 @@ int addPhylo()
 }
 int removePhylo()
 {
-     semWait("countMutex");
-     if(philosophersCount <= MIN_PHYL){
+    semWait("countMutex");
+    if (philosophersCount <= MIN_PHYL)
+    {
         semPost("countMutex");
         return -1;
     }
-    semClose(semNames[philosophersCount-1]);
+    semClose(semNames[philosophersCount - 1]);
 
-    kill(phyloPid[philosophersCount-1]);
+    kill(phyloPid[philosophersCount - 1]);
     philosophersCount--;
     semPost("countMutex");
     return 1;
 }
 
-void endtable(){
-     for(int i = 0; i < philosophersCount; i++){
+void endtable()
+{
+    for (int i = 0; i < philosophersCount; i++)
+    {
         kill(phyloPid[i]);
     }
 }
 
-
 void printState()
-{   
+{
 
-     for(int i = 0; i < philosophersCount; i++){
-        if(EATING == state[i]){
+    for (int i = 0; i < philosophersCount; i++)
+    {
+        if (EATING == state[i])
+        {
             print("E ");
         }
-        else{
+        else
+        {
             print(". ");
         }
     }
     print("\n");
 }
 
-
-void putForks(int i){
+void putForks(int i)
+{
     semWait("mutex");
     state[i] = THINKING;
 
     int j;
-    for(j=0; j < queueSize; j++){
+    for (j = 0; j < queueSize; j++)
+    {
         int k = queue[j];
-        
-        if(state[k] == WAITING && state[(k + philosophersCount - 1) % philosophersCount] != EATING && state[(k + 1) % philosophersCount] != EATING){
+
+        if (state[k] == WAITING && state[(k + philosophersCount - 1) % philosophersCount] != EATING && state[(k + 1) % philosophersCount] != EATING)
+        {
             state[k] = EATING;
             semPost(semNames[k]);
             int iter;
-            for(iter = j; iter < queueSize - 1; iter++){
+            for (iter = j; iter < queueSize - 1; iter++)
+            {
                 queue[iter] = queue[iter + 1];
             }
             queueSize--;
@@ -177,34 +196,39 @@ void putForks(int i){
     semPost("mutex");
 }
 
-
-void takeForks(int i){
+void takeForks(int i)
+{
     semWait("mutex");
     state[i] = WAITING;
-    
+
     queue[queueSize++] = i;
 
     test(i);
 
-    if(state[i] != EATING){
+    if (state[i] != EATING)
+    {
         semPost("mutex");
         semWait(semNames[i]);
     }
-    else{
+    else
+    {
         queueSize--;
         semPost("mutex");
     }
-
 }
 
-void resetState(){
-    for(int i = 0; i < MAX_PHYL; i++){
+void resetState()
+{
+    for (int i = 0; i < MAX_PHYL; i++)
+    {
         state[i] = THINKING;
     }
 }
 
-void test(int i){
-    if(state[i] == WAITING && state[LEFT] != EATING && state[RIGHT] != EATING){
+void test(int i)
+{
+    if (state[i] == WAITING && state[LEFT_PHYLO] != EATING && state[RIGHT_PHYLO] != EATING)
+    {
         state[i] = EATING;
         semPost(semNames[i]);
     }

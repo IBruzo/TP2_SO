@@ -252,7 +252,7 @@ static void *catPro(int argc, char *argv[])
 	while (c != (char)EOF)
 	{
 		c = getchar();
-		if (isalnum(c) || '\n' == c || ' ' == c || c == EOF)
+		if (isalnum(c) || '\n' == c || ' ' == c || c == (char)EOF)
 		{
 			print("%c", c);
 		}

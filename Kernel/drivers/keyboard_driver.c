@@ -262,10 +262,10 @@ void storeKey()
 
 void handleCtrlC()
 {
-    keyBuffer[bufferCount++] = KILL_PROCESS;
+    keyBuffer[bufferCount++] = KILL_PROCESS; // carga el codigo de un ctrl c a el buffer para poder imprimirlo bien
     PCB *curr = get(PCBTable, peek(&inputStack));
     // Se evita el asesinato de la shell
-    if (curr->PID == 4)
+    if (curr->PID == 4) // si se intenta matar a la shell no le deja
     {
         // print("Beneath an unsinking black sun... through the boundless gloom... our journey continues.\n");
         return;
@@ -273,8 +273,8 @@ void handleCtrlC()
     // Se asesina el proceso y se lo remueve del Input Stack
     if (peek(&inputStack) != -1)
     {
-        sys_kill(peek(&inputStack));
-        pop(&inputStack);
+        sys_kill(peek(&inputStack)); // mata al q esta usando el teclado
+        pop(&inputStack);            // lo saca del stack para seguir el orden de las cosas
         forceTick();
         return;
     }
@@ -285,10 +285,10 @@ void handleCtrlC()
         // El proceso puede estar en el Wait Stack debido a un sleep
         if (strcmp(curr->name, "sleep") == 0)
         {
-            Process pro = peekWaitStack(&waitStack);
-            sys_kill(pro.cpid); // mata hijo
-            if (pro.pid != 4)
-                sys_kill(pro.pid); // mata padre
+            Process pro = peekWaitStack(&waitStack); // lo guardo antes porque sys_kill hace un pop del wait stack
+            sys_kill(pro.cpid);                      // mata hijo
+            if (pro.pid != 4)                        // si el padre es la shell no lo mata
+                sys_kill(pro.pid);                   // mata padre
             forceTick();
         }
         // Caso normal
@@ -302,10 +302,9 @@ void handleCtrlC()
     {
         Iterator *it = dlcCreateIterator(&route);
         int iter = 0;
-        list_t *aux;
         while (iter < dlcSize + 1)
         {
-            aux = dlcNext(it);
+            list_t *aux = dlcNext(it);
             PCB *curr = get(PCBTable, aux->data);
             if (curr->FD[0] == 1)
             {

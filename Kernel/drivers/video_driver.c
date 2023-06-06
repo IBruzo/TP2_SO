@@ -55,19 +55,13 @@ void put_pixel(uint32_t x, uint32_t y, uint32_t color)
 	screen[pixel_offset + 2] = (uint8_t)((color >> 16) & 0xFF); // R
 }
 
-/**
- * @brief los cuadrados se arman de arriba a la izq hacia abajo a la derecha
- * @param x pos en x
- * @param y pos en y
- * @param tam tamaño de 1 lado
- * @param color
- */
+// Renderizacion de cuadrados, se construyen de arriba a la izq hacia abajo a la derecha
 void put_square(uint32_t x, uint32_t y, uint32_t tam, uint32_t color)
 {
 	put_rectangle(x, y, tam, tam, color);
 }
 
-// esta optimizado por recomendacion de osdev(un poco cambiado)->https://wiki.osdev.org/Drawing_In_Protected_Mode#Drawing_Text
+// Esta optimizado por recomendacion de osdev(un poco cambiado)->https://wiki.osdev.org/Drawing_In_Protected_Mode#Drawing_Text
 void put_rectangle(uint32_t x, uint32_t y, uint32_t tamX, uint32_t tamY, uint32_t color)
 {
 	uint8_t *screen = (uint8_t *)(uint64_t)info->framebuffer;
@@ -84,8 +78,6 @@ void put_rectangle(uint32_t x, uint32_t y, uint32_t tamX, uint32_t tamY, uint32_
 		pixel_offset += info->pitch;
 	}
 }
-
-// entre "A" 65 - 33
 
 /** parametros:
 	@param letra
@@ -121,23 +113,20 @@ int put_letter(char letter, uint32_t x, uint32_t y, uint32_t tam, uint32_t color
 		unsigned char mask = 0x01;
 		for (int j = 0; j < 8; j++)
 		{
-			((uint8_t)font[i + (start * 32)] & (uint8_t)mask) >> j ? put_square(a, y, tam, color) : 0;
+			(((uint8_t)font[i + (start * 32)] & (uint8_t)mask) >> j) ? put_square(a, y, tam, color) : 0;
 			a += tam;
 			mask = mask << 1;
 		}
 	}
 	return a + tam; // posicion horizontal final
 }
-/**
- * @brief encadena letras con put letter moviendose en x por lo q ocupa un caracter
- *
- */
+
+// Encadena letras con put letter moviendose en x por lo que ocupa un caracter
 void put_word(char *string, uint32_t x, uint32_t y, uint32_t tam, uint32_t color)
 {
-	int accum;
 	for (int i = 0; string[i] != 0; i++)
 	{
-		accum = i * tam * ANCHO_LETRA_PIX;
+		int accum = i * tam * ANCHO_LETRA_PIX;
 		put_letter(string[i], x + accum, y, tam, color);
 	}
 }
