@@ -21,7 +21,8 @@ static uint8_t *max_ptr;
 
 size_t allocatedBytes = 0;
 
-void mem(char *buffer, int unit) // crea string de memoria total, ocupada y libre
+// Crea string de memoria total, ocupada y libre
+void mem(char *buffer, int unit)
 {
   int total;
   int allocated;
@@ -30,7 +31,6 @@ void mem(char *buffer, int unit) // crea string de memoria total, ocupada y libr
   int read;
 
   int kibiConvert = 1024 * 1024;
-  // size_t gibiConvert = 1024*1024*1024;
   if (unit == 0)
   { // mb
     total = (int)memSize / kibiConvert;

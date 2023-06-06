@@ -67,7 +67,7 @@ void *phyloProcess(int argc, char *argv[])
     while (c != 'q')
     {
         c = getchar();
-        c = tolower(c);
+        c = toLower(c);
         switch (c)
         {
         case 'a':

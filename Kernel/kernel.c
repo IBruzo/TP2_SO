@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <lib.h>
 #include <moduleLoader.h>
-
 #include <interrupts.h>
 #include <sound_driver.h>
 #include <video_driver.h>
@@ -47,32 +46,30 @@ int main()
 	initSems();
 	initPipes();
 	initMemoryManager(heapAddress, MAX_HEAP_SIZE);
-	initializeWaitStack(&waitQueue);
-	initStack(&inputQueue);
+	initializeWaitStack(&waitStack);
+	initStack(&inputStack);
 
 	newList(PCBTable);
 
 	initScheduler();
 
-	/* --------------- Creating Kernel PCB -------------- */
+	/* --------------- Creacion del Proceso Centinela/Kernel -------------- */
 	PCB kernelPCB;
 	int kernelFD[] = {0, 1};
-	buildPCB("kernelProcess", &kernelPCB, KERNEL_PID, KERNEL_PID, 0, 0, BLOCKED, 1, kernelFD);
+	buildPCB("Alpha", &kernelPCB, KERNEL_PID, KERNEL_PID, 0, 0, BLOCKED, 1, kernelFD);
 	insert(PCBTable, &kernelPCB);
 
-	/* ------------ Creating IDLE Process ---------------- */
+	/* --------------------- Creacion del Proceso IDLE -------------------- */
 	// Reserva de memoria para el Stack
 	uint64_t *idleMemStart = (uint64_t *)sys_mAlloc(PAGE_SIZE);
-
 	// Creacion de PCB
 	PCB idlePCB;
 	int idleFD[] = {0, 1};
-	buildPCB("idleProcess", &idlePCB, IDLE_PID, KERNEL_PID, (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE), (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE) + 20 * 8, READY, 1, idleFD);
+	buildPCB("Idle", &idlePCB, IDLE_PID, KERNEL_PID, (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE), (uint64_t)(idleMemStart + PAGE_SIZE - STACK_SIZE) + 20 * 8, READY, 1, idleFD);
 	// Adicion a la PCBT
 	insert(PCBTable, &idlePCB);
 	// Creacion de Stack
 	buildStartUpProcess(idleMemStart + PAGE_SIZE - STACK_SIZE, idleProcess);
-
 	// Transferencia de Control al Userland, se precalcula el valor
 	EntryPoint userlandEntryPoint = (EntryPoint)sampleCodeModuleAddress;
 	int userland = userlandEntryPoint();

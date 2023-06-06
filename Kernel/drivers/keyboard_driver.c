@@ -164,7 +164,7 @@ char getKey()
     if (bufferCount <= 0)
     {
         block(getCurrentPid());
-        push(&inputQueue, getCurrentPid());
+        push(&inputStack, getCurrentPid());
         return 0;
     }
     return popBuffer();
@@ -236,7 +236,7 @@ void storeKey()
             if (combinedChar == 'c' || combinedChar == 'C')
             {
                 keyBuffer[bufferCount++] = KILL_PROCESS;
-                PCB *curr = get(PCBTable, peek(&inputQueue));
+                PCB *curr = get(PCBTable, peek(&inputStack));
                 // Se evita el asesinato de la shell
                 if (curr->PID == 4)
                 {
@@ -244,21 +244,21 @@ void storeKey()
                     return;
                 }
                 // Se asesina el proceso y se lo remueve del Input Stack
-                if (peek(&inputQueue) != -1)
+                if (peek(&inputStack) != -1)
                 {
-                    sys_kill(peek(&inputQueue));
-                    pop(&inputQueue);
+                    sys_kill(peek(&inputStack));
+                    pop(&inputStack);
                     forceTick();
                     return;
                 }
                 // Se asesina el proceso y se lo remueve del Wait Stack, son casos excluyentes
-                else if (peekWaitStack(&waitQueue).cpid != -1)
+                else if (peekWaitStack(&waitStack).cpid != -1)
                 {
-                    PCB *curr = get(PCBTable, peekWaitStack(&waitQueue).cpid);
+                    PCB *curr = get(PCBTable, peekWaitStack(&waitStack).cpid);
                     // El proceso puede estar en el Wait Stack debido a un sleep
                     if (strcmp(curr->name, "sleep") == 0)
                     {
-                        Process pro = peekWaitStack(&waitQueue);
+                        Process pro = peekWaitStack(&waitStack);
                         sys_kill(pro.cpid); // mata hijo
                         if (pro.pid != 4)
                             sys_kill(pro.pid); // mata padre
@@ -308,8 +308,8 @@ void storeKey()
     }
     if (bufferCount > 0)
     {
-        unblock(peek(&inputQueue));
-        pop(&inputQueue);
+        unblock(peek(&inputStack));
+        pop(&inputStack);
     }
     return;
 }

@@ -8,6 +8,12 @@
 #include <interrupts.h>
 #include <lib.h>
 #include <list.h>
+#include "memoryManager.h"
+#include "schedulerLib.h"
+#include "scheduler.h"
+#include "semaphores.h"
+#include "pipe.h"
+#include "waitStack.h"
 
 #define STDOUT 1
 #define STDRED 2
@@ -54,7 +60,5 @@ int sys_openPipe(char *name);
 int sys_closePipe(int fd);
 void sys_ps(char *buffer);
 void sys_mem(char *buffer, int unit);
-
-int getCurrentPid(); //>.>
 
 #endif

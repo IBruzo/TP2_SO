@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-// hay que mover esto a otro.h
 #define READY 0
 #define RUNNING 1
 #define BLOCKED 2
@@ -27,8 +26,6 @@ typedef struct PCB
     char priority;
     char lives;
     int FD[2]; // f 0:1 , -1-1 back
-    // char waitInput;
-    // char waitChild;
     memInfo memInfo;
 } PCB;
 
@@ -45,25 +42,16 @@ typedef struct List
 } List;
 
 void newList(List *list);
-
 void freeList(List *list);
-
 int isEmpty(const List *list);
-
 int size(const List *list);
-
 void insert(List *list, PCB *data);
-
 void delete(List *list, int targetPID);
-
 PCB *get(List *list, int targetPID);
-
 void iterate(List *list, void (*action)(const PCB *));
-
 Node *next(Node *current);
-
 Node *begin(List *list);
-
 void printList(List *list);
+void ps(char *buffer);
 
 #endif // UNTITLED5_LISTADT_H

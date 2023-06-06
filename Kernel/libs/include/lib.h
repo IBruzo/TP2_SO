@@ -23,7 +23,6 @@
 #define IDLE_PID 1
 #define KERNEL_PID 0
 
-// Para poder usar print();
 void *memset(void *destination, int32_t character, uint64_t length);
 void *memcpy(void *destination, const void *source, uint64_t length);
 void strcpy(char *destination, const char *origin);
@@ -42,8 +41,8 @@ void strcat(char *destination, const char *origin);
 char *strcpyR(char *destination, const char *source);
 int sprintf(char *buffer, char *foundation, ...);
 int snprintf(char *buffer, size_t size, char *foundation, ...);
-char *snprintf2(char *foundation, ...);
 int strToInt(char *str);
+int strcmp(const char *str1, const char *str2);
 
 // Funciones Nativas del Kernel
 void clearBSS(void *bssAddress, uint64_t bssSize);
@@ -58,5 +57,4 @@ extern uint8_t inb(uint16_t port);
 extern void outb(uint16_t port, uint8_t value);
 char *snapshot();
 int buildDummyStack(uint64_t memStart, void *(*function)(int, char **), int argc, char **argv);
-int strcmp(const char *str1, const char *str2);
 #endif

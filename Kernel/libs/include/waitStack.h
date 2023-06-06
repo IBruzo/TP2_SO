@@ -17,7 +17,7 @@ typedef struct
     int top;
 } WaitStack;
 
-extern WaitStack waitQueue;
+extern WaitStack waitStack;
 
 void initializeWaitStack(WaitStack *stack);
 int isWaitStackEmpty(WaitStack *stack);

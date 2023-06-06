@@ -26,7 +26,7 @@ extern char *snapshot();
 #define EOF -1
 #define KILL_PROCESS -2
 
-// hashcodes de los strings comandos en mayuscula
+// Hashcodes de los strings comandos en mayuscula
 #define HELP 2089138798
 #define TRON 2089584296
 #define CLEAR 216417516
@@ -42,8 +42,8 @@ extern char *snapshot();
 #define DOWNSIZE 235307405
 #define LANG_ES 3115062494 // lange=es
 #define LANG_EN 3115062489
-#define LANGUAGE 3857633481 // for help
-#define SIZE 2089538912     // for help
+#define LANGUAGE 3857633481
+#define SIZE 2089538912
 #define INFOREG 2989276335
 #define TEST_MM 3973914654
 #define MEM 193463204
@@ -62,8 +62,9 @@ extern char *snapshot();
 #define PS 5862632
 #define LOOP 2089293535
 #define TEST_NO_SYNC 3264647453
-
 #define PHYLO 231712881
+
+#define MAX_PID 5000
 
 void handleCommand();
 void handleKey(char c);

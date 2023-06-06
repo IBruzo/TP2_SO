@@ -21,7 +21,6 @@ void insert(List *list, PCB *data)
     Node *newNode = (Node *)sys_mAlloc(sizeof(Node));
     newNode->data = data;
 
-    // If the list is empty or the new element should be inserted at the beginning
     if (list->head == NULL || compare_PCB(data, list->head->data) < 0)
     {
         newNode->next = list->head;
@@ -31,7 +30,6 @@ void insert(List *list, PCB *data)
     {
         Node *current = list->head;
 
-        // Traverse the list to find the appropriate position for insertion
         while (current->next != NULL && compare_PCB(data, current->next->data) >= 0)
         {
             current = current->next;
@@ -55,12 +53,10 @@ void delete(List *list, int targetPID)
         {
             if (prev == NULL)
             {
-                // Deleting the head node
                 list->head = current->next;
             }
             else
             {
-                // Deleting a node in the middle or at the end
                 prev->next = current->next;
             }
 
@@ -121,7 +117,6 @@ void freeList(List *list)
     list->size = 0;
 }
 
-// Function to get the next node in the list
 Node *next(Node *current)
 {
     if (current != NULL)
@@ -131,7 +126,6 @@ Node *next(Node *current)
     return NULL;
 }
 
-// Function to get the beginning node of the list
 Node *begin(List *list)
 {
     return list->head;
@@ -143,8 +137,54 @@ void printList(List *list)
     print("\nPCB Table\n");
     while (current != NULL)
     {
-        // Assuming the data in the PCB structure has a member called 'name'
         print("PID [%d]  PRIO [%d] STATE[%d] |", current->data->PID, current->data->priority, current->data->state);
         current = current->next;
     }
+}
+
+static char *stateStr(int state)
+{
+    switch (state)
+    {
+    case BLOCKED:
+        return "BLOCKED";
+    case READY:
+        return "READY  ";
+    case RUNNING:
+        return "RUNNING";
+    default:
+        return "EXITED ";
+    }
+}
+
+// Imprime la lista de todos los procesos con sus propiedades
+void ps(char *buffer)
+{
+    char header[100];
+    sprintf(header, "Process    |  ID  | Prioridad |   RSP   |   RBP    |  Context  | State \n");
+    strcpy(buffer, header);
+    char line[100];
+    sprintf(line, "-------------------------------------------------------------------------\n");
+    strcat(buffer, line);
+
+    Node *pcb = begin(PCBTable);
+    while (pcb != NULL)
+    {
+        if (pcb->data->state != EXITED)
+        {
+            char *process = (char *)sys_mAlloc(sizeof(char) * 200);
+            if ((uint32_t)pcb->data->RBP == 0)
+            {
+                sprintf(process, "%s    |  %d   |     %d     | %x  | 0x%s |  %s       | %s \n", pcb->data->name, pcb->data->PID, pcb->data->priority, (uint32_t)pcb->data->RSP, "000000", (pcb->data->FD[0] == 0 && pcb->data->FD[1] == 1) ? "FG" : "BG", stateStr(pcb->data->state));
+            }
+            else
+            {
+                sprintf(process, "%s    |  %d   |     %d     | %x  | 0x%x |  %s       | %s \n", pcb->data->name, pcb->data->PID, pcb->data->priority, (uint32_t)pcb->data->RSP, (uint32_t)pcb->data->RBP, (pcb->data->FD[0] == 0 && pcb->data->FD[1] == 1) ? "FG" : "BG", stateStr(pcb->data->state));
+            }
+            strcat(buffer, process);
+            sys_mFree(process);
+        }
+        pcb = next(pcb);
+    }
+    return;
 }

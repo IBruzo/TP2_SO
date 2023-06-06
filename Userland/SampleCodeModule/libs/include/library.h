@@ -30,7 +30,6 @@ void appendchar(char character);
 void appendstring(char *string);
 void appendstringColor(char *string, int color);
 int isalnum(int c);
-char tolower(char c);
 void filterSpaces(char *str);
 
 // string
@@ -58,6 +57,10 @@ int pow(int base, unsigned int exp);
 char onlyHexChars(char *string);
 char isHexChar(char character);
 int strToInt(char *str);
+char *toUpper(char *string);
+char toLower(char c);
+int bcdToDec(int bcd);
+char *itos(int num);
 
 // consoleControl
 int canWrite();

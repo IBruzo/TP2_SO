@@ -8,18 +8,17 @@ static uint64_t int_80(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, u
 
 typedef uint64_t (*syscall)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 
-// static void int_22(uint64_t rdi, uint64_t rsi, uint64_t rdx ,uint64_t rcx, uint64_t r8, uint64_t r9);
 void (*fun_inter[256])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 uint64_t (*fun_sys[256])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 
-// Inicializa los vectores de funciones q se usaran para las interrupciones
+// Inicializa el vector de Funciones que redirige al handler de cada Interrupcion
 void initialize()
 {
     (fun_inter[0]) = int_20;
     (fun_inter[1]) = int_21;
     (fun_inter[0x60]) = (void (*)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t))int_80;
 
-    // agrego syscalls
+    // Syscalls
     (fun_sys[SYS_GETCHAR_ID]) = (syscall)sys_getchar;
     (fun_sys[SYS_WRITE_ID]) = (syscall)sys_write;
     (fun_sys[SYS_TICK_ID]) = (syscall)sys_tick;
@@ -78,10 +77,8 @@ void int_21()
 {
     storeKey();
 }
-/**
- * @brief selecciona la syscall q se va a usar
- *
- */
+
+// Acomoda los parametros y se llama a la syscall correspondiente
 uint64_t int_80(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9)
 {
     return (*fun_sys[rdi])(rsi, rdx, rcx, r8, r9);
