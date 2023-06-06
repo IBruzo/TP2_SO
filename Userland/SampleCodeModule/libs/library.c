@@ -314,7 +314,7 @@ void appendcharColor(char character, int color)
 	}
 
 	putcharSpecifics(character, cursorX, cursorY, fontsize, color);
-	if ((character == -1 || character == '\n') && getOutputFD(getPid()) != -1)
+	if ((character == -1 || character == '\n' || character == -2) && getOutputFD(getPid()) != -1)
 	{
 		newline();
 		backspaceSpecial();
