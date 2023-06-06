@@ -3,19 +3,12 @@
 
 #include "library.h"
 
-#define MAX_PHYL 15
+#define MAX_PHYL 10
 #define MIN_PHYL 2
 #define INIT_PHYL 5
 #define SEM_PHYL "semPhylos"
 #define LEN 10
 
-typedef struct
-{
-    uint64_t pid;
-    int state;
-    uint64_t semIndex;
-    char semName[LEN];
-} phylo_t;
 
 enum state
 {
@@ -24,17 +17,18 @@ enum state
     WAITING
 };
 
+#define ROJO 0xFF0000
+#define AMARILLO 0xFFFF00
 
 
-int addPhylo(int pIndex);
-int removePhylo(int pIndex);
-void endTable();
+int addPhylo();
+int removePhylo();
+void endtable();
 void * phyloProcess(int argc, char *argv[]);
 void printState();
-void takeChopstick(int pIndex);
-void update(int pIndex);
-int left(int pIndex);
-int right(int pIndex);
 
-
+void putForks(int i);
+void takeForks(int i);
+void resetState();
+void test(int i);
 #endif

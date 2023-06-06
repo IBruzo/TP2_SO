@@ -79,6 +79,7 @@ int semClose(char *name)
     int semIndex = findSem(name);
     if (semIndex == -1)
     {
+        _xchg(&semLock, 0);
         return -1;
     }
 
